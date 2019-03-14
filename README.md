@@ -40,6 +40,7 @@ public class Main {
 ### Prerequisites
 
 * Gradle
+* Lucidtech AI Services credentials
 
 #### Arch
 
