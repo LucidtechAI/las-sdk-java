@@ -22,15 +22,15 @@ public class Main {
        Client client = new Client("<api endpoint>");
        
        // Get document handle
-       JSONObject postDocumentsResponse = this.client.postDocuments("image/jpeg", "foobar");
+       JSONObject postDocumentsResponse = client.postDocuments("image/jpeg", "foobar");
        
        // Put document to s3
        URI uploadUri = new URI(postDocumentsResponse.getString("uploadUrl"));
        String documentId = postDocumentsResponse.getString("documentId");
-       this.client.putDocument("document.jpeg", "image/jpeg", uploadUri);
+       client.putDocument("document.jpeg", "image/jpeg", uploadUri);
        
        // Get prediction on document
-       JSONObject prediction = this.client.postPredictions(documentId, "invoice");
+       JSONObject prediction = client.postPredictions(documentId, "invoice");
    }
 }
 ```
