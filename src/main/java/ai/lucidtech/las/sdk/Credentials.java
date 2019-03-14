@@ -22,7 +22,6 @@ public class Credentials {
 
     /**
      *  Used to fetch and store credentials.
-     *  Uses default location ~/.lucidtech/credentials.cfg to fetch credentials
      *
      * @param credentialsPath Path to credentials file
      */
