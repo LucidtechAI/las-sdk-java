@@ -36,17 +36,24 @@ class Authorization {
 
         Instant now = Instant.now();
         Map<String, String> canonicalHeaders = getCanonicalHeaders(uri, now);
+
         String canonicalRequest = this.getCanonicalRequest(uri, method, body, canonicalHeaders);
         String requestDigest = DigestUtils.sha256Hex(canonicalRequest.getBytes());
         String credentialScope = this.getCredentialScope(now);
         byte[] stringToSign = this.getSignString(now, credentialScope, requestDigest);
         byte[] signatureKey = this.getSignatureKey(now);
-        String signature = Hex.encodeHexString(HmacUtils.getInitializedMac(HmacAlgorithms.HMAC_SHA_256, signatureKey).doFinal(stringToSign));
+
+        String signature = Hex.encodeHexString(this.hmacSHA256(signatureKey, stringToSign));
         return buildAuthHeader(now, credentialScope, canonicalHeaders.keySet(), signature);
     }
 
+    private byte[] hmacSHA256(byte[] key, byte[] message) {
+        return HmacUtils.getInitializedMac(HmacAlgorithms.HMAC_SHA_256, key).doFinal(message);
+    }
+
     private byte[] getSignString(Instant now, String credentialScope, String requestDigest) {
-        List<String> signParts = Arrays.asList(Authorization.ALGORITHM, this.getDateTimeStamp(now), credentialScope, requestDigest);
+        List<String> signParts = Arrays.asList(Authorization.ALGORITHM, this.getDateTimeStamp(now),
+                credentialScope, requestDigest);
         return String.join("\n", signParts).getBytes();
     }
 
@@ -60,6 +67,7 @@ class Authorization {
         headers.put("host", uri.getHost());
         headers.put("x-amz-date", this.getDateTimeStamp(now));
         headers.put("x-api-key", this.credentials.getApiKey());
+
         return headers;
     }
 
@@ -69,11 +77,16 @@ class Authorization {
 
     private String getCanonicalRequest(URI uri, String method, byte[] body, Map<String, String> canonicalHeaders) {
         String canonicalQueryString = this.getCanonicalQueryString(uri.getQuery());
-        List<String> headerPartList = canonicalHeaders.entrySet().stream().map(Authorization::toHeaderPart).collect(Collectors.toList());
+        List<String> headerPartList = canonicalHeaders.entrySet().stream()
+                .map(Authorization::toHeaderPart)
+                .collect(Collectors.toList());
+
         String headerParts = String.join("", headerPartList);
         String headerKeys = String.join(";", canonicalHeaders.keySet());
         String payloadHash = DigestUtils.sha256Hex(body);
-        List<String> requestComponents = Arrays.asList(method, uri.getPath(), canonicalQueryString, headerParts, headerKeys, payloadHash);
+
+        List<String> requestComponents = Arrays.asList(method, uri.getPath(), canonicalQueryString, headerParts,
+                headerKeys, payloadHash);
         return String.join("\n", requestComponents);
     }
 
@@ -86,7 +99,7 @@ class Authorization {
         byte[] signatureKey = ("AWS4" + this.credentials.getSecretAccessKey()).getBytes();
         List<String> parts = Arrays.asList(this.getDateStamp(now), this.region, this.service, "aws4_request");
         for (String part : parts) {
-            signatureKey = HmacUtils.getInitializedMac(HmacAlgorithms.HMAC_SHA_256, signatureKey).doFinal(part.getBytes());
+            signatureKey = this.hmacSHA256(signatureKey, part.getBytes());
         }
 
         return signatureKey;
@@ -96,7 +109,8 @@ class Authorization {
         return auth.getKey() + "=" + auth.getValue();
     }
 
-    private Map<String, String> buildAuthHeader(Instant now, String credentialScope, Iterable<String> signedHeaders, String signature) {
+    private Map<String, String> buildAuthHeader(Instant now, String credentialScope, Iterable<String> signedHeaders,
+                                                String signature) {
         Map<String, String> auth = new TreeMap<>();
         auth.put("Credential", this.credentials.getAccessKeyId() + "/" + credentialScope);
         auth.put("SignedHeaders", String.join(";", signedHeaders));
