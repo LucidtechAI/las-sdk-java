@@ -109,6 +109,22 @@ public class LasClient {
         return new JSONObject(jsonResponse);
     }
 
+    /**
+     * Post feedback to the REST API, calls the POST /documents/{documentId} endpoint.
+     * Posting feedback means posting the ground truth data for the particular document.
+     * This enables the API to learn from past mistakes
+     *
+     * @param documentId The document id to post feedback to.
+     * @see LasClient#postDocuments
+     * @param feedback Feedback to post
+     * @return Feedback response
+     */
+    public JSONObject postDocumentId(String documentId, JSONObject feedback) throws IOException {
+        HttpUriRequest request = this.createSignedRequest("POST", "/documents/" + documentId, feedback);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
     private String executeRequest(HttpUriRequest request) throws IOException {
         HttpResponse httpResponse= this.httpClient.execute(request);
         HttpEntity responseEntity = httpResponse.getEntity();
