@@ -125,6 +125,19 @@ public class LasClient {
         return new JSONObject(jsonResponse);
     }
 
+    /**
+     * Delete documents with this consent_id, calls the DELETE /consent/{consentId} endpoint.
+     *
+     * @param consentId Delete documents with this consentId
+     * @return Feedback response
+     * @see LasClient#postDocuments
+     */
+    public JSONObject deleteConsentId(String consentId) throws IOException {
+        HttpUriRequest request = this.createSignedRequest("DELETE", "/consents/" + consentId, new JSONObject());
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
     private String executeRequest(HttpUriRequest request) throws IOException {
         HttpResponse httpResponse= this.httpClient.execute(request);
         HttpEntity responseEntity = httpResponse.getEntity();
