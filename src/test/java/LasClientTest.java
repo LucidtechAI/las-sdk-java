@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
@@ -98,6 +99,52 @@ public class LasClientTest {
             StreamSupport.stream(fields.spliterator(), false)
                     .map(o -> (JSONObject)o)
                     .forEach(LasClientTest::assertField);
+        }
+    }
+
+    private JSONObject createField(String label, String value) {
+        JSONObject field = new JSONObject();
+        field.put("label", label);
+        field.put("value", value);
+        return field;
+    }
+
+    private static void assertFeedbackItem(JSONObject feedbackItem) {
+        Assert.assertNotNull(feedbackItem.get("label"));
+        Assert.assertNotNull(feedbackItem.get("value"));
+    }
+
+    private static void assertFeedbackResponse(JSONObject feedbackResponse) {
+        Assert.assertNotNull(feedbackResponse.get("documentId"));
+        Assert.assertNotNull(feedbackResponse.get("consentId"));
+        JSONArray feedback = feedbackResponse.getJSONArray("feedback");
+        Assert.assertNotNull(feedback);
+
+        StreamSupport.stream(feedback.spliterator(), false)
+                .map(o -> (JSONObject)o)
+                .forEach(LasClientTest::assertFeedbackItem);
+    }
+
+    @Test
+    public void testPostDocumentId() throws IOException {
+        String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
+
+        for (String documentMimeType : documentMimeTypes) {
+            ContentType contentType = ContentType.fromString(documentMimeType);
+            String consentId = UUID.randomUUID().toString();
+            JSONObject document = this.lasClient.postDocuments(contentType, consentId);
+            String documentId = document.getString("documentId");
+
+            JSONObject feedback = new JSONObject();
+            List<JSONObject> fieldList = Arrays.asList(
+                    this.createField("total_amount", "123.00"),
+                    this.createField("purchase_date", "2019-05-23")
+            );
+            JSONArray fields = new JSONArray(fieldList);
+            feedback.put("feedback", fields);
+
+            JSONObject feedbackResponse = this.lasClient.postDocumentId(documentId, feedback);
+            LasClientTest.assertFeedbackResponse(feedbackResponse);
         }
     }
 }
