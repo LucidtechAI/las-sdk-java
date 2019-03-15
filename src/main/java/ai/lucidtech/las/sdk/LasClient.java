@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.util.Map;
 
 
-public class Client {
+public class LasClient {
     private String endpoint;
     private Authorization auth;
     private HttpClient httpClient;
@@ -31,7 +31,7 @@ public class Client {
      *
      * @param endpoint Domain endpoint of the api, e.g. https://<prefix>.api.lucidtech.ai/<version>
      */
-    public Client(String endpoint) {
+    public LasClient(String endpoint) {
         this.endpoint = endpoint;
         Credentials credentials = new Credentials();
         this.auth = new Authorization(credentials);
@@ -45,7 +45,7 @@ public class Client {
      * @param credentials Credentials to use
      * @see Credentials
      */
-    public Client(String endpoint, Credentials credentials) {
+    public LasClient(String endpoint, Credentials credentials) {
         this.endpoint = endpoint;
         this.auth = new Authorization(credentials);
         this.httpClient = HttpClientBuilder.create().build();
@@ -75,9 +75,9 @@ public class Client {
      * @param documentPath Path to document to upload
      * @param contentType Mime type of document to upload. Same as provided to postDocuments
      * @see ContentType
-     * @see Client#postDocuments
+     * @see LasClient#postDocuments
      * @param presignedUrl Presigned upload url from postDocuments
-     * @see Client#postDocuments
+     * @see LasClient#postDocuments
      * @return Response from PUT operation
      */
     public String putDocument(String documentPath, ContentType contentType, URI presignedUrl) throws IOException {
@@ -95,7 +95,7 @@ public class Client {
      * Run inference and create a prediction, calls the POST /predictions endpoint
      *
      * @param documentId The document id to run inference and create a prediction. See postDocuments for how to get documentId
-     * @see Client#postDocuments
+     * @see LasClient#postDocuments
      * @param modelName The name of the model to use for inference
      * @return Prediction on document
      */
