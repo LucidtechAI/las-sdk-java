@@ -16,18 +16,20 @@
 
 ```java
 import ai.lucidtech.las.sdk.Client;
+import ai.lucidtech.las.sdk.ContentType;
 
 public class Main {
    public static void main(String[] args) throws IOException, URISyntaxException {
        Client client = new Client("<api endpoint>");
        
        // Get document handle
-       JSONObject postDocumentsResponse = client.postDocuments("image/jpeg", "foobar");
+       ContentType contentType = ContentType.JPEG;
+       JSONObject postDocumentsResponse = client.postDocuments(contentType, "foobar");
        
        // Put document to s3
        URI uploadUri = new URI(postDocumentsResponse.getString("uploadUrl"));
        String documentId = postDocumentsResponse.getString("documentId");
-       client.putDocument("document.jpeg", "image/jpeg", uploadUri);
+       client.putDocument("document.jpeg", contentType, uploadUri);
        
        // Get prediction on document
        JSONObject prediction = client.postPredictions(documentId, "invoice");

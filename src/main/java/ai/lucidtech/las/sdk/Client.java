@@ -3,7 +3,11 @@ package ai.lucidtech.las.sdk;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -51,12 +55,13 @@ public class Client {
      * Creates a document handle, calls POST /documents endpoint
      *
      * @param contentType A mime type for the document handle
+     * @see ContentType
      * @param consentId An identifier to mark the owner of the document handle
      * @return Response from API
      */
-    public JSONObject postDocuments(String contentType, String consentId) throws IOException {
+    public JSONObject postDocuments(ContentType contentType, String consentId) throws IOException {
         JSONObject jsonBody = new JSONObject();
-        jsonBody.put("contentType", contentType);
+        jsonBody.put("contentType", contentType.getMimeType());
         jsonBody.put("consentId", consentId);
 
         HttpUriRequest request = this.createSignedRequest("POST", "/documents", jsonBody);
@@ -69,16 +74,17 @@ public class Client {
      *
      * @param documentPath Path to document to upload
      * @param contentType Mime type of document to upload. Same as provided to postDocuments
+     * @see ContentType
      * @see Client#postDocuments
      * @param presignedUrl Presigned upload url from postDocuments
      * @see Client#postDocuments
      * @return Response from PUT operation
      */
-    public String putDocument(String documentPath, String contentType, URI presignedUrl) throws IOException {
+    public String putDocument(String documentPath, ContentType contentType, URI presignedUrl) throws IOException {
         byte[] body = this.readDocument(documentPath);
 
         HttpPut putRequest = new HttpPut(presignedUrl);
-        putRequest.addHeader("Content-Type", contentType);
+        putRequest.addHeader("Content-Type", contentType.getMimeType());
         ByteArrayEntity entity = new ByteArrayEntity(body);
         putRequest.setEntity(entity);
 
