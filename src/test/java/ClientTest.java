@@ -1,4 +1,5 @@
 import ai.lucidtech.las.sdk.Client;
+import ai.lucidtech.las.sdk.ContentType;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -64,13 +65,14 @@ public class ClientTest {
             String modelName = modelNames[i];
             String documentPath = this.getResourcePath(documentPaths[i]);
             String documentMimeType = documentMimeTypes[i];
+            ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
 
-            JSONObject postDocumentsResponse = this.client.postDocuments(documentMimeType, consentId);
+            JSONObject postDocumentsResponse = this.client.postDocuments(contentType, consentId);
             URI uploadUri = new URI(postDocumentsResponse.getString("uploadUrl"));
             String documentId = postDocumentsResponse.getString("documentId");
 
-            this.client.putDocument(documentPath, documentMimeType, uploadUri);
+            this.client.putDocument(documentPath, contentType, uploadUri);
             JSONObject prediction = this.client.postPredictions(documentId, modelName);
 
             JSONArray fields = prediction.getJSONArray("predictions");
