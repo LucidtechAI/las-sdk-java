@@ -147,4 +147,20 @@ public class LasClientTest {
             LasClientTest.assertFeedbackResponse(feedbackResponse);
         }
     }
+
+    @Test
+    public void testDeleteConsentId() throws IOException {
+        String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
+
+        for (String documentMimeType : documentMimeTypes) {
+            ContentType contentType = ContentType.fromString(documentMimeType);
+            String consentId = UUID.randomUUID().toString();
+            this.lasClient.postDocuments(contentType, consentId);
+
+            JSONObject response = this.lasClient.deleteConsentId(consentId);
+            Assert.assertNotNull(response.getString("consentId"));
+            JSONArray documentIds = response.getJSONArray("documentIds");
+            Assert.assertNotNull(documentIds);
+        }
+    }
 }
