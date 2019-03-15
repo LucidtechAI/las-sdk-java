@@ -1,4 +1,4 @@
-import ai.lucidtech.las.sdk.Client;
+import ai.lucidtech.las.sdk.LasClient;
 import ai.lucidtech.las.sdk.ContentType;
 
 import org.json.JSONArray;
@@ -17,15 +17,15 @@ import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 
-public class ClientTest {
+public class LasClientTest {
     private static final String CONFIG_RELATIVE_PATH = "config.properties";
 
-    private Client client;
+    private LasClient lasClient;
     private Properties config;
 
     @Before
     public void setUp() {
-        String configPath = this.getResourcePath(ClientTest.CONFIG_RELATIVE_PATH);
+        String configPath = this.getResourcePath(LasClientTest.CONFIG_RELATIVE_PATH);
 
         try(FileInputStream input = new FileInputStream(configPath)) {
             this.config = new Properties();
@@ -34,7 +34,7 @@ public class ClientTest {
             ex.printStackTrace();
         }
 
-        this.client = new Client(this.config.getProperty("endpoint"));
+        this.lasClient = new LasClient(this.config.getProperty("endpoint"));
     }
 
     private String getResourcePath(String relativePath) {
@@ -45,12 +45,30 @@ public class ClientTest {
         return Arrays.stream(s.split(",")).map(String::trim).toArray(String[]::new);
     }
 
+    private static void assertDocument(JSONObject document) {
+        Assert.assertNotNull(document.get("uploadUrl"));
+        Assert.assertNotNull(document.get("documentId"));
+    }
+
     private static void assertField(JSONObject field) {
         Assert.assertNotNull(field.get("label"));
         Assert.assertNotNull(field.get("value"));
         float confidence = field.getFloat("confidence");
         Assert.assertTrue(confidence >= 0.0);
         Assert.assertTrue(confidence <= 1.0);
+    }
+
+    @Test
+    public void testPostDocuments() throws IOException {
+        String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
+
+        for (String documentMimeType : documentMimeTypes) {
+            ContentType contentType = ContentType.fromString(documentMimeType);
+            String consentId = UUID.randomUUID().toString();
+
+            JSONObject document = this.lasClient.postDocuments(contentType, consentId);
+            LasClientTest.assertDocument(document);
+        }
     }
 
     @Test
@@ -68,18 +86,18 @@ public class ClientTest {
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
 
-            JSONObject postDocumentsResponse = this.client.postDocuments(contentType, consentId);
-            URI uploadUri = new URI(postDocumentsResponse.getString("uploadUrl"));
-            String documentId = postDocumentsResponse.getString("documentId");
+            JSONObject document = this.lasClient.postDocuments(contentType, consentId);
+            URI uploadUri = new URI(document.getString("uploadUrl"));
+            String documentId = document.getString("documentId");
 
-            this.client.putDocument(documentPath, contentType, uploadUri);
-            JSONObject prediction = this.client.postPredictions(documentId, modelName);
+            this.lasClient.putDocument(documentPath, contentType, uploadUri);
+            JSONObject prediction = this.lasClient.postPredictions(documentId, modelName);
 
             JSONArray fields = prediction.getJSONArray("predictions");
             Assert.assertNotNull(fields);
             StreamSupport.stream(fields.spliterator(), false)
                     .map(o -> (JSONObject)o)
-                    .forEach(ClientTest::assertField);
+                    .forEach(LasClientTest::assertField);
         }
     }
 }

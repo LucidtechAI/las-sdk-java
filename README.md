@@ -15,24 +15,24 @@
 ### Quick start
 
 ```java
-import ai.lucidtech.las.sdk.Client;
+import ai.lucidtech.las.sdk.LasClient;
 import ai.lucidtech.las.sdk.ContentType;
 
 public class Main {
    public static void main(String[] args) throws IOException, URISyntaxException {
-       Client client = new Client("<api endpoint>");
+       LasClient lasClient = new LasClient("<api endpoint>");
        
        // Get document handle
        ContentType contentType = ContentType.JPEG;
-       JSONObject postDocumentsResponse = client.postDocuments(contentType, "foobar");
+       JSONObject postDocumentsResponse = lasClient.postDocuments(contentType, "foobar");
        
        // Put document to s3
        URI uploadUri = new URI(postDocumentsResponse.getString("uploadUrl"));
        String documentId = postDocumentsResponse.getString("documentId");
-       client.putDocument("document.jpeg", contentType, uploadUri);
+       lasClient.putDocument("document.jpeg", contentType, uploadUri);
        
        // Get prediction on document
-       JSONObject prediction = client.postPredictions(documentId, "invoice");
+       JSONObject prediction = lasClient.postPredictions(documentId, "invoice");
    }
 }
 ```
