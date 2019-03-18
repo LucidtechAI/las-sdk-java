@@ -15,24 +15,25 @@
 ### Quick start
 
 ```java
-import ai.lucidtech.las.sdk.Client;
-import ai.lucidtech.las.sdk.ContentType;
+import ai.lucidtech.las.sdk.ApiClient;
+import ai.lucidtech.las.sdk.Prediction;
+import ai.lucidtech.las.sdk.Field;
+
+import java.util.List;
 
 public class Main {
    public static void main(String[] args) throws IOException, URISyntaxException {
-       Client client = new Client("<api endpoint>");
+       ApiClient apiClient = new ApiClient("<api endpoint>");
+       Prediction prediction = apiClient.predict("document.jpeg", "invoice");
        
-       // Get document handle
-       ContentType contentType = ContentType.JPEG;
-       JSONObject postDocumentsResponse = client.postDocuments(contentType, "foobar");
-       
-       // Put document to s3
-       URI uploadUri = new URI(postDocumentsResponse.getString("uploadUrl"));
-       String documentId = postDocumentsResponse.getString("documentId");
-       client.putDocument("document.jpeg", contentType, uploadUri);
-       
-       // Get prediction on document
-       JSONObject prediction = client.postPredictions(documentId, "invoice");
+       List<Field> fields = prediction.getFields();
+       for (Field field : fields) {
+           label = field.getLabel();
+           value = field.getValue();
+           confidence = field.getConfidence();
+           
+           System.out.println("label: " + label + " value: " + value + " conf: " + confidence);
+       }
    }
 }
 ```
