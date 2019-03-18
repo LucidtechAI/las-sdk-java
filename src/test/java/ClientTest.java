@@ -1,4 +1,4 @@
-import ai.lucidtech.las.sdk.LasClient;
+import ai.lucidtech.las.sdk.Client;
 import ai.lucidtech.las.sdk.ContentType;
 
 import org.json.JSONArray;
@@ -18,15 +18,15 @@ import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 
-public class LasClientTest {
+public class ClientTest {
     private static final String CONFIG_RELATIVE_PATH = "config.properties";
 
-    private LasClient lasClient;
+    private Client client;
     private Properties config;
 
     @Before
     public void setUp() {
-        String configPath = this.getResourcePath(LasClientTest.CONFIG_RELATIVE_PATH);
+        String configPath = this.getResourcePath(ClientTest.CONFIG_RELATIVE_PATH);
 
         try(FileInputStream input = new FileInputStream(configPath)) {
             this.config = new Properties();
@@ -35,7 +35,7 @@ public class LasClientTest {
             ex.printStackTrace();
         }
 
-        this.lasClient = new LasClient(this.config.getProperty("endpoint"));
+        this.client = new Client(this.config.getProperty("endpoint"));
     }
 
     private String getResourcePath(String relativePath) {
@@ -67,8 +67,8 @@ public class LasClientTest {
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
 
-            JSONObject document = this.lasClient.postDocuments(contentType, consentId);
-            LasClientTest.assertDocument(document);
+            JSONObject document = this.client.postDocuments(contentType, consentId);
+            ClientTest.assertDocument(document);
         }
     }
 
@@ -87,18 +87,18 @@ public class LasClientTest {
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
 
-            JSONObject document = this.lasClient.postDocuments(contentType, consentId);
+            JSONObject document = this.client.postDocuments(contentType, consentId);
             URI uploadUri = new URI(document.getString("uploadUrl"));
             String documentId = document.getString("documentId");
 
-            this.lasClient.putDocument(documentPath, contentType, uploadUri);
-            JSONObject prediction = this.lasClient.postPredictions(documentId, modelName);
+            this.client.putDocument(documentPath, contentType, uploadUri);
+            JSONObject prediction = this.client.postPredictions(documentId, modelName);
 
             JSONArray fields = prediction.getJSONArray("predictions");
             Assert.assertNotNull(fields);
             StreamSupport.stream(fields.spliterator(), false)
                     .map(o -> (JSONObject)o)
-                    .forEach(LasClientTest::assertField);
+                    .forEach(ClientTest::assertField);
         }
     }
 
@@ -122,7 +122,7 @@ public class LasClientTest {
 
         StreamSupport.stream(feedback.spliterator(), false)
                 .map(o -> (JSONObject)o)
-                .forEach(LasClientTest::assertFeedbackItem);
+                .forEach(ClientTest::assertFeedbackItem);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class LasClientTest {
         for (String documentMimeType : documentMimeTypes) {
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
-            JSONObject document = this.lasClient.postDocuments(contentType, consentId);
+            JSONObject document = this.client.postDocuments(contentType, consentId);
             String documentId = document.getString("documentId");
 
             JSONObject feedback = new JSONObject();
@@ -143,8 +143,8 @@ public class LasClientTest {
             JSONArray fields = new JSONArray(fieldList);
             feedback.put("feedback", fields);
 
-            JSONObject feedbackResponse = this.lasClient.postDocumentId(documentId, feedback);
-            LasClientTest.assertFeedbackResponse(feedbackResponse);
+            JSONObject feedbackResponse = this.client.postDocumentId(documentId, feedback);
+            ClientTest.assertFeedbackResponse(feedbackResponse);
         }
     }
 
@@ -155,9 +155,9 @@ public class LasClientTest {
         for (String documentMimeType : documentMimeTypes) {
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
-            this.lasClient.postDocuments(contentType, consentId);
+            this.client.postDocuments(contentType, consentId);
 
-            JSONObject response = this.lasClient.deleteConsentId(consentId);
+            JSONObject response = this.client.deleteConsentId(consentId);
             Assert.assertNotNull(response.getString("consentId"));
             JSONArray documentIds = response.getJSONArray("documentIds");
             Assert.assertNotNull(documentIds);

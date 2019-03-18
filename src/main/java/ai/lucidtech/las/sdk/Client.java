@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.util.Map;
 
 
-public class LasClient {
+public class Client {
     private String endpoint;
     private Authorization auth;
     private HttpClient httpClient;
@@ -31,7 +31,7 @@ public class LasClient {
      *
      * @param endpoint Domain endpoint of the api, e.g. https://<prefix>.api.lucidtech.ai/<version>
      */
-    public LasClient(String endpoint) {
+    public Client(String endpoint) {
         this.endpoint = endpoint;
         Credentials credentials = new Credentials();
         this.auth = new Authorization(credentials);
@@ -45,7 +45,7 @@ public class LasClient {
      * @param credentials Credentials to use
      * @see Credentials
      */
-    public LasClient(String endpoint, Credentials credentials) {
+    public Client(String endpoint, Credentials credentials) {
         this.endpoint = endpoint;
         this.auth = new Authorization(credentials);
         this.httpClient = HttpClientBuilder.create().build();
@@ -75,9 +75,9 @@ public class LasClient {
      * @param documentPath Path to document to upload
      * @param contentType Mime type of document to upload. Same as provided to postDocuments
      * @see ContentType
-     * @see LasClient#postDocuments
+     * @see Client#postDocuments
      * @param presignedUrl Presigned upload url from postDocuments
-     * @see LasClient#postDocuments
+     * @see Client#postDocuments
      * @return Response from PUT operation
      */
     public String putDocument(String documentPath, ContentType contentType, URI presignedUrl) throws IOException {
@@ -95,7 +95,7 @@ public class LasClient {
      * Run inference and create a prediction, calls the POST /predictions endpoint
      *
      * @param documentId The document id to run inference and create a prediction. See postDocuments for how to get documentId
-     * @see LasClient#postDocuments
+     * @see Client#postDocuments
      * @param modelName The name of the model to use for inference
      * @return Prediction on document
      */
@@ -115,7 +115,7 @@ public class LasClient {
      * This enables the API to learn from past mistakes
      *
      * @param documentId The document id to post feedback to.
-     * @see LasClient#postDocuments
+     * @see Client#postDocuments
      * @param feedback Feedback to post
      * @return Feedback response
      */
@@ -130,7 +130,7 @@ public class LasClient {
      *
      * @param consentId Delete documents with this consentId
      * @return Feedback response
-     * @see LasClient#postDocuments
+     * @see Client#postDocuments
      */
     public JSONObject deleteConsentId(String consentId) throws IOException {
         HttpUriRequest request = this.createSignedRequest("DELETE", "/consents/" + consentId, new JSONObject());
