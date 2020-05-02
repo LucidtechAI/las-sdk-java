@@ -23,8 +23,8 @@ import java.util.Map;
 
 public class Client {
     private String endpoint;
-    private Authorization auth;
     private HttpClient httpClient;
+    private Credentials credentials;
 
     /**
      * A low level client to invoke api methods from Lucidtech AI Services.
@@ -33,8 +33,7 @@ public class Client {
      */
     public Client(String endpoint) {
         this.endpoint = endpoint;
-        Credentials credentials = new Credentials();
-        this.auth = new Authorization(credentials);
+        this.credentials = new Credentials();
         this.httpClient = HttpClientBuilder.create().build();
     }
 
@@ -47,7 +46,7 @@ public class Client {
      */
     public Client(String endpoint, Credentials credentials) {
         this.endpoint = endpoint;
-        this.auth = new Authorization(credentials);
+        this.credentials = new Credentials();
         this.httpClient = HttpClientBuilder.create().build();
     }
 
@@ -162,7 +161,7 @@ public class Client {
     }
 
     private Map<String, String> createSigningHeaders(URI uri, String method, byte[] body) {
-        Map<String, String> headers = this.auth.signHeaders(uri, method, body);
+        String accessToken = this.credentials.getAccessToken();
         headers.put("Content-Type", "application/json");
         return headers;
     }

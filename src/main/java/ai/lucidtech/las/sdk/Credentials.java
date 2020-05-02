@@ -12,6 +12,8 @@ public class Credentials {
     private String apiKey;
     private String authEndpoint;
     private String apiEndpoint;
+    private String accessToken;
+    private int expires;
 
     /**
      *  Used to fetch and store credentials.
@@ -49,7 +51,11 @@ public class Credentials {
         this.apiEndpoint = apiEndpoint;
     }
 
-    private void readCredentialsFromEnviron() {
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    private Map readCredentialsFromEnviron() {
         Map<String, String> pairs = new HashMap<String, String>();
         pairs.put("clientId", "LAS_CLIENT_ID");
         pairs.put("clientSecret", "LAS_CLIENT_SECRET");
@@ -60,18 +66,10 @@ public class Credentials {
         Map<String, String> result = new HashMap<String, String>();
 
         for (Map.Entry<String, String> entry : pairs.entrySet()) {
-            try {
-                result.put(entry.getKey(), System.getenv(entry.getValue()));
-            } catch (NullPointerException) {
-
-            }
+            result.put(entry.getKey(), System.getenv(entry.getValue()));
         }
 
-        String clientId = System.getenv("LAS_CLIENT_ID");
-        String clientSecret = System.getenv("LAS_CLIENT_SECRET");
-        String apiKey = System.getenv("LAS_API_KEY");
-        String authEndpoint = System.getenv("LAS_AUTH_ENDPOINT");
-        String apiEndpoint = System.getenv("LAS_API_ENDPOINT");
+        return result;
     }
 
     private void readCredentials(String credentialsPath) {
@@ -80,25 +78,25 @@ public class Credentials {
             Properties properties = new Properties();
             properties.load(input);
 
-            this.accessKeyId = properties.getProperty("access_key_id");
-            this.secretAccessKey = properties.getProperty("secret_access_key");
+            this.clientId = properties.getProperty("client_id");
+            this.clientSecret = properties.getProperty("client_secret");
             this.apiKey = properties.getProperty("api_key");
+            this.apiEndpoint = properties.getProperty("api_endpoint");
+            this.authEndpoint = properties.getProperty("auth_endpoint");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
-        var env = System.getenv();
     }
 
-    public String getAccessKeyId() {
-        return this.accessKeyId;
+    private List<?> getClientCredentials() {
+        String url = "https://" + authEndpoint + "/token?grant_type=client_credentials";
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/x-www-form-urlencoded");
     }
 
-    public String getSecretAccessKey() {
-        return this.secretAccessKey;
-    }
-
-    public String getApiKey() {
-        return this.apiKey;
+    public String getAccessToken() {
+        if (accessToken) {
+            return accessToken;
+        }
     }
 }
