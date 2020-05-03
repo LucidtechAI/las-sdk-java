@@ -4,6 +4,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.*;
+import java.time.Instant;
+import java.net.*;
+import org.json.*;
 
 
 public class Credentials {
@@ -13,7 +16,7 @@ public class Credentials {
     private String authEndpoint;
     private String apiEndpoint;
     private String accessToken;
-    private int expires;
+    private long expires;
 
     /**
      *  Used to fetch and store credentials.
@@ -77,6 +80,11 @@ public class Credentials {
         try(FileInputStream input = new FileInputStream(credentialsPath)) {
             Properties properties = new Properties();
             properties.load(input);
+            Map<String, String> credentialsFromEnviron = this.readCredentialsFromEnviron();
+
+            for (Object prop : properties.entrySet()) {
+
+            }
 
             this.clientId = properties.getProperty("client_id");
             this.clientSecret = properties.getProperty("client_secret");
@@ -88,15 +96,45 @@ public class Credentials {
         }
     }
 
-    private List<?> getClientCredentials() {
-        String url = "https://" + authEndpoint + "/token?grant_type=client_credentials";
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", "application/x-www-form-urlencoded");
+    private JSONObject getClientCredentials() throws IOException {
+        URL url = new URL("https://" + authEndpoint + "/token?grant_type=client_credentials");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.connect();
+        int status = conn.getResponseCode();
+
+        if (status != 200) {
+            throw new RuntimeException("Failed to fetch access token: HTTP response code " + status);
+        }
+
+        Scanner sc = new Scanner(url.openStream());
+        String response = "";
+
+        while (sc.hasNext()) {
+            response += sc.nextLine();
+        }
+
+        JSONObject jsonResponse = new JSONObject(response);
+
+        if (!jsonResponse.has("access_token") || !jsonResponse.has("expires_in")) {
+            throw new RuntimeException("Failed to fetch access token: invalid response body");
+        }
+
+        return jsonResponse;
     }
 
     public String getAccessToken() {
-        if (accessToken) {
-            return accessToken;
+        if (accessToken == null || accessToken.isEmpty() || expires < Instant.now().getEpochSecond()) {
+            try {
+                JSONObject tokenData = this.getClientCredentials();
+                this.accessToken = tokenData.getString("access_token");
+                this.expires = Instant.now().getEpochSecond() + Integer.parseInt(tokenData.getString("expires_id"));
+            } catch (IOException | RuntimeException ex) {
+                ex.printStackTrace();
+            }
         }
+
+        return this.accessToken;
     }
 }

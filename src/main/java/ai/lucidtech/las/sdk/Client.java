@@ -9,6 +9,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
@@ -47,7 +49,12 @@ public class Client {
     public Client(String endpoint, Credentials credentials) {
         this.endpoint = endpoint;
         this.credentials = new Credentials();
-        this.httpClient = HttpClientBuilder.create().build();
+
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        this.httpClient = HttpClientBuilder
+            .create()
+            .setDefaultCredentialsProvider(credentialsProvider)
+            .build();
     }
 
     /**
@@ -160,12 +167,6 @@ public class Client {
         return uri;
     }
 
-    private Map<String, String> createSigningHeaders(URI uri, String method, byte[] body) {
-        String accessToken = this.credentials.getAccessToken();
-        headers.put("Content-Type", "application/json");
-        return headers;
-    }
-
     private HttpUriRequest createSignedRequest(String method, String path, JSONObject jsonBody) {
         URI uri = this.createUri(path);
         HttpUriRequest request;
@@ -188,10 +189,9 @@ public class Client {
             default: throw new IllegalArgumentException("HTTP verb not supported: " + method);
         }
 
-        Map<String, String> headers = this.createSigningHeaders(uri, method, body);
-        for (Map.Entry<String, String> header : headers.entrySet()) {
-            request.addHeader(header.getKey(), header.getValue());
-        }
+        request.addHeader("Content-Type", "application/json");
+        request.addHeader("Authorization", "Bearer " + this.credentials.getAccessToken());
+        request.addHeader("X-Api-Key", this.credentials.getApiKey());
 
         return request;
     }
