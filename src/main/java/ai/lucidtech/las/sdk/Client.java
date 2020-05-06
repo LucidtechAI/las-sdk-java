@@ -9,8 +9,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
@@ -20,21 +18,20 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.util.Map;
+import java.nio.file.Paths;
+import java.util.*;
 
 
 public class Client {
-    private String endpoint;
+    private static List<String> VALID_CONTENT_TYPES = Arrays.asList("image/jpeg", "application/pdf");
+
     private HttpClient httpClient;
     private Credentials credentials;
 
     /**
      * A low level client to invoke api methods from Lucidtech AI Services.
-     *
-     * @param endpoint Domain endpoint of the api, e.g. https://<prefix>.api.lucidtech.ai/<version>
      */
-    public Client(String endpoint) {
-        this.endpoint = endpoint;
+    public Client() {
         this.credentials = new Credentials();
         this.httpClient = HttpClientBuilder.create().build();
     }
@@ -42,19 +39,12 @@ public class Client {
     /**
      * A low level client to invoke api methods from Lucidtech AI Services.
      *
-     * @param endpoint Domain endpoint of the api, e.g. https://<prefix>.api.lucidtech.ai/<version>
      * @param credentials Credentials to use
      * @see Credentials
      */
-    public Client(String endpoint, Credentials credentials) {
-        this.endpoint = endpoint;
-        this.credentials = new Credentials();
-
-        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        this.httpClient = HttpClientBuilder
-            .create()
-            .setDefaultCredentialsProvider(credentialsProvider)
-            .build();
+    public Client(Credentials credentials) {
+        this.credentials = credentials;
+        this.httpClient = HttpClientBuilder.create().build();
     }
 
     /**
@@ -65,10 +55,24 @@ public class Client {
      * @param consentId An identifier to mark the owner of the document handle
      * @return Response from API
      */
-    public JSONObject postDocuments(ContentType contentType, String consentId) throws IOException {
+    public JSONObject createDocument(
+        byte[] content,
+        ContentType contentType,
+        String consentId,
+        Map<String, Object> options
+    ) throws IOException {
         JSONObject jsonBody = new JSONObject();
+        jsonBody.put("content", Base64.getEncoder().encodeToString(content));
         jsonBody.put("contentType", contentType.getMimeType());
         jsonBody.put("consentId", consentId);
+
+        if (options.containsKey("batchId")) {
+            jsonBody.put("batchId", options.get("batchId"));
+        }
+
+        if (options.containsKey("feedback")) {
+            jsonBody.put("feedback", options.get("feedback"));
+        }
 
         HttpUriRequest request = this.createSignedRequest("POST", "/documents", jsonBody);
         String jsonResponse = this.executeRequest(request);
@@ -79,11 +83,11 @@ public class Client {
      * Convenience method for putting a document to presigned url
      *
      * @param documentPath Path to document to upload
-     * @param contentType Mime type of document to upload. Same as provided to postDocuments
+     * @param contentType Mime type of document to upload. Same as provided to createDocument
      * @see ContentType
-     * @see Client#postDocuments
-     * @param presignedUrl Presigned upload url from postDocuments
-     * @see Client#postDocuments
+     * @see Client#createDocument
+     * @param presignedUrl Presigned upload url from createDocument
+     * @see Client#createDocument
      * @return Response from PUT operation
      */
     public String putDocument(String documentPath, ContentType contentType, URI presignedUrl) throws IOException {
@@ -100,8 +104,8 @@ public class Client {
     /**
      * Run inference and create a prediction, calls the POST /predictions endpoint
      *
-     * @param documentId The document id to run inference and create a prediction. See postDocuments for how to get documentId
-     * @see Client#postDocuments
+     * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
+     * @see Client#createDocument
      * @param modelName The name of the model to use for inference
      * @return Prediction on document
      */
@@ -121,7 +125,7 @@ public class Client {
      * This enables the API to learn from past mistakes
      *
      * @param documentId The document id to post feedback to.
-     * @see Client#postDocuments
+     * @see Client#createDocument
      * @param feedback Feedback to post
      * @return Feedback response
      */
@@ -136,10 +140,14 @@ public class Client {
      *
      * @param consentId Delete documents with this consentId
      * @return Feedback response
-     * @see Client#postDocuments
+     * @see Client#createDocument
      */
-    public JSONObject deleteConsentId(String consentId) throws IOException {
-        HttpUriRequest request = this.createSignedRequest("DELETE", "/consents/" + consentId, new JSONObject());
+    public JSONObject deleteConsent(String consentId) throws IOException {
+        HttpUriRequest request = this.createSignedRequest(
+            "DELETE",
+            "/consents/" + consentId,
+            new JSONObject("{}")
+        );
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -157,14 +165,38 @@ public class Client {
 
     private URI createUri(String path) {
         URI uri;
+        String apiEndpoint = this.credentials.getApiEndpoint();
 
         try {
-            uri = new URI(this.endpoint + path);
+            uri = new URI(apiEndpoint + path);
         } catch (URISyntaxException ex) {
             throw new RuntimeException(ex);
         }
 
         return uri;
+    }
+
+    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException, URISyntaxException {
+        byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
+        ContentType contentType = this.getContentType(documentPath);
+        JSONObject document = this.createDocument(documentContent, contentType, consentId, new HashMap<String, Object>());
+
+        URI uploadUri = new URI(document.getString("uploadUrl"));
+        String documentId = document.getString("documentId");
+        this.putDocument(documentPath, contentType, uploadUri);
+
+        JSONObject prediction = this.postPredictions(documentId, modelName);
+        return new Prediction(documentId, consentId, modelName, prediction);
+    }
+
+    private ContentType getContentType(String documentPath) throws IOException {
+        File file = new File(documentPath);
+        String contentType = Files.probeContentType(file.toPath());
+        if (VALID_CONTENT_TYPES.contains(contentType)) {
+            return ContentType.fromString(contentType);
+        }
+
+        throw new RuntimeException("ContentType not supported: " + contentType);
     }
 
     private HttpUriRequest createSignedRequest(String method, String path, JSONObject jsonBody) {
@@ -190,7 +222,7 @@ public class Client {
         }
 
         request.addHeader("Content-Type", "application/json");
-        request.addHeader("Authorization", "Bearer " + this.credentials.getAccessToken());
+        request.addHeader("Authorization", "Bearer " + this.credentials.getAccessToken(this.httpClient));
         request.addHeader("X-Api-Key", this.credentials.getApiKey());
 
         return request;

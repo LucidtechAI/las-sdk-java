@@ -1,15 +1,15 @@
-import ai.lucidtech.las.sdk.Client;
-import ai.lucidtech.las.sdk.ContentType;
+import ai.lucidtech.las.sdk.*;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +35,14 @@ public class ClientTest {
             ex.printStackTrace();
         }
 
-        this.client = new Client(this.config.getProperty("endpoint"));
+        Credentials credentials = new Credentials(
+            this.config.getProperty("clientId"),
+            this.config.getProperty("clientSecret"),
+            this.config.getProperty("apiKey"),
+            this.config.getProperty("authEndpoint"),
+            this.config.getProperty("apiEndpoint")
+        );
+        this.client = new Client(credentials);
     }
 
     private String getResourcePath(String relativePath) {
@@ -43,62 +50,58 @@ public class ClientTest {
     }
 
     private String[] toArray(String s) {
-        return Arrays.stream(s.split(",")).map(String::trim).toArray(String[]::new);
-    }
-
-    private static void assertDocument(JSONObject document) {
-        Assert.assertNotNull(document.get("uploadUrl"));
-        Assert.assertNotNull(document.get("documentId"));
-    }
-
-    private static void assertField(JSONObject field) {
-        Assert.assertNotNull(field.get("label"));
-        Assert.assertNotNull(field.get("value"));
-        float confidence = field.getFloat("confidence");
-        Assert.assertTrue(confidence >= 0.0);
-        Assert.assertTrue(confidence <= 1.0);
-    }
+        return Arrays.stream(s.split(",")).map(String::trim).toArray(String[]::new); }
 
     @Test
-    public void testPostDocuments() throws IOException {
+    public void testCreateDocument() throws IOException {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (String documentMimeType : documentMimeTypes) {
+            byte[] content = UUID.randomUUID().toString().getBytes();
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
 
-            JSONObject document = this.client.postDocuments(contentType, consentId);
-            ClientTest.assertDocument(document);
+            JSONObject document = this.client.createDocument(content, contentType, consentId, new HashedMap());
+            Assert.assertTrue(document.has("consentId"));
+            Assert.assertTrue(document.has("contentType"));
+            Assert.assertTrue(document.has("documentId"));
         }
     }
 
     @Test
-    public void testPostPredictions() throws IOException, URISyntaxException {
+    public void testCreatePrediction() throws IOException, URISyntaxException {
         String[] modelNames = this.toArray(this.config.getProperty("model.names"));
         String[] documentPaths = this.toArray(this.config.getProperty("document.paths"));
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
-        Assert.assertEquals(modelNames.length, documentPaths.length);
-        Assert.assertEquals(modelNames.length, documentMimeTypes.length);
 
         for (int i = 0; i < documentPaths.length; ++i) {
             String modelName = modelNames[i];
             String documentPath = this.getResourcePath(documentPaths[i]);
             String documentMimeType = documentMimeTypes[i];
+
+            byte[] content = UUID.randomUUID().toString().getBytes();
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
 
-            JSONObject document = this.client.postDocuments(contentType, consentId);
-            URI uploadUri = new URI(document.getString("uploadUrl"));
+            JSONObject document = this.client.createDocument(content, contentType, consentId, new HashedMap());
             String documentId = document.getString("documentId");
 
-            this.client.putDocument(documentPath, contentType, uploadUri);
             JSONObject prediction = this.client.postPredictions(documentId, modelName);
 
+            System.out.println("document: " + document);
+            System.out.println("prediction" + prediction);
             JSONArray fields = prediction.getJSONArray("predictions");
             Assert.assertNotNull(fields);
+
             StreamSupport.stream(fields.spliterator(), false)
                     .map(o -> (JSONObject)o)
-                    .forEach(ClientTest::assertField);
+                    .forEach(field -> {
+                        Assert.assertNotNull(field.get("label"));
+                        Assert.assertNotNull(field.get("value"));
+                        float confidence = field.getFloat("confidence");
+                        Assert.assertTrue(confidence >= 0.0);
+                        Assert.assertTrue(confidence <= 1.0);
+                    });
         }
     }
 
@@ -126,19 +129,20 @@ public class ClientTest {
     }
 
     @Test
-    public void testPostDocumentId() throws IOException {
+    public void testUpdateDocument() throws IOException {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (String documentMimeType : documentMimeTypes) {
+            byte[] content = UUID.randomUUID().toString().getBytes();
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
-            JSONObject document = this.client.postDocuments(contentType, consentId);
+            JSONObject document = this.client.createDocument(content, contentType, consentId, new HashedMap());
             String documentId = document.getString("documentId");
 
             JSONObject feedback = new JSONObject();
             List<JSONObject> fieldList = Arrays.asList(
-                    this.createField("total_amount", "123.00"),
-                    this.createField("purchase_date", "2019-05-23")
+                this.createField("total_amount", "123.00"),
+                this.createField("purchase_date", "2019-05-23")
             );
             JSONArray fields = new JSONArray(fieldList);
             feedback.put("feedback", fields);
@@ -148,16 +152,18 @@ public class ClientTest {
         }
     }
 
+    @Ignore
     @Test
     public void testDeleteConsentId() throws IOException {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (String documentMimeType : documentMimeTypes) {
+            byte[] content = UUID.randomUUID().toString().getBytes();
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
-            this.client.postDocuments(contentType, consentId);
+            this.client.createDocument(content, contentType, consentId, new HashedMap());
 
-            JSONObject response = this.client.deleteConsentId(consentId);
+            JSONObject response = this.client.deleteConsent(consentId);
             Assert.assertNotNull(response.getString("consentId"));
             JSONArray documentIds = response.getJSONArray("documentIds");
             Assert.assertNotNull(documentIds);
