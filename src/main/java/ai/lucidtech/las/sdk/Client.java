@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 
@@ -47,12 +46,19 @@ public class Client {
         this.httpClient = HttpClientBuilder.create().build();
     }
 
+    public JSONObject getDocument(String documentId) throws IOException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents/" + documentId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
     /**
      * Creates a document handle, calls POST /documents endpoint
      *
      * @param contentType A mime type for the document handle
      * @see ContentType
      * @param consentId An identifier to mark the owner of the document handle
+     * @param options Additional options to include in request body
      * @return Response from API
      */
     public JSONObject createDocument(
@@ -66,15 +72,34 @@ public class Client {
         jsonBody.put("contentType", contentType.getMimeType());
         jsonBody.put("consentId", consentId);
 
-        if (options.containsKey("batchId")) {
-            jsonBody.put("batchId", options.get("batchId"));
+        for (Map.Entry<String, Object> option: options.entrySet()) {
+            jsonBody.put(option.getKey(), option.getValue());
         }
 
-        if (options.containsKey("feedback")) {
-            jsonBody.put("feedback", options.get("feedback"));
-        }
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents", jsonBody);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
 
-        HttpUriRequest request = this.createSignedRequest("POST", "/documents", jsonBody);
+    /**
+     * Creates a document handle, calls POST /documents endpoint
+     *
+     * @param contentType A mime type for the document handle
+     * @see ContentType
+     * @param consentId An identifier to mark the owner of the document handle
+     * @return Response from API
+     */
+    public JSONObject createDocument(
+            byte[] content,
+            ContentType contentType,
+            String consentId
+    ) throws IOException {
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("content", Base64.getEncoder().encodeToString(content));
+        jsonBody.put("contentType", contentType.getMimeType());
+        jsonBody.put("consentId", consentId);
+
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents", jsonBody);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -90,7 +115,7 @@ public class Client {
      * @see Client#createDocument
      * @return Response from PUT operation
      */
-    public String putDocument(String documentPath, ContentType contentType, URI presignedUrl) throws IOException {
+    public String updateDocument(String documentPath, ContentType contentType, URI presignedUrl) throws IOException {
         byte[] body = this.readDocument(documentPath);
 
         HttpPut putRequest = new HttpPut(presignedUrl);
@@ -109,16 +134,29 @@ public class Client {
      * @param modelName The name of the model to use for inference
      * @return Prediction on document
      */
-    public JSONObject postPredictions(String documentId, String modelName) throws IOException {
+    public JSONObject createPrediction(String documentId, String modelName) throws IOException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
         jsonBody.put("modelName", modelName);
 
-        HttpUriRequest request = this.createSignedRequest("POST", "/predictions", jsonBody);
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", jsonBody);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
-
+//
+//    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException, URISyntaxException {
+//        byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
+//        ContentType contentType = this.getContentType(documentPath);
+//        JSONObject document = this.createDocument(documentContent, contentType, consentId);
+//
+//        URI uploadUri = new URI(document.getString("uploadUrl"));
+//        String documentId = document.getString("documentId");
+//        this.putDocument(documentPath, contentType, uploadUri);
+//
+//        JSONObject prediction = this.postPredictions(documentId, modelName);
+//        return new Prediction(documentId, consentId, modelName, prediction);
+//    }
+//
     /**
      * Post feedback to the REST API, calls the POST /documents/{documentId} endpoint.
      * Posting feedback means posting the ground truth data for the particular document.
@@ -129,8 +167,8 @@ public class Client {
      * @param feedback Feedback to post
      * @return Feedback response
      */
-    public JSONObject postDocumentId(String documentId, JSONObject feedback) throws IOException {
-        HttpUriRequest request = this.createSignedRequest("POST", "/documents/" + documentId, feedback);
+    public JSONObject updateDocument(String documentId, JSONObject feedback) throws IOException {
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents/" + documentId, feedback);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -143,7 +181,7 @@ public class Client {
      * @see Client#createDocument
      */
     public JSONObject deleteConsent(String consentId) throws IOException {
-        HttpUriRequest request = this.createSignedRequest(
+        HttpUriRequest request = this.createAuthorizedRequest(
             "DELETE",
             "/consents/" + consentId,
             new JSONObject("{}")
@@ -155,6 +193,8 @@ public class Client {
     private String executeRequest(HttpUriRequest request) throws IOException {
         HttpResponse httpResponse= this.httpClient.execute(request);
         HttpEntity responseEntity = httpResponse.getEntity();
+        int status = httpResponse.getStatusLine().getStatusCode();
+
         return EntityUtils.toString(responseEntity);
     }
 
@@ -176,19 +216,6 @@ public class Client {
         return uri;
     }
 
-    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException, URISyntaxException {
-        byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
-        ContentType contentType = this.getContentType(documentPath);
-        JSONObject document = this.createDocument(documentContent, contentType, consentId, new HashMap<String, Object>());
-
-        URI uploadUri = new URI(document.getString("uploadUrl"));
-        String documentId = document.getString("documentId");
-        this.putDocument(documentPath, contentType, uploadUri);
-
-        JSONObject prediction = this.postPredictions(documentId, modelName);
-        return new Prediction(documentId, consentId, modelName, prediction);
-    }
-
     private ContentType getContentType(String documentPath) throws IOException {
         File file = new File(documentPath);
         String contentType = Files.probeContentType(file.toPath());
@@ -199,7 +226,29 @@ public class Client {
         throw new RuntimeException("ContentType not supported: " + contentType);
     }
 
-    private HttpUriRequest createSignedRequest(String method, String path, JSONObject jsonBody) {
+    private HttpUriRequest createAuthorizedRequest(String method, String path) {
+        URI uri = this.createUri(path);
+        HttpUriRequest request;
+
+        switch (method) {
+            case "GET": {
+                request = new HttpGet(uri);
+            }
+            break;
+            case "DELETE": {
+                request = new HttpDelete(uri);
+            }
+            default: throw new IllegalArgumentException("HTTP verb not supported: " + method);
+        }
+
+        request.addHeader("Content-Type", "application/json");
+        request.addHeader("Authorization", "Bearer " + this.credentials.getAccessToken(this.httpClient));
+        request.addHeader("X-Api-Key", this.credentials.getApiKey());
+
+        return request;
+    }
+
+    private HttpUriRequest createAuthorizedRequest(String method, String path, JSONObject jsonBody) {
         URI uri = this.createUri(path);
         HttpUriRequest request;
         byte[] body = null;

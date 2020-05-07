@@ -1,6 +1,5 @@
 import ai.lucidtech.las.sdk.*;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -11,6 +10,8 @@ import org.junit.Ignore;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -53,6 +54,15 @@ public class ClientTest {
         return Arrays.stream(s.split(",")).map(String::trim).toArray(String[]::new); }
 
     @Test
+    public void testGetDocument() throws IOException {
+        String documentId = UUID.randomUUID().toString();
+        JSONObject document = this.client.getDocument(documentId);
+        Assert.assertTrue(document.has("consentId"));
+        Assert.assertTrue(document.has("contentType"));
+        Assert.assertTrue(document.has("documentId"));
+    }
+
+    @Test
     public void testCreateDocument() throws IOException {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
@@ -61,7 +71,7 @@ public class ClientTest {
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
 
-            JSONObject document = this.client.createDocument(content, contentType, consentId, new HashedMap());
+            JSONObject document = this.client.createDocument(content, contentType, consentId);
             Assert.assertTrue(document.has("consentId"));
             Assert.assertTrue(document.has("contentType"));
             Assert.assertTrue(document.has("documentId"));
@@ -76,20 +86,11 @@ public class ClientTest {
 
         for (int i = 0; i < documentPaths.length; ++i) {
             String modelName = modelNames[i];
-            String documentPath = this.getResourcePath(documentPaths[i]);
-            String documentMimeType = documentMimeTypes[i];
+            String documentId = UUID.randomUUID().toString();
 
-            byte[] content = UUID.randomUUID().toString().getBytes();
-            ContentType contentType = ContentType.fromString(documentMimeType);
-            String consentId = UUID.randomUUID().toString();
+            JSONObject prediction = this.client.createPrediction(documentId, modelName);
+            System.out.println(prediction);
 
-            JSONObject document = this.client.createDocument(content, contentType, consentId, new HashedMap());
-            String documentId = document.getString("documentId");
-
-            JSONObject prediction = this.client.postPredictions(documentId, modelName);
-
-            System.out.println("document: " + document);
-            System.out.println("prediction" + prediction);
             JSONArray fields = prediction.getJSONArray("predictions");
             Assert.assertNotNull(fields);
 
@@ -136,7 +137,7 @@ public class ClientTest {
             byte[] content = UUID.randomUUID().toString().getBytes();
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
-            JSONObject document = this.client.createDocument(content, contentType, consentId, new HashedMap());
+            JSONObject document = this.client.createDocument(content, contentType, consentId);
             String documentId = document.getString("documentId");
 
             JSONObject feedback = new JSONObject();
@@ -147,7 +148,7 @@ public class ClientTest {
             JSONArray fields = new JSONArray(fieldList);
             feedback.put("feedback", fields);
 
-            JSONObject feedbackResponse = this.client.postDocumentId(documentId, feedback);
+            JSONObject feedbackResponse = this.client.updateDocument(documentId, feedback);
             ClientTest.assertFeedbackResponse(feedbackResponse);
         }
     }
@@ -161,7 +162,7 @@ public class ClientTest {
             byte[] content = UUID.randomUUID().toString().getBytes();
             ContentType contentType = ContentType.fromString(documentMimeType);
             String consentId = UUID.randomUUID().toString();
-            this.client.createDocument(content, contentType, consentId, new HashedMap());
+            this.client.createDocument(content, contentType, consentId);
 
             JSONObject response = this.client.deleteConsent(consentId);
             Assert.assertNotNull(response.getString("consentId"));
