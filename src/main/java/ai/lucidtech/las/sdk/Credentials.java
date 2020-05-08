@@ -2,6 +2,8 @@ package ai.lucidtech.las.sdk;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.Map;
@@ -35,8 +37,9 @@ public class Credentials {
      */
     public Credentials() {
         String homeDir = System.getProperty("user.home");
-        String credentialsPath = homeDir + "/.lucidtech/credentials.cfg";
-        this.readFromFile(credentialsPath);
+        //String credentialsPath = homeDir + "/.lucidtech/credentials.cfg";
+        Path credentialsPath = Paths.get(homeDir, ".lucidtech", "credentials.cfg");
+        this.readFromFile(credentialsPath.toString());
     }
 
     /**
@@ -126,10 +129,7 @@ public class Credentials {
         int status = response.getStatusLine().getStatusCode();
 
         if (status != 200) {
-            System.out.println("Request headers: ");
             printHeaders(request.getAllHeaders());
-            System.out.println();
-            System.out.println("Response headers: ");
             printHeaders(response.getAllHeaders());
 
             throw new RuntimeException("Failed to fetch access token: HTTP response code " + status);

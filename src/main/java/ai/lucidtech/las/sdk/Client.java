@@ -2,12 +2,13 @@ package ai.lucidtech.las.sdk;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 
@@ -46,8 +48,39 @@ public class Client {
         this.httpClient = HttpClientBuilder.create().build();
     }
 
+    /**
+     *
+     * @param documentId
+     * @return
+     * @throws IOException
+     */
     public JSONObject getDocument(String documentId) throws IOException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents/" + documentId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
+     *
+     * @return All documents from REST API
+     * @throws IOException
+     */
+    public JSONObject listDocuments() throws IOException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents");
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
+     *
+     * @param options Available options are:
+     * batchId - the batch id that contains the documents of interest
+     * consentId - an identifier to mark the owner of the document handle
+     * @return documents from REST API filtered using the passed options
+     * @throws IOException
+     */
+    public JSONObject listDocuments(List<NameValuePair> options) throws IOException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents", options);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -105,28 +138,6 @@ public class Client {
     }
 
     /**
-     * Convenience method for putting a document to presigned url
-     *
-     * @param documentPath Path to document to upload
-     * @param contentType Mime type of document to upload. Same as provided to createDocument
-     * @see ContentType
-     * @see Client#createDocument
-     * @param presignedUrl Presigned upload url from createDocument
-     * @see Client#createDocument
-     * @return Response from PUT operation
-     */
-    public String updateDocument(String documentPath, ContentType contentType, URI presignedUrl) throws IOException {
-        byte[] body = this.readDocument(documentPath);
-
-        HttpPut putRequest = new HttpPut(presignedUrl);
-        putRequest.addHeader("Content-Type", contentType.getMimeType());
-        ByteArrayEntity entity = new ByteArrayEntity(body);
-        putRequest.setEntity(entity);
-
-        return this.executeRequest(putRequest);
-    }
-
-    /**
      * Run inference and create a prediction, calls the POST /predictions endpoint
      *
      * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
@@ -143,20 +154,17 @@ public class Client {
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
-//
-//    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException, URISyntaxException {
-//        byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
-//        ContentType contentType = this.getContentType(documentPath);
-//        JSONObject document = this.createDocument(documentContent, contentType, consentId);
-//
-//        URI uploadUri = new URI(document.getString("uploadUrl"));
-//        String documentId = document.getString("documentId");
-//        this.putDocument(documentPath, contentType, uploadUri);
-//
-//        JSONObject prediction = this.postPredictions(documentId, modelName);
-//        return new Prediction(documentId, consentId, modelName, prediction);
-//    }
-//
+
+    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException, URISyntaxException {
+        byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
+        ContentType contentType = this.getContentType(documentPath);
+        JSONObject document = this.createDocument(documentContent, contentType, consentId);
+        String documentId = document.getString("documentId");
+
+        JSONObject prediction = this.createPrediction(documentId, modelName);
+        return new Prediction(documentId, consentId, modelName, prediction);
+    }
+
     /**
      * Post feedback to the REST API, calls the POST /documents/{documentId} endpoint.
      * Posting feedback means posting the ground truth data for the particular document.
@@ -171,6 +179,20 @@ public class Client {
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents/" + documentId, feedback);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
+    }
+
+    /**
+     *
+     * @param description Creates a batch handle, calls the POST /batches endpoint
+     * @return
+     * @throws IOException
+     */
+    public JSONObject createBatch(String description) throws IOException {
+        JSONObject body = new JSONObject();
+        body.put("description", description);
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
     }
 
     /**
@@ -190,6 +212,12 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    public JSONObject getUser(String userId) throws IOException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/users/" + userId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
     private String executeRequest(HttpUriRequest request) throws IOException {
         HttpResponse httpResponse= this.httpClient.execute(request);
         HttpEntity responseEntity = httpResponse.getEntity();
@@ -203,17 +231,27 @@ public class Client {
         return Files.readAllBytes(file.toPath());
     }
 
-    private URI createUri(String path) {
+    private URI createUri(String path) throws URISyntaxException {
+        URI uri;
+        String apiEndpoint = this.credentials.getApiEndpoint();
+        uri = new URI(apiEndpoint + path);
+
+        return uri;
+    }
+
+    private URI createUri(String path, List<NameValuePair> queryParams) throws URISyntaxException {
         URI uri;
         String apiEndpoint = this.credentials.getApiEndpoint();
 
-        try {
-            uri = new URI(apiEndpoint + path);
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException(ex);
-        }
+        uri = new URI(apiEndpoint + path);
 
-        return uri;
+        URIBuilder builder = new URIBuilder(uri);
+        builder.setScheme(uri.getScheme());
+        builder.setHost(uri.getHost());
+        builder.setPath(path);
+        builder.addParameters(queryParams);
+
+        return builder.build();
     }
 
     private ContentType getContentType(String documentPath) throws IOException {
@@ -227,7 +265,15 @@ public class Client {
     }
 
     private HttpUriRequest createAuthorizedRequest(String method, String path) {
-        URI uri = this.createUri(path);
+        URI uri;
+
+        try {
+            uri = this.createUri(path);
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Failed to create url");
+        }
+
         HttpUriRequest request;
 
         switch (method) {
@@ -248,8 +294,45 @@ public class Client {
         return request;
     }
 
+    private HttpUriRequest createAuthorizedRequest(String method, String path, List<NameValuePair> queryParams) {
+        URI uri;
+
+        try {
+            uri = this.createUri(path, queryParams);
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Failed to create url");
+        }
+
+        HttpUriRequest request;
+
+        switch (method) {
+            case "GET": {
+                request = new HttpGet(uri);
+            } break;
+            case "DELETE": {
+                request = new HttpDelete(uri);
+            } break;
+            default: throw new IllegalArgumentException("HTTP verb not supported: " + method);
+        }
+
+        request.addHeader("Content-Type", "application/json");
+        request.addHeader("Authorization", "Bearer " + this.credentials.getAccessToken(this.httpClient));
+        request.addHeader("X-Api-Key", this.credentials.getApiKey());
+
+        return request;
+    }
+
     private HttpUriRequest createAuthorizedRequest(String method, String path, JSONObject jsonBody) {
-        URI uri = this.createUri(path);
+        URI uri;
+
+        try {
+            uri = this.createUri(path);
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Failed to create url");
+        }
+
         HttpUriRequest request;
         byte[] body = null;
 

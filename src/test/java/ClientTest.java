@@ -1,5 +1,8 @@
-import ai.lucidtech.las.sdk.*;
+import ai.lucidtech.las.sdk.Client;
+import ai.lucidtech.las.sdk.Credentials;
+import ai.lucidtech.las.sdk.ContentType;
 
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -7,15 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Ignore;
 
+import org.apache.http.NameValuePair;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 
@@ -24,6 +23,13 @@ public class ClientTest {
 
     private Client client;
     private Properties config;
+
+    private String documentId;
+    private String batchId;
+    private String consentId;
+    private String userId;
+    private List<JSONObject> feedback;
+    private byte[] content;
 
     @Before
     public void setUp() {
@@ -43,20 +49,26 @@ public class ClientTest {
             this.config.getProperty("authEndpoint"),
             this.config.getProperty("apiEndpoint")
         );
+
         this.client = new Client(credentials);
+
+        this.documentId = UUID.randomUUID().toString();
+        this.batchId = UUID.randomUUID().toString();
+        this.consentId = UUID.randomUUID().toString();
+        this.userId = UUID.randomUUID().toString();
+        this.content = UUID.randomUUID().toString().getBytes();
+        this.feedback = Arrays.asList(
+            this.createField("total_amount", "123.00"),
+            this.createField("purchase_date", "2019-05-23")
+        );
     }
 
-    private String getResourcePath(String relativePath) {
-        return getClass().getResource(relativePath).getFile();
+    private static void assertFeedbackResponse(JSONObject feedbackResponse) {
     }
-
-    private String[] toArray(String s) {
-        return Arrays.stream(s.split(",")).map(String::trim).toArray(String[]::new); }
 
     @Test
     public void testGetDocument() throws IOException {
-        String documentId = UUID.randomUUID().toString();
-        JSONObject document = this.client.getDocument(documentId);
+        JSONObject document = this.client.getDocument(this.documentId);
         Assert.assertTrue(document.has("consentId"));
         Assert.assertTrue(document.has("contentType"));
         Assert.assertTrue(document.has("documentId"));
@@ -67,11 +79,9 @@ public class ClientTest {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (String documentMimeType : documentMimeTypes) {
-            byte[] content = UUID.randomUUID().toString().getBytes();
             ContentType contentType = ContentType.fromString(documentMimeType);
-            String consentId = UUID.randomUUID().toString();
 
-            JSONObject document = this.client.createDocument(content, contentType, consentId);
+            JSONObject document = this.client.createDocument(this.content, contentType, this.consentId);
             Assert.assertTrue(document.has("consentId"));
             Assert.assertTrue(document.has("contentType"));
             Assert.assertTrue(document.has("documentId"));
@@ -79,54 +89,51 @@ public class ClientTest {
     }
 
     @Test
+    public void testCreateDocumentWithOptions() throws IOException {
+        String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
+        Map<String, Object> options = new HashMap<String, Object>();
+        List<JSONObject> fieldList = Arrays.asList(
+                this.createField("total_amount", "123.00"),
+                this.createField("purchase_date", "2019-05-23")
+        );
+        JSONArray fields = new JSONArray(fieldList);
+        options.put("feedback", fields);
+
+        for (String documentMimeType : documentMimeTypes) {
+            byte[] content = UUID.randomUUID().toString().getBytes();
+            ContentType contentType = ContentType.fromString(documentMimeType);
+            String consentId = UUID.randomUUID().toString();
+
+            JSONObject document = this.client.createDocument(content, contentType, consentId, options);
+            Assert.assertTrue(document.has("consentId"));
+            Assert.assertTrue(document.has("contentType"));
+            Assert.assertTrue(document.has("documentId"));
+            Assert.assertTrue(document.has("feedback"));
+            Assert.assertTrue(document.has("batchId"));
+        }
+    }
+
+    @Test
     public void testCreatePrediction() throws IOException, URISyntaxException {
         String[] modelNames = this.toArray(this.config.getProperty("model.names"));
         String[] documentPaths = this.toArray(this.config.getProperty("document.paths"));
-        String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (int i = 0; i < documentPaths.length; ++i) {
             String modelName = modelNames[i];
-            String documentId = UUID.randomUUID().toString();
-
             JSONObject prediction = this.client.createPrediction(documentId, modelName);
-            System.out.println(prediction);
-
             JSONArray fields = prediction.getJSONArray("predictions");
             Assert.assertNotNull(fields);
 
             StreamSupport.stream(fields.spliterator(), false)
-                    .map(o -> (JSONObject)o)
-                    .forEach(field -> {
-                        Assert.assertNotNull(field.get("label"));
-                        Assert.assertNotNull(field.get("value"));
-                        float confidence = field.getFloat("confidence");
-                        Assert.assertTrue(confidence >= 0.0);
-                        Assert.assertTrue(confidence <= 1.0);
-                    });
-        }
-    }
-
-    private JSONObject createField(String label, String value) {
-        JSONObject field = new JSONObject();
-        field.put("label", label);
-        field.put("value", value);
-        return field;
-    }
-
-    private static void assertFeedbackItem(JSONObject feedbackItem) {
-        Assert.assertNotNull(feedbackItem.get("label"));
-        Assert.assertNotNull(feedbackItem.get("value"));
-    }
-
-    private static void assertFeedbackResponse(JSONObject feedbackResponse) {
-        Assert.assertNotNull(feedbackResponse.get("documentId"));
-        Assert.assertNotNull(feedbackResponse.get("consentId"));
-        JSONArray feedback = feedbackResponse.getJSONArray("feedback");
-        Assert.assertNotNull(feedback);
-
-        StreamSupport.stream(feedback.spliterator(), false)
                 .map(o -> (JSONObject)o)
-                .forEach(ClientTest::assertFeedbackItem);
+                .forEach(field -> {
+                    Assert.assertNotNull(field.get("label"));
+                    Assert.assertNotNull(field.get("value"));
+                    float confidence = field.getFloat("confidence");
+                    Assert.assertTrue(confidence >= 0.0);
+                    Assert.assertTrue(confidence <= 1.0);
+                });
+        }
     }
 
     @Test
@@ -134,12 +141,7 @@ public class ClientTest {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (String documentMimeType : documentMimeTypes) {
-            byte[] content = UUID.randomUUID().toString().getBytes();
             ContentType contentType = ContentType.fromString(documentMimeType);
-            String consentId = UUID.randomUUID().toString();
-            JSONObject document = this.client.createDocument(content, contentType, consentId);
-            String documentId = document.getString("documentId");
-
             JSONObject feedback = new JSONObject();
             List<JSONObject> fieldList = Arrays.asList(
                 this.createField("total_amount", "123.00"),
@@ -148,12 +150,53 @@ public class ClientTest {
             JSONArray fields = new JSONArray(fieldList);
             feedback.put("feedback", fields);
 
-            JSONObject feedbackResponse = this.client.updateDocument(documentId, feedback);
-            ClientTest.assertFeedbackResponse(feedbackResponse);
+            JSONObject feedbackResponse = this.client.updateDocument(this.documentId, feedback);
+
+            Assert.assertNotNull(feedbackResponse.get("documentId"));
+            Assert.assertNotNull(feedbackResponse.get("consentId"));
+            JSONArray feedbackValue = feedbackResponse.getJSONArray("feedback");
+            Assert.assertNotNull(feedbackValue);
+
+            StreamSupport.stream(feedbackValue.spliterator(), false)
+                .map(o -> (JSONObject)o)
+                .forEach(feedbackItem -> {
+                    Assert.assertNotNull(feedbackItem.get("label"));
+                    Assert.assertNotNull(feedbackItem.get("value"));
+                });
         }
     }
 
+    @Test
+    public void testListDocuments() throws IOException {
+        JSONObject response = this.client.listDocuments();
+        JSONArray documents = response.getJSONArray("documents");
+        Assert.assertNotNull(documents);
+    }
+
+    @Test
+    public void testListFilteredDocuments() throws IOException {
+        List<NameValuePair> options = new ArrayList<NameValuePair>();
+        options.add(new BasicNameValuePair("batchId", this.batchId));
+        options.add(new BasicNameValuePair("consentId", this.consentId));
+        JSONObject response = this.client.listDocuments(options);
+        JSONArray documents = response.getJSONArray("documents");
+        Assert.assertNotNull(documents);
+    }
+
+    @Test
+    public void testCreateBatch() throws IOException {
+        String description = "I'm gonna create a new batch, give me a batch id!";
+        JSONObject response = this.client.createBatch(description);
+        Assert.assertNotNull(response.get("batchId"));
+    }
+
     @Ignore
+    @Test
+    public void testGetUser() throws IOException {
+        JSONObject response = this.client.getUser(this.userId);
+    }
+
+    @Ignore // DELETE requests are not supported yet
     @Test
     public void testDeleteConsentId() throws IOException {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
@@ -161,13 +204,26 @@ public class ClientTest {
         for (String documentMimeType : documentMimeTypes) {
             byte[] content = UUID.randomUUID().toString().getBytes();
             ContentType contentType = ContentType.fromString(documentMimeType);
-            String consentId = UUID.randomUUID().toString();
-            this.client.createDocument(content, contentType, consentId);
+            this.client.createDocument(content, contentType, this.consentId);
 
-            JSONObject response = this.client.deleteConsent(consentId);
+            JSONObject response = this.client.deleteConsent(this.consentId);
             Assert.assertNotNull(response.getString("consentId"));
             JSONArray documentIds = response.getJSONArray("documentIds");
             Assert.assertNotNull(documentIds);
         }
+    }
+
+    private String getResourcePath(String relativePath) {
+        return getClass().getResource(relativePath).getFile();
+    }
+
+    private String[] toArray(String s) {
+        return Arrays.stream(s.split(",")).map(String::trim).toArray(String[]::new); }
+
+    private JSONObject createField(String label, String value) {
+        JSONObject field = new JSONObject();
+        field.put("label", label);
+        field.put("value", value);
+        return field;
     }
 }
