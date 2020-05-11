@@ -63,9 +63,6 @@ public class ClientTest {
         );
     }
 
-    private static void assertFeedbackResponse(JSONObject feedbackResponse) {
-    }
-
     @Test
     public void testGetDocument() throws IOException {
         JSONObject document = this.client.getDocument(this.documentId);
