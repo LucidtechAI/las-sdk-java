@@ -63,12 +63,11 @@ public class ClientTest {
         );
     }
 
-    private static void assertFeedbackResponse(JSONObject feedbackResponse) {
-    }
-
     @Test
     public void testGetDocument() throws IOException {
-        JSONObject document = this.client.getDocument(this.documentId);
+        ContentType contentType = ContentType.fromString("image/jpeg");
+        JSONObject newDocument = this.client.createDocument(this.content, contentType, this.consentId);
+        JSONObject document = this.client.getDocument(newDocument.getString("documentId"));
         Assert.assertTrue(document.has("consentId"));
         Assert.assertTrue(document.has("contentType"));
         Assert.assertTrue(document.has("documentId"));
@@ -179,6 +178,7 @@ public class ClientTest {
         options.add(new BasicNameValuePair("batchId", this.batchId));
         options.add(new BasicNameValuePair("consentId", this.consentId));
         JSONObject response = this.client.listDocuments(options);
+        System.out.println(response);
         JSONArray documents = response.getJSONArray("documents");
         Assert.assertNotNull(documents);
     }
