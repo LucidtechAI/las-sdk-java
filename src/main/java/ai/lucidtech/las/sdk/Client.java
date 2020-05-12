@@ -246,9 +246,6 @@ public class Client {
         uri = new URI(apiEndpoint + path);
 
         URIBuilder builder = new URIBuilder(uri);
-        builder.setScheme(uri.getScheme());
-        builder.setHost(uri.getHost());
-        builder.setPath(path);
         builder.addParameters(queryParams);
 
         return builder.build();
