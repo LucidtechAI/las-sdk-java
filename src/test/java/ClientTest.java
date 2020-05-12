@@ -13,7 +13,9 @@ import org.junit.Ignore;
 import org.apache.http.NameValuePair;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
@@ -24,7 +26,6 @@ public class ClientTest {
     private Client client;
     private Properties config;
 
-    private String documentId;
     private String batchId;
     private String consentId;
     private String userId;
@@ -52,11 +53,16 @@ public class ClientTest {
 
         this.client = new Client(credentials);
 
-        this.documentId = UUID.randomUUID().toString();
         this.batchId = UUID.randomUUID().toString();
         this.consentId = UUID.randomUUID().toString();
         this.userId = UUID.randomUUID().toString();
-        this.content = UUID.randomUUID().toString().getBytes();
+        //this.content = UUID.randomUUID().toString().getBytes();
+        Path path = Paths.get(this.getResourcePath("example.jpeg"));
+
+        try {
+            this.content = Files.readAllBytes(path); // fails with prism because of file size
+        } catch (IOException ex) {}
+
         this.feedback = Arrays.asList(
             this.createField("total_amount", "123.00"),
             this.createField("purchase_date", "2019-05-23")
@@ -92,8 +98,8 @@ public class ClientTest {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
         Map<String, Object> options = new HashMap<String, Object>();
         List<JSONObject> fieldList = Arrays.asList(
-                this.createField("total_amount", "123.00"),
-                this.createField("purchase_date", "2019-05-23")
+            this.createField("total_amount", "123.00"),
+            this.createField("purchase_date", "2019-05-23")
         );
         JSONArray fields = new JSONArray(fieldList);
         options.put("feedback", fields);
@@ -113,13 +119,16 @@ public class ClientTest {
     }
 
     @Test
-    public void testCreatePrediction() throws IOException, URISyntaxException {
+    public void testCreatePrediction() throws IOException {
         String[] modelNames = this.toArray(this.config.getProperty("model.names"));
         String[] documentPaths = this.toArray(this.config.getProperty("document.paths"));
+        String[] mimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (int i = 0; i < documentPaths.length; ++i) {
             String modelName = modelNames[i];
-            JSONObject prediction = this.client.createPrediction(documentId, modelName);
+            ContentType contentType = ContentType.fromString(mimeTypes[i]);
+            JSONObject document = this.client.createDocument(this.content, contentType, this.consentId);
+            JSONObject prediction = this.client.createPrediction(document.getString("documentId"), modelName);
             JSONArray fields = prediction.getJSONArray("predictions");
             Assert.assertNotNull(fields);
 
@@ -141,7 +150,9 @@ public class ClientTest {
 
         for (String documentMimeType : documentMimeTypes) {
             ContentType contentType = ContentType.fromString(documentMimeType);
+            JSONObject document = this.client.createDocument(this.content, contentType, this.consentId);
             JSONObject feedback = new JSONObject();
+
             List<JSONObject> fieldList = Arrays.asList(
                 this.createField("total_amount", "123.00"),
                 this.createField("purchase_date", "2019-05-23")
@@ -149,7 +160,7 @@ public class ClientTest {
             JSONArray fields = new JSONArray(fieldList);
             feedback.put("feedback", fields);
 
-            JSONObject feedbackResponse = this.client.updateDocument(this.documentId, feedback);
+            JSONObject feedbackResponse = this.client.updateDocument(document.getString("documentId"), feedback);
 
             Assert.assertNotNull(feedbackResponse.get("documentId"));
             Assert.assertNotNull(feedbackResponse.get("consentId"));
@@ -168,6 +179,7 @@ public class ClientTest {
     @Test
     public void testListDocuments() throws IOException {
         JSONObject response = this.client.listDocuments();
+        System.out.println(response);
         JSONArray documents = response.getJSONArray("documents");
         Assert.assertNotNull(documents);
     }
@@ -178,7 +190,6 @@ public class ClientTest {
         options.add(new BasicNameValuePair("batchId", this.batchId));
         options.add(new BasicNameValuePair("consentId", this.consentId));
         JSONObject response = this.client.listDocuments(options);
-        System.out.println(response);
         JSONArray documents = response.getJSONArray("documents");
         Assert.assertNotNull(documents);
     }

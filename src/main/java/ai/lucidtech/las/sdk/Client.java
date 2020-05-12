@@ -155,7 +155,7 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
-    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException, URISyntaxException {
+    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException {
         byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
         ContentType contentType = this.getContentType(documentPath);
         JSONObject document = this.createDocument(documentContent, contentType, consentId);
