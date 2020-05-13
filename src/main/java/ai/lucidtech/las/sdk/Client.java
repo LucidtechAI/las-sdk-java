@@ -1,6 +1,7 @@
 package ai.lucidtech.las.sdk;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -155,6 +156,27 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    /**
+     * Run inference and create a prediction, calls the POST /predictions endpoint
+     *
+     * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
+     * @see Client#createDocument
+     * @param modelName The name of the model to use for inference
+     * @param options Available options are:
+     *   maxPages - maximum number of pages to run predicitons on
+     *   autoRotate - whether or not to let the API try different rotations on
+     * @return Prediction on document
+     */
+    public JSONObject createPrediction(String documentId, String modelName, List<NameValuePair> options) throws IOException {
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("documentId", documentId);
+        jsonBody.put("modelName", modelName);
+
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", jsonBody, options);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
     public Prediction predict(String documentPath, String modelName, String consentId) throws IOException {
         byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
         ContentType contentType = this.getContentType(documentPath);
@@ -232,11 +254,8 @@ public class Client {
     }
 
     private URI createUri(String path) throws URISyntaxException {
-        URI uri;
         String apiEndpoint = this.credentials.getApiEndpoint();
-        uri = new URI(apiEndpoint + path);
-
-        return uri;
+        return new URI(apiEndpoint + path);
     }
 
     private URI createUri(String path, List<NameValuePair> queryParams) throws URISyntaxException {
@@ -271,6 +290,7 @@ public class Client {
             throw new RuntimeException("Failed to create url");
         }
 
+        System.out.println("URI: " + uri);
         HttpUriRequest request;
 
         switch (method) {
@@ -325,6 +345,48 @@ public class Client {
 
         try {
             uri = this.createUri(path);
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Failed to create url");
+        }
+
+        HttpUriRequest request;
+        byte[] body = null;
+
+        switch (method) {
+            case "GET": {
+                request = new HttpGet(uri);
+            } break;
+            case "DELETE": {
+                request = new HttpDelete(uri);
+            } break;
+            case "POST": {
+                request = new HttpPost(uri);
+
+                body = jsonBody.toString().getBytes();
+                ByteArrayEntity entity = new ByteArrayEntity(body);
+                ((HttpPost) request).setEntity(entity);
+            } break;
+            default: throw new IllegalArgumentException("HTTP verb not supported: " + method);
+        }
+
+        request.addHeader("Content-Type", "application/json");
+        request.addHeader("Authorization", "Bearer " + this.credentials.getAccessToken(this.httpClient));
+        request.addHeader("X-Api-Key", this.credentials.getApiKey());
+
+        return request;
+    }
+
+    private HttpUriRequest createAuthorizedRequest(
+        String method,
+        String path,
+        JSONObject jsonBody,
+        List<NameValuePair> queryParams
+    ) {
+        URI uri;
+
+        try {
+            uri = this.createUri(path, queryParams);
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("Failed to create url");
