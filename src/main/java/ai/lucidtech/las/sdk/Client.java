@@ -1,7 +1,6 @@
 package ai.lucidtech.las.sdk;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -124,9 +123,9 @@ public class Client {
      * @return Response from API
      */
     public JSONObject createDocument(
-            byte[] content,
-            ContentType contentType,
-            String consentId
+        byte[] content,
+        ContentType contentType,
+        String consentId
     ) throws IOException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("content", Base64.getEncoder().encodeToString(content));
@@ -167,12 +166,16 @@ public class Client {
      *   autoRotate - whether or not to let the API try different rotations on
      * @return Prediction on document
      */
-    public JSONObject createPrediction(String documentId, String modelName, List<NameValuePair> options) throws IOException {
+    public JSONObject createPrediction(String documentId, String modelName, Map<String, Object> options) throws IOException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
         jsonBody.put("modelName", modelName);
 
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", jsonBody, options);
+        for (Map.Entry<String, Object> option: options.entrySet()) {
+            jsonBody.put(option.getKey(), option.getValue());
+        }
+
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", jsonBody);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -345,48 +348,6 @@ public class Client {
 
         try {
             uri = this.createUri(path);
-        } catch (URISyntaxException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Failed to create url");
-        }
-
-        HttpUriRequest request;
-        byte[] body = null;
-
-        switch (method) {
-            case "GET": {
-                request = new HttpGet(uri);
-            } break;
-            case "DELETE": {
-                request = new HttpDelete(uri);
-            } break;
-            case "POST": {
-                request = new HttpPost(uri);
-
-                body = jsonBody.toString().getBytes();
-                ByteArrayEntity entity = new ByteArrayEntity(body);
-                ((HttpPost) request).setEntity(entity);
-            } break;
-            default: throw new IllegalArgumentException("HTTP verb not supported: " + method);
-        }
-
-        request.addHeader("Content-Type", "application/json");
-        request.addHeader("Authorization", "Bearer " + this.credentials.getAccessToken(this.httpClient));
-        request.addHeader("X-Api-Key", this.credentials.getApiKey());
-
-        return request;
-    }
-
-    private HttpUriRequest createAuthorizedRequest(
-        String method,
-        String path,
-        JSONObject jsonBody,
-        List<NameValuePair> queryParams
-    ) {
-        URI uri;
-
-        try {
-            uri = this.createUri(path, queryParams);
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
             throw new RuntimeException("Failed to create url");

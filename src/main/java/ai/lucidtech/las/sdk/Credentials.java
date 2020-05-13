@@ -37,7 +37,6 @@ public class Credentials {
      */
     public Credentials() {
         String homeDir = System.getProperty("user.home");
-        //String credentialsPath = homeDir + "/.lucidtech/credentials.cfg";
         Path credentialsPath = Paths.get(homeDir, ".lucidtech", "credentials.cfg");
         this.readFromFile(credentialsPath.toString());
     }
