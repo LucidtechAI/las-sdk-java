@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.time.Instant;
 import java.util.Base64;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.http.*;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
@@ -38,7 +39,7 @@ public class Credentials {
     public Credentials() {
         String homeDir = System.getProperty("user.home");
         Path credentialsPath = Paths.get(homeDir, ".lucidtech", "credentials.cfg");
-        this.readFromFile(credentialsPath.toString());
+        this.setCredentials(credentialsPath.toString());
     }
 
     /**
@@ -47,7 +48,7 @@ public class Credentials {
      * @param credentialsPath Path to credentials file
      */
     public Credentials(String credentialsPath) {
-        this.readFromFile(credentialsPath);
+        this.setCredentials(credentialsPath);
     }
 
     /**
@@ -75,7 +76,40 @@ public class Credentials {
         return apiEndpoint;
     }
 
-    private Map readFromEnviron() {
+    private void setCredentials(String credentialsPath) {
+        Map credentialsFromEnv = this.readFromEnv();
+        Map credentialsFromFile = this.readFromFile(credentialsPath);
+        Map<String, String> credentials;
+
+        System.out.println("env: " + credentialsFromEnv);
+        System.out.println("file: " + credentialsFromFile);
+
+        if (all(credentialsFromEnv)) {
+            credentials = credentialsFromEnv;
+        } else if (all(credentialsFromFile)) {
+            credentials = credentialsFromFile;
+        } else {
+            return;
+        }
+
+        this.clientId = credentials.get("clientId");
+        this.clientSecret = credentials.get("clientSecret");
+        this.apiKey = credentials.get("apiKey");
+        this.apiEndpoint = credentials.get("authEndpoint");
+        this.authEndpoint = credentials.get("apiEndpoint");
+    }
+
+    private boolean all(Map data) {
+        for (Object value : data.values()) {
+            if (value == null || value == "") {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private Map readFromEnv() {
         Map<String, String> pairs = new HashMap<String, String>();
         pairs.put("clientId", "LAS_CLIENT_ID");
         pairs.put("clientSecret", "LAS_CLIENT_SECRET");
@@ -92,21 +126,30 @@ public class Credentials {
         return result;
     }
 
-    private void readFromFile(String credentialsPath) {
-        // TODO Read INI files properly
-        try(FileInputStream input = new FileInputStream(credentialsPath)) {
-            Properties properties = new Properties();
-            properties.load(input);
-            Map<String, String> credentialsFromEnviron = this.readFromEnviron();
+    private Map<Object, Object> readFromFile(String credentialsPath) {
+        Map<String, String> pairs = new HashMap<String, String>();
+        pairs.put("clientId", "client_id");
+        pairs.put("clientSecret", "client_secret");
+        pairs.put("apiKey", "api_key");
+        pairs.put("authEndpoint", "auth_endpoint");
+        pairs.put("apiEndpoint", "api_endpoint");
 
-            this.clientId = properties.getProperty("client_id");
-            this.clientSecret = properties.getProperty("client_secret");
-            this.apiKey = properties.getProperty("api_key");
-            this.apiEndpoint = properties.getProperty("api_endpoint");
-            this.authEndpoint = properties.getProperty("auth_endpoint");
+        Map<Object, Object> result = new HashMap<Object, Object>();
+        Properties properties = new Properties();
+
+        try(FileInputStream input = new FileInputStream(credentialsPath)) {
+            properties.load(input);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        System.out.println("Properties: " + properties);
+
+        for (Map.Entry<String, String> entry : pairs.entrySet()) {
+            System.out.println("entry: " + entry);
+            result.put(entry.getKey(), properties.getProperty(entry.getValue()));
+        }
+
+        return result;
     }
 
     private JSONObject getClientCredentials(HttpClient httpClient) throws IOException {
