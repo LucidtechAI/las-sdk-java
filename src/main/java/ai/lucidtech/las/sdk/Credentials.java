@@ -95,8 +95,8 @@ public class Credentials {
         this.clientId = credentials.get("clientId");
         this.clientSecret = credentials.get("clientSecret");
         this.apiKey = credentials.get("apiKey");
-        this.apiEndpoint = credentials.get("authEndpoint");
-        this.authEndpoint = credentials.get("apiEndpoint");
+        this.apiEndpoint = credentials.get("apiEndpoint");
+        this.authEndpoint = credentials.get("authEndpoint");
     }
 
     private boolean all(Map data) {
