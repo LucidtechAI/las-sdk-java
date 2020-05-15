@@ -1,4 +1,8 @@
-import ai.lucidtech.las.sdk.*;
+import ai.lucidtech.las.sdk.Client;
+import ai.lucidtech.las.sdk.Credentials;
+import ai.lucidtech.las.sdk.MissingCredentialsException;
+import ai.lucidtech.las.sdk.APIException;
+import ai.lucidtech.las.sdk.ContentType;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -8,13 +12,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Ignore;
 
+import java.util.Properties;
+import java.util.List;
+import java.util.UUID;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+
 import org.apache.http.NameValuePair;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.stream.StreamSupport;
 
 
