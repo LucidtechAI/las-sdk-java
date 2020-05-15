@@ -1,17 +1,13 @@
 package ai.lucidtech.las.sdk;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
-import java.util.Properties;
-import java.util.Map;
-import java.util.HashMap;
 import java.time.Instant;
 import java.util.Base64;
 
-import org.apache.http.*;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -33,38 +29,45 @@ public class Credentials {
 
     /**
      *  Used to fetch and store credentials.
-     *  Uses default location ~/.lucidtech/credentials.cfg to fetch credentials
-     */
-    public Credentials() {
-        String homeDir = System.getProperty("user.home");
-        Path credentialsPath = Paths.get(homeDir, ".lucidtech", "credentials.cfg");
-        this.readFromFile(credentialsPath.toString());
-    }
-
-    /**
-     *  Used to fetch and store credentials.
-     *
-     * @param credentialsPath Path to credentials file
-     */
-    public Credentials(String credentialsPath) {
-        this.readFromFile(credentialsPath);
-    }
-
-    /**
-     *  Used to fetch and store credentials.
      *
      * @param clientId Client id
      * @param clientSecret Client secret
      * @param apiKey API key
      * @param authEndpoint Auth endpoint
      * @param apiEndpoint Domain endpoint of the api, e.g. https://<prefix>.api.lucidtech.ai/<version>
+     * @throws MissingCredentialsException
      */
-    public Credentials(String clientId, String clientSecret, String apiKey, String authEndpoint, String apiEndpoint) {
+    public Credentials(
+        String clientId,
+        String clientSecret,
+        String apiKey,
+        String authEndpoint,
+        String apiEndpoint
+    ) throws MissingCredentialsException {
+        this.validateCredentials();
+
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.apiKey = apiKey;
         this.authEndpoint = authEndpoint;
         this.apiEndpoint = apiEndpoint;
+    }
+
+    /**
+     * Returns an access token, downloading it if valid token is not present
+     */
+    public String getAccessToken(HttpClient httpClient) {
+        if (accessToken == null || accessToken.isEmpty() || expires < Instant.now().getEpochSecond()) {
+            try {
+                JSONObject tokenData = this.getClientCredentials(httpClient);
+                this.accessToken = tokenData.getString("access_token");
+                this.expires = Instant.now().getEpochSecond() + tokenData.getInt("expires_in");
+            } catch (IOException | RuntimeException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return this.accessToken;
     }
 
     public String getApiKey() {
@@ -75,37 +78,11 @@ public class Credentials {
         return apiEndpoint;
     }
 
-    private Map readFromEnviron() {
-        Map<String, String> pairs = new HashMap<String, String>();
-        pairs.put("clientId", "LAS_CLIENT_ID");
-        pairs.put("clientSecret", "LAS_CLIENT_SECRET");
-        pairs.put("apiKey", "LAS_API_KEY");
-        pairs.put("authEndpoint", "LAS_AUTH_ENDPOINT");
-        pairs.put("apiEndpoint", "LAS_API_ENDPOINT");
-
-        Map<String, String> result = new HashMap<String, String>();
-
-        for (Map.Entry<String, String> entry : pairs.entrySet()) {
-            result.put(entry.getKey(), System.getenv(entry.getValue()));
-        }
-
-        return result;
-    }
-
-    private void readFromFile(String credentialsPath) {
-        // TODO Read INI files properly
-        try(FileInputStream input = new FileInputStream(credentialsPath)) {
-            Properties properties = new Properties();
-            properties.load(input);
-            Map<String, String> credentialsFromEnviron = this.readFromEnviron();
-
-            this.clientId = properties.getProperty("client_id");
-            this.clientSecret = properties.getProperty("client_secret");
-            this.apiKey = properties.getProperty("api_key");
-            this.apiEndpoint = properties.getProperty("api_endpoint");
-            this.authEndpoint = properties.getProperty("auth_endpoint");
-        } catch (IOException ex) {
-            ex.printStackTrace();
+    private void validateCredentials(String ...credentials) throws MissingCredentialsException {
+        for (String value : credentials) {
+            if (value == null) {
+                throw new MissingCredentialsException();
+            }
         }
     }
 
@@ -128,9 +105,6 @@ public class Credentials {
         int status = response.getStatusLine().getStatusCode();
 
         if (status != 200) {
-            printHeaders(request.getAllHeaders());
-            printHeaders(response.getAllHeaders());
-
             throw new RuntimeException("Failed to fetch access token: HTTP response code " + status);
         }
 
@@ -142,25 +116,5 @@ public class Credentials {
         }
 
         return jsonResponse;
-    }
-
-    void printHeaders(Header[] headers) {
-        for (int i = 0; i < headers.length; i++) {
-            System.out.println(headers[i].getName() + ": " + headers[i].getValue());
-        }
-    }
-
-    public String getAccessToken(HttpClient httpClient) {
-        if (accessToken == null || accessToken.isEmpty() || expires < Instant.now().getEpochSecond()) {
-            try {
-                JSONObject tokenData = this.getClientCredentials(httpClient);
-                this.accessToken = tokenData.getString("access_token");
-                this.expires = Instant.now().getEpochSecond() + tokenData.getInt("expires_in");
-            } catch (IOException | RuntimeException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        return this.accessToken;
     }
 }

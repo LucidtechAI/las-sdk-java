@@ -1,7 +1,9 @@
 package ai.lucidtech.las.sdk;
 
-import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -30,15 +32,7 @@ public class Client {
     private Credentials credentials;
 
     /**
-     * A low level client to invoke api methods from Lucidtech AI Services.
-     */
-    public Client() {
-        this.credentials = new Credentials();
-        this.httpClient = HttpClientBuilder.create().build();
-    }
-
-    /**
-     * A low level client to invoke api methods from Lucidtech AI Services.
+     * A client to invoke api methods from Lucidtech AI Services.
      *
      * @param credentials Credentials to use
      * @see Credentials
@@ -54,7 +48,7 @@ public class Client {
      * @return
      * @throws IOException
      */
-    public JSONObject getDocument(String documentId) throws IOException {
+    public JSONObject getDocument(String documentId) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents/" + documentId);
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -65,7 +59,7 @@ public class Client {
      * @return All documents from REST API
      * @throws IOException
      */
-    public JSONObject listDocuments() throws IOException {
+    public JSONObject listDocuments() throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents");
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -79,7 +73,7 @@ public class Client {
      * @return documents from REST API filtered using the passed options
      * @throws IOException
      */
-    public JSONObject listDocuments(List<NameValuePair> options) throws IOException {
+    public JSONObject listDocuments(List<NameValuePair> options) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents", options);
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -99,7 +93,7 @@ public class Client {
         ContentType contentType,
         String consentId,
         Map<String, Object> options
-    ) throws IOException {
+    ) throws IOException, APIException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("content", Base64.getEncoder().encodeToString(content));
         jsonBody.put("contentType", contentType.getMimeType());
@@ -126,7 +120,7 @@ public class Client {
         byte[] content,
         ContentType contentType,
         String consentId
-    ) throws IOException {
+    ) throws IOException, APIException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("content", Base64.getEncoder().encodeToString(content));
         jsonBody.put("contentType", contentType.getMimeType());
@@ -145,7 +139,7 @@ public class Client {
      * @param modelName The name of the model to use for inference
      * @return Prediction on document
      */
-    public JSONObject createPrediction(String documentId, String modelName) throws IOException {
+    public JSONObject createPrediction(String documentId, String modelName) throws IOException, APIException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
         jsonBody.put("modelName", modelName);
@@ -166,7 +160,7 @@ public class Client {
      *   autoRotate - whether or not to let the API try different rotations on
      * @return Prediction on document
      */
-    public JSONObject createPrediction(String documentId, String modelName, Map<String, Object> options) throws IOException {
+    public JSONObject createPrediction(String documentId, String modelName, Map<String, Object> options) throws IOException, APIException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
         jsonBody.put("modelName", modelName);
@@ -180,7 +174,7 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
-    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException {
+    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException, APIException {
         byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
         ContentType contentType = this.getContentType(documentPath);
         JSONObject document = this.createDocument(documentContent, contentType, consentId);
@@ -200,7 +194,7 @@ public class Client {
      * @param feedback Feedback to post
      * @return Feedback response
      */
-    public JSONObject updateDocument(String documentId, JSONObject feedback) throws IOException {
+    public JSONObject updateDocument(String documentId, JSONObject feedback) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents/" + documentId, feedback);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -212,7 +206,7 @@ public class Client {
      * @return
      * @throws IOException
      */
-    public JSONObject createBatch(String description) throws IOException {
+    public JSONObject createBatch(String description) throws IOException, APIException {
         JSONObject body = new JSONObject();
         body.put("description", description);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
@@ -227,7 +221,7 @@ public class Client {
      * @return Feedback response
      * @see Client#createDocument
      */
-    public JSONObject deleteConsent(String consentId) throws IOException {
+    public JSONObject deleteConsent(String consentId) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest(
             "DELETE",
             "/consents/" + consentId,
@@ -237,16 +231,29 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
-    public JSONObject getUser(String userId) throws IOException {
+    public JSONObject getUser(String userId) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/users/" + userId);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
 
-    private String executeRequest(HttpUriRequest request) throws IOException {
+    private String executeRequest(HttpUriRequest request) throws IOException, APIException {
         HttpResponse httpResponse= this.httpClient.execute(request);
         HttpEntity responseEntity = httpResponse.getEntity();
-        int status = httpResponse.getStatusLine().getStatusCode();
+        StatusLine statusLine = httpResponse.getStatusLine();
+        int status = statusLine.getStatusCode();
+
+        if (status == HttpStatus.SC_FORBIDDEN) {
+            throw new APIException("Credentials provided are not valid");
+        }
+
+        if (status == 429) {
+            throw new APIException("You have reached the limit of requests per second");
+        }
+
+        if (status > 299) {
+            throw new APIException(status, statusLine.getReasonPhrase());
+        }
 
         return EntityUtils.toString(responseEntity);
     }
@@ -293,17 +300,15 @@ public class Client {
             throw new RuntimeException("Failed to create url");
         }
 
-        System.out.println("URI: " + uri);
         HttpUriRequest request;
 
         switch (method) {
             case "GET": {
                 request = new HttpGet(uri);
-            }
-            break;
+            } break;
             case "DELETE": {
                 request = new HttpDelete(uri);
-            }
+            } break;
             default: throw new IllegalArgumentException("HTTP verb not supported: " + method);
         }
 
