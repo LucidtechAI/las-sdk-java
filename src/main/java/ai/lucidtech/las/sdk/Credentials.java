@@ -33,6 +33,7 @@ public class Credentials {
      * @param apiKey API key
      * @param authEndpoint Auth endpoint
      * @param apiEndpoint Domain endpoint of the api, e.g. https://<prefix>.api.lucidtech.ai/<version>
+     * @throws MissingCredentialsException
      */
     public Credentials(
         String clientId,
@@ -41,14 +42,7 @@ public class Credentials {
         String authEndpoint,
         String apiEndpoint
     ) throws MissingCredentialsException {
-        if (apiEndpoint == null
-            || authEndpoint == null
-            || apiKey == null
-            || clientSecret == null
-            || clientId == null
-        ) {
-            throw new MissingCredentialsException();
-        }
+        this.validateCredentials();
 
         this.clientId = clientId;
         this.clientSecret = clientSecret;
@@ -57,12 +51,37 @@ public class Credentials {
         this.apiEndpoint = apiEndpoint;
     }
 
+    /**
+     * Returns an access token, downloading it if valid token is not present
+     */
+    public String getAccessToken(HttpClient httpClient) {
+        if (accessToken == null || accessToken.isEmpty() || expires < Instant.now().getEpochSecond()) {
+            try {
+                JSONObject tokenData = this.getClientCredentials(httpClient);
+                this.accessToken = tokenData.getString("access_token");
+                this.expires = Instant.now().getEpochSecond() + tokenData.getInt("expires_in");
+            } catch (IOException | RuntimeException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return this.accessToken;
+    }
+
     public String getApiKey() {
         return apiKey;
     }
 
     public String getApiEndpoint() {
         return apiEndpoint;
+    }
+
+    private void validateCredentials(String ...credentials) throws MissingCredentialsException {
+        for (String value : credentials) {
+            if (value == null) {
+                throw new MissingCredentialsException();
+            }
+        }
     }
 
     private JSONObject getClientCredentials(HttpClient httpClient) throws IOException {
@@ -95,19 +114,5 @@ public class Credentials {
         }
 
         return jsonResponse;
-    }
-
-    public String getAccessToken(HttpClient httpClient) {
-        if (accessToken == null || accessToken.isEmpty() || expires < Instant.now().getEpochSecond()) {
-            try {
-                JSONObject tokenData = this.getClientCredentials(httpClient);
-                this.accessToken = tokenData.getString("access_token");
-                this.expires = Instant.now().getEpochSecond() + tokenData.getInt("expires_in");
-            } catch (IOException | RuntimeException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        return this.accessToken;
     }
 }

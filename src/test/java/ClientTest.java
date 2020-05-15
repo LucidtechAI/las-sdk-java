@@ -41,14 +41,13 @@ public class ClientTest {
             ex.printStackTrace();
         }
 
-        Credentials credentials;
-            credentials = new Credentials(
-                this.config.getProperty("clientId"),
-                this.config.getProperty("clientSecret"),
-                this.config.getProperty("apiKey"),
-                this.config.getProperty("authEndpoint"),
-                this.config.getProperty("apiEndpoint")
-            );
+        Credentials credentials = new Credentials(
+            this.config.getProperty("clientId"),
+            this.config.getProperty("clientSecret"),
+            this.config.getProperty("apiKey"),
+            this.config.getProperty("authEndpoint"),
+            this.config.getProperty("apiEndpoint")
+        );
 
         this.client = new Client(credentials);
 
