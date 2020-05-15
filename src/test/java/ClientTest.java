@@ -1,6 +1,4 @@
-import ai.lucidtech.las.sdk.Client;
-import ai.lucidtech.las.sdk.Credentials;
-import ai.lucidtech.las.sdk.ContentType;
+import ai.lucidtech.las.sdk.*;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -33,7 +31,7 @@ public class ClientTest {
     private byte[] content;
 
     @Before
-    public void setUp() {
+    public void setUp() throws MissingCredentialsException {
         String configPath = this.getResourcePath(ClientTest.CONFIG_RELATIVE_PATH);
 
         try(FileInputStream input = new FileInputStream(configPath)) {
@@ -43,20 +41,20 @@ public class ClientTest {
             ex.printStackTrace();
         }
 
-        Credentials credentials = new Credentials(
-            this.config.getProperty("clientId"),
-            this.config.getProperty("clientSecret"),
-            this.config.getProperty("apiKey"),
-            this.config.getProperty("authEndpoint"),
-            this.config.getProperty("apiEndpoint")
-        );
+        Credentials credentials;
+            credentials = new Credentials(
+                this.config.getProperty("clientId"),
+                this.config.getProperty("clientSecret"),
+                this.config.getProperty("apiKey"),
+                this.config.getProperty("authEndpoint"),
+                this.config.getProperty("apiEndpoint")
+            );
 
         this.client = new Client(credentials);
 
         this.batchId = UUID.randomUUID().toString();
         this.consentId = UUID.randomUUID().toString();
         this.userId = UUID.randomUUID().toString();
-        //this.content = UUID.randomUUID().toString().getBytes();
         Path path = Paths.get(this.getResourcePath("example.jpeg"));
 
         try {
@@ -70,7 +68,7 @@ public class ClientTest {
     }
 
     @Test
-    public void testGetDocument() throws IOException {
+    public void testGetDocument() throws IOException, APIException {
         ContentType contentType = ContentType.fromString("image/jpeg");
         JSONObject newDocument = this.client.createDocument(this.content, contentType, this.consentId);
         JSONObject document = this.client.getDocument(newDocument.getString("documentId"));
@@ -80,7 +78,7 @@ public class ClientTest {
     }
 
     @Test
-    public void testCreateDocument() throws IOException {
+    public void testCreateDocument() throws IOException, APIException {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (String documentMimeType : documentMimeTypes) {
@@ -94,7 +92,7 @@ public class ClientTest {
     }
 
     @Test
-    public void testCreateDocumentWithOptions() throws IOException {
+    public void testCreateDocumentWithOptions() throws IOException, APIException {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
         Map<String, Object> options = new HashMap<String, Object>();
         List<JSONObject> fieldList = Arrays.asList(
@@ -119,7 +117,7 @@ public class ClientTest {
     }
 
     @Test
-    public void testCreatePrediction() throws IOException {
+    public void testCreatePrediction() throws IOException, APIException {
         String[] modelNames = this.toArray(this.config.getProperty("model.names"));
         String[] documentPaths = this.toArray(this.config.getProperty("document.paths"));
         String[] mimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
@@ -145,7 +143,7 @@ public class ClientTest {
     }
 
     @Test
-    public void testUpdateDocument() throws IOException {
+    public void testUpdateDocument() throws IOException, APIException {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (String documentMimeType : documentMimeTypes) {
@@ -177,15 +175,14 @@ public class ClientTest {
     }
 
     @Test
-    public void testListDocuments() throws IOException {
+    public void testListDocuments() throws IOException, APIException {
         JSONObject response = this.client.listDocuments();
-        System.out.println(response);
         JSONArray documents = response.getJSONArray("documents");
         Assert.assertNotNull(documents);
     }
 
     @Test
-    public void testListFilteredDocuments() throws IOException {
+    public void testListFilteredDocuments() throws IOException, APIException {
         List<NameValuePair> options = new ArrayList<NameValuePair>();
         options.add(new BasicNameValuePair("batchId", this.batchId));
         options.add(new BasicNameValuePair("consentId", this.consentId));
@@ -195,7 +192,7 @@ public class ClientTest {
     }
 
     @Test
-    public void testCreateBatch() throws IOException {
+    public void testCreateBatch() throws IOException, APIException {
         String description = "I'm gonna create a new batch, give me a batch id!";
         JSONObject response = this.client.createBatch(description);
         Assert.assertNotNull(response.get("batchId"));
@@ -203,13 +200,13 @@ public class ClientTest {
 
     @Ignore
     @Test
-    public void testGetUser() throws IOException {
+    public void testGetUser() throws IOException, APIException {
         JSONObject response = this.client.getUser(this.userId);
     }
 
     @Ignore // DELETE requests are not supported yet
     @Test
-    public void testDeleteConsentId() throws IOException {
+    public void testDeleteConsentId() throws IOException, APIException {
         String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (String documentMimeType : documentMimeTypes) {
