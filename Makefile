@@ -6,6 +6,9 @@ build:
 test:
 	./gradlew test
 
+docs: # See here for doxybook2 installation instructions https://github.com/matusnovak/doxybook2#Install
+	doxybook2 --input xml --output markdown
+
 prism-start:
 	@echo "Starting mock API..."
 	docker run -t \
