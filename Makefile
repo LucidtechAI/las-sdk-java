@@ -7,7 +7,13 @@ test:
 	./gradlew test
 
 docs: # See here for doxybook2 installation instructions https://github.com/matusnovak/doxybook2#Install
-	doxybook2 --input xml --output markdown
+	doxygen
+	doxybook2 \
+	  --input xml \
+	  --output markdown \
+	  --summary-input README.md.tmpl \
+	  --summary-output markdown/README.md
+	  
 
 prism-start:
 	@echo "Starting mock API..."
