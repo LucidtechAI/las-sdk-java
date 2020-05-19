@@ -44,9 +44,10 @@ public class Client {
 
     /**
      *
-     * @param documentId
-     * @return
-     * @throws IOException
+     * @param documentId The document id to run inference and create a prediction on
+     * @return response from the API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject getDocument(String documentId) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents/" + documentId);
@@ -57,7 +58,8 @@ public class Client {
     /**
      *
      * @return All documents from REST API
-     * @throws IOException
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject listDocuments() throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents");
@@ -71,7 +73,8 @@ public class Client {
      * batchId - the batch id that contains the documents of interest
      * consentId - an identifier to mark the owner of the document handle
      * @return documents from REST API filtered using the passed options
-     * @throws IOException
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject listDocuments(List<NameValuePair> options) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents", options);
@@ -82,11 +85,14 @@ public class Client {
     /**
      * Creates a document handle, calls POST /documents endpoint
      *
-     * @param contentType A mime type for the document handle
      * @see ContentType
+     * @param content Binary data
+     * @param contentType A mime type for the document handle
      * @param consentId An identifier to mark the owner of the document handle
      * @param options Additional options to include in request body
      * @return Response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject createDocument(
         byte[] content,
@@ -111,10 +117,13 @@ public class Client {
     /**
      * Creates a document handle, calls POST /documents endpoint
      *
-     * @param contentType A mime type for the document handle
      * @see ContentType
+     * @param content Binary data
+     * @param contentType A mime type for the document handle
      * @param consentId An identifier to mark the owner of the document handle
      * @return Response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject createDocument(
         byte[] content,
@@ -134,10 +143,12 @@ public class Client {
     /**
      * Run inference and create a prediction, calls the POST /predictions endpoint
      *
-     * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
      * @see Client#createDocument
+     * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
      * @param modelName The name of the model to use for inference
      * @return Prediction on document
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject createPrediction(String documentId, String modelName) throws IOException, APIException {
         JSONObject jsonBody = new JSONObject();
@@ -152,13 +163,15 @@ public class Client {
     /**
      * Run inference and create a prediction, calls the POST /predictions endpoint
      *
-     * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
      * @see Client#createDocument
+     * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
      * @param modelName The name of the model to use for inference
      * @param options Available options are:
-     *   maxPages - maximum number of pages to run predicitons on
+     *   maxPages - maximum number of pages to run predictions on
      *   autoRotate - whether or not to let the API try different rotations on
      * @return Prediction on document
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject createPrediction(String documentId, String modelName, Map<String, Object> options) throws IOException, APIException {
         JSONObject jsonBody = new JSONObject();
@@ -174,6 +187,18 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    /**
+     * Create a prediction on a document <i>documentPath</i> by path using model <i>modelName</i>.
+     * This method takes care of creating and uploading a document as well as running inference using
+     * model to create prediction on the document.
+     *
+     * @param documentPath Path to document to run inference on
+     * @param modelName The name of the model to use for inference
+     * @param consentId An identifier to mark the owner of the document handle
+     * @return Prediction on document
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     */
     public Prediction predict(String documentPath, String modelName, String consentId) throws IOException, APIException {
         byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
         ContentType contentType = this.getContentType(documentPath);
@@ -189,10 +214,12 @@ public class Client {
      * Posting feedback means posting the ground truth data for the particular document.
      * This enables the API to learn from past mistakes
      *
-     * @param documentId The document id to post feedback to.
      * @see Client#createDocument
+     * @param documentId The document id to post feedback to.
      * @param feedback Feedback to post
      * @return Feedback response
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject updateDocument(String documentId, JSONObject feedback) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents/" + documentId, feedback);
@@ -201,10 +228,11 @@ public class Client {
     }
 
     /**
-     *
+     * Creates a batch handle, calls the POST /batches endpoint
      * @param description Creates a batch handle, calls the POST /batches endpoint
-     * @return
-     * @throws IOException
+     * @return Batch handle id and pre-signed upload url
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject createBatch(String description) throws IOException, APIException {
         JSONObject body = new JSONObject();
@@ -217,9 +245,11 @@ public class Client {
     /**
      * Delete documents with this consent_id, calls the DELETE /consent/{consentId} endpoint.
      *
+     * @see Client#createDocument
      * @param consentId Delete documents with this consentId
      * @return Feedback response
-     * @see Client#createDocument
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject deleteConsent(String consentId) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest(
@@ -231,6 +261,12 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    /**
+     * Get information about user, calls the GET /users/{user_id} endpoint.
+     * @param userId The user_id to get consent hash for
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     */
     public JSONObject getUser(String userId) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/users/" + userId);
         String response = this.executeRequest(request);

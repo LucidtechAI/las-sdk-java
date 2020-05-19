@@ -34,8 +34,8 @@ public class Credentials {
      * @param clientSecret Client secret
      * @param apiKey API key
      * @param authEndpoint Auth endpoint
-     * @param apiEndpoint Domain endpoint of the api, e.g. https://<prefix>.api.lucidtech.ai/<version>
-     * @throws MissingCredentialsException
+     * @param apiEndpoint Domain endpoint of the api, e.g. https://{prefix}.api.lucidtech.ai/{version}
+     * @throws MissingCredentialsException Raised if some of credentials are missing
      */
     public Credentials(
         String clientId,
@@ -54,7 +54,8 @@ public class Credentials {
     }
 
     /**
-     * Returns an access token, downloading it if valid token is not present
+     * @param httpClient Instance of HttpClient used to access the authentication endpoint
+     * @return Access token, downloading it if necessary
      */
     public String getAccessToken(HttpClient httpClient) {
         if (accessToken == null || accessToken.isEmpty() || expires < Instant.now().getEpochSecond()) {
