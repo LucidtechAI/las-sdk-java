@@ -46,8 +46,8 @@ public class Client {
      *
      * @param documentId The document id to run inference and create a prediction on
      * @return response from the API
-     * @throws IOException general IOException
-     * @throws APIException raised when API returns an erroneous status code
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject getDocument(String documentId) throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents/" + documentId);
@@ -58,8 +58,8 @@ public class Client {
     /**
      *
      * @return All documents from REST API
-     * @throws IOException general IOException
-     * @throws APIException raised when API returns an erroneous status code
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject listDocuments() throws IOException, APIException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents");
