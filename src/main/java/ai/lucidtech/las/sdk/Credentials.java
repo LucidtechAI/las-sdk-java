@@ -57,14 +57,14 @@ public class Credentials {
      * @param httpClient Instance of HttpClient used to access the authentication endpoint
      * @return Access token, downloading it if necessary
      */
-    public String getAccessToken(HttpClient httpClient) {
+    public String getAccessToken(HttpClient httpClient) throws MissingAccessTokenException {
         if (accessToken == null || accessToken.isEmpty() || expires < Instant.now().getEpochSecond()) {
             try {
                 JSONObject tokenData = this.getClientCredentials(httpClient);
                 this.accessToken = tokenData.getString("access_token");
                 this.expires = Instant.now().getEpochSecond() + tokenData.getInt("expires_in");
             } catch (IOException | RuntimeException ex) {
-                ex.printStackTrace();
+                throw new MissingAccessTokenException();
             }
         }
 
