@@ -49,7 +49,7 @@ public class Client {
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject getDocument(String documentId) throws IOException, APIException {
+    public JSONObject getDocument(String documentId) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents/" + documentId);
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -61,7 +61,7 @@ public class Client {
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject listDocuments() throws IOException, APIException {
+    public JSONObject listDocuments() throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents");
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -76,7 +76,9 @@ public class Client {
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject listDocuments(List<NameValuePair> options) throws IOException, APIException {
+    public JSONObject listDocuments(
+        List<NameValuePair> options
+    ) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents", options);
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -99,7 +101,7 @@ public class Client {
         ContentType contentType,
         String consentId,
         Map<String, Object> options
-    ) throws IOException, APIException {
+    ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("content", Base64.getEncoder().encodeToString(content));
         jsonBody.put("contentType", contentType.getMimeType());
@@ -129,7 +131,7 @@ public class Client {
         byte[] content,
         ContentType contentType,
         String consentId
-    ) throws IOException, APIException {
+    ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("content", Base64.getEncoder().encodeToString(content));
         jsonBody.put("contentType", contentType.getMimeType());
@@ -150,7 +152,10 @@ public class Client {
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject createPrediction(String documentId, String modelName) throws IOException, APIException {
+    public JSONObject createPrediction(
+        String documentId,
+        String modelName
+    ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
         jsonBody.put("modelName", modelName);
@@ -173,7 +178,11 @@ public class Client {
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject createPrediction(String documentId, String modelName, Map<String, Object> options) throws IOException, APIException {
+    public JSONObject createPrediction(
+        String documentId,
+        String modelName,
+        Map<String, Object> options
+    ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
         jsonBody.put("modelName", modelName);
@@ -199,7 +208,11 @@ public class Client {
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      */
-    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException, APIException {
+    public Prediction predict(
+        String documentPath,
+        String modelName,
+        String consentId
+    ) throws IOException, APIException, MissingAccessTokenException {
         byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
         ContentType contentType = this.getContentType(documentPath);
         JSONObject document = this.createDocument(documentContent, contentType, consentId);
@@ -221,7 +234,10 @@ public class Client {
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject updateDocument(String documentId, JSONObject feedback) throws IOException, APIException {
+    public JSONObject updateDocument(
+        String documentId,
+        JSONObject feedback
+    ) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents/" + documentId, feedback);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -234,7 +250,7 @@ public class Client {
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject createBatch(String description) throws IOException, APIException {
+    public JSONObject createBatch(String description) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
         body.put("description", description);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
@@ -251,7 +267,7 @@ public class Client {
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject deleteConsent(String consentId) throws IOException, APIException {
+    public JSONObject deleteConsent(String consentId) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest(
             "DELETE",
             "/consents/" + consentId,
@@ -267,7 +283,7 @@ public class Client {
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject getUser(String userId) throws IOException, APIException {
+    public JSONObject getUser(String userId) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/users/" + userId);
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -326,7 +342,7 @@ public class Client {
         throw new RuntimeException("ContentType not supported: " + contentType);
     }
 
-    private HttpUriRequest createAuthorizedRequest(String method, String path) {
+    private HttpUriRequest createAuthorizedRequest(String method, String path) throws MissingAccessTokenException {
         URI uri;
 
         try {
@@ -355,7 +371,11 @@ public class Client {
         return request;
     }
 
-    private HttpUriRequest createAuthorizedRequest(String method, String path, List<NameValuePair> queryParams) {
+    private HttpUriRequest createAuthorizedRequest(
+        String method,
+        String path,
+        List<NameValuePair> queryParams
+    ) throws MissingAccessTokenException {
         URI uri;
 
         try {
@@ -384,7 +404,11 @@ public class Client {
         return request;
     }
 
-    private HttpUriRequest createAuthorizedRequest(String method, String path, JSONObject jsonBody) {
+    private HttpUriRequest createAuthorizedRequest(
+        String method,
+        String path,
+        JSONObject jsonBody
+    ) throws MissingAccessTokenException {
         URI uri;
 
         try {
