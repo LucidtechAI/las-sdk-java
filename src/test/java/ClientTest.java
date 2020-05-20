@@ -53,11 +53,11 @@ public class ClientTest {
         }
 
         Credentials credentials = new Credentials(
-            this.config.getProperty("clientId"),
-            this.config.getProperty("clientSecret"),
-            this.config.getProperty("apiKey"),
-            this.config.getProperty("authEndpoint"),
-            this.config.getProperty("apiEndpoint")
+            System.getenv("TEST_LAS_CLIENT_ID"),
+            System.getenv("TEST_LAS_SECRET"),
+            System.getenv("TEST_LAS_API_KEY"),
+            System.getenv("TEST_LAS_AUTH_ENDPOINT"),
+            System.getenv("TEST_LAS_API_ENDPOINT")
         );
 
         this.client = new Client(credentials);
