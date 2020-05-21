@@ -44,11 +44,12 @@ public class Client {
 
     /**
      *
-     * @param documentId
-     * @return
-     * @throws IOException
+     * @param documentId The document id to run inference and create a prediction on
+     * @return response from the API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject getDocument(String documentId) throws IOException, APIException {
+    public JSONObject getDocument(String documentId) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents/" + documentId);
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -57,9 +58,10 @@ public class Client {
     /**
      *
      * @return All documents from REST API
-     * @throws IOException
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject listDocuments() throws IOException, APIException {
+    public JSONObject listDocuments() throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents");
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -71,9 +73,12 @@ public class Client {
      * batchId - the batch id that contains the documents of interest
      * consentId - an identifier to mark the owner of the document handle
      * @return documents from REST API filtered using the passed options
-     * @throws IOException
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject listDocuments(List<NameValuePair> options) throws IOException, APIException {
+    public JSONObject listDocuments(
+        List<NameValuePair> options
+    ) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents", options);
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -82,18 +87,21 @@ public class Client {
     /**
      * Creates a document handle, calls POST /documents endpoint
      *
-     * @param contentType A mime type for the document handle
      * @see ContentType
+     * @param content Binary data
+     * @param contentType A mime type for the document handle
      * @param consentId An identifier to mark the owner of the document handle
      * @param options Additional options to include in request body
      * @return Response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject createDocument(
         byte[] content,
         ContentType contentType,
         String consentId,
         Map<String, Object> options
-    ) throws IOException, APIException {
+    ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("content", Base64.getEncoder().encodeToString(content));
         jsonBody.put("contentType", contentType.getMimeType());
@@ -111,16 +119,19 @@ public class Client {
     /**
      * Creates a document handle, calls POST /documents endpoint
      *
-     * @param contentType A mime type for the document handle
      * @see ContentType
+     * @param content Binary data
+     * @param contentType A mime type for the document handle
      * @param consentId An identifier to mark the owner of the document handle
      * @return Response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
     public JSONObject createDocument(
         byte[] content,
         ContentType contentType,
         String consentId
-    ) throws IOException, APIException {
+    ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("content", Base64.getEncoder().encodeToString(content));
         jsonBody.put("contentType", contentType.getMimeType());
@@ -134,12 +145,17 @@ public class Client {
     /**
      * Run inference and create a prediction, calls the POST /predictions endpoint
      *
-     * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
      * @see Client#createDocument
+     * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
      * @param modelName The name of the model to use for inference
      * @return Prediction on document
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject createPrediction(String documentId, String modelName) throws IOException, APIException {
+    public JSONObject createPrediction(
+        String documentId,
+        String modelName
+    ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
         jsonBody.put("modelName", modelName);
@@ -152,15 +168,21 @@ public class Client {
     /**
      * Run inference and create a prediction, calls the POST /predictions endpoint
      *
-     * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
      * @see Client#createDocument
+     * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
      * @param modelName The name of the model to use for inference
      * @param options Available options are:
-     *   maxPages - maximum number of pages to run predicitons on
+     *   maxPages - maximum number of pages to run predictions on
      *   autoRotate - whether or not to let the API try different rotations on
      * @return Prediction on document
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject createPrediction(String documentId, String modelName, Map<String, Object> options) throws IOException, APIException {
+    public JSONObject createPrediction(
+        String documentId,
+        String modelName,
+        Map<String, Object> options
+    ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
         jsonBody.put("modelName", modelName);
@@ -174,7 +196,23 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
-    public Prediction predict(String documentPath, String modelName, String consentId) throws IOException, APIException {
+    /**
+     * Create a prediction on a document <i>documentPath</i> by path using model <i>modelName</i>.
+     * This method takes care of creating and uploading a document as well as running inference using
+     * model to create prediction on the document.
+     *
+     * @param documentPath Path to document to run inference on
+     * @param modelName The name of the model to use for inference
+     * @param consentId An identifier to mark the owner of the document handle
+     * @return Prediction on document
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     */
+    public Prediction predict(
+        String documentPath,
+        String modelName,
+        String consentId
+    ) throws IOException, APIException, MissingAccessTokenException {
         byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
         ContentType contentType = this.getContentType(documentPath);
         JSONObject document = this.createDocument(documentContent, contentType, consentId);
@@ -189,24 +227,30 @@ public class Client {
      * Posting feedback means posting the ground truth data for the particular document.
      * This enables the API to learn from past mistakes
      *
-     * @param documentId The document id to post feedback to.
      * @see Client#createDocument
+     * @param documentId The document id to post feedback to.
      * @param feedback Feedback to post
      * @return Feedback response
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject updateDocument(String documentId, JSONObject feedback) throws IOException, APIException {
+    public JSONObject updateDocument(
+        String documentId,
+        JSONObject feedback
+    ) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents/" + documentId, feedback);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
 
     /**
-     *
+     * Creates a batch handle, calls the POST /batches endpoint
      * @param description Creates a batch handle, calls the POST /batches endpoint
-     * @return
-     * @throws IOException
+     * @return Batch handle id and pre-signed upload url
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject createBatch(String description) throws IOException, APIException {
+    public JSONObject createBatch(String description) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
         body.put("description", description);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
@@ -217,11 +261,13 @@ public class Client {
     /**
      * Delete documents with this consent_id, calls the DELETE /consent/{consentId} endpoint.
      *
+     * @see Client#createDocument
      * @param consentId Delete documents with this consentId
      * @return Feedback response
-     * @see Client#createDocument
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
      */
-    public JSONObject deleteConsent(String consentId) throws IOException, APIException {
+    public JSONObject deleteConsent(String consentId) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest(
             "DELETE",
             "/consents/" + consentId,
@@ -231,7 +277,13 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
-    public JSONObject getUser(String userId) throws IOException, APIException {
+    /**
+     * Get information about user, calls the GET /users/{user_id} endpoint.
+     * @param userId The user_id to get consent hash for
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     */
+    public JSONObject getUser(String userId) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/users/" + userId);
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -290,7 +342,7 @@ public class Client {
         throw new RuntimeException("ContentType not supported: " + contentType);
     }
 
-    private HttpUriRequest createAuthorizedRequest(String method, String path) {
+    private HttpUriRequest createAuthorizedRequest(String method, String path) throws MissingAccessTokenException {
         URI uri;
 
         try {
@@ -319,7 +371,11 @@ public class Client {
         return request;
     }
 
-    private HttpUriRequest createAuthorizedRequest(String method, String path, List<NameValuePair> queryParams) {
+    private HttpUriRequest createAuthorizedRequest(
+        String method,
+        String path,
+        List<NameValuePair> queryParams
+    ) throws MissingAccessTokenException {
         URI uri;
 
         try {
@@ -348,7 +404,11 @@ public class Client {
         return request;
     }
 
-    private HttpUriRequest createAuthorizedRequest(String method, String path, JSONObject jsonBody) {
+    private HttpUriRequest createAuthorizedRequest(
+        String method,
+        String path,
+        JSONObject jsonBody
+    ) throws MissingAccessTokenException {
         URI uri;
 
         try {
