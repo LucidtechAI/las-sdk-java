@@ -48,6 +48,7 @@ public class Client {
      * @return response from the API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject getDocument(String documentId) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents/" + documentId);
@@ -60,6 +61,7 @@ public class Client {
      * @return All documents from REST API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listDocuments() throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents");
@@ -75,6 +77,7 @@ public class Client {
      * @return documents from REST API filtered using the passed options
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listDocuments(
         List<NameValuePair> options
@@ -95,6 +98,7 @@ public class Client {
      * @return Response from API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject createDocument(
         byte[] content,
@@ -126,6 +130,7 @@ public class Client {
      * @return Response from API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject createDocument(
         byte[] content,
@@ -151,6 +156,7 @@ public class Client {
      * @return Prediction on document
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject createPrediction(
         String documentId,
@@ -177,6 +183,7 @@ public class Client {
      * @return Prediction on document
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject createPrediction(
         String documentId,
@@ -207,6 +214,7 @@ public class Client {
      * @return Prediction on document
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public Prediction predict(
         String documentPath,
@@ -233,6 +241,7 @@ public class Client {
      * @return Feedback response
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject updateDocument(
         String documentId,
@@ -249,6 +258,7 @@ public class Client {
      * @return Batch handle id and pre-signed upload url
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject createBatch(String description) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
@@ -266,6 +276,7 @@ public class Client {
      * @return Feedback response
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject deleteConsent(String consentId) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest(
@@ -280,8 +291,10 @@ public class Client {
     /**
      * Get information about user, calls the GET /users/{user_id} endpoint.
      * @param userId The user_id to get consent hash for
+     * @return User response
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject getUser(String userId) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/users/" + userId);
