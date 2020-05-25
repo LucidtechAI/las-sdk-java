@@ -6,6 +6,10 @@ build:
 test:
 	./gradlew test
 
+publish:
+	./gradlew clean test
+	./gradlew clean uploadArchives
+
 docs: # See here for doxybook2 installation instructions https://github.com/matusnovak/doxybook2#Install
 	doxygen
 	moxygen xml
