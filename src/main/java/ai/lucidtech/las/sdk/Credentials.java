@@ -65,7 +65,6 @@ public class Credentials {
                 this.accessToken = tokenData.getString("access_token");
                 this.expires = Instant.now().getEpochSecond() + tokenData.getInt("expires_in");
             } catch (IOException | RuntimeException ex) {
-                System.out.println(ex);
                 throw new MissingAccessTokenException();
             }
         }
