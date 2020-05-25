@@ -44,7 +44,7 @@ public class Credentials {
         String authEndpoint,
         String apiEndpoint
     ) throws MissingCredentialsException {
-        this.validateCredentials();
+        this.validateCredentials(clientId, clientSecret, apiKey, authEndpoint, apiEndpoint);
 
         this.clientId = clientId;
         this.clientSecret = clientSecret;
@@ -56,6 +56,7 @@ public class Credentials {
     /**
      * @param httpClient Instance of HttpClient used to access the authentication endpoint
      * @return Access token, downloading it if necessary
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public String getAccessToken(HttpClient httpClient) throws MissingAccessTokenException {
         if (accessToken == null || accessToken.isEmpty() || expires < Instant.now().getEpochSecond()) {
@@ -88,11 +89,6 @@ public class Credentials {
     }
 
     private JSONObject getClientCredentials(HttpClient httpClient) throws IOException {
-        HttpHost targetHost = new HttpHost("https://" + this.authEndpoint + "/oauth2/token?grant_type=client_credentials");
-
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost, new BasicScheme());
-
         HttpUriRequest request = new HttpPost("https://" + this.authEndpoint + "/oauth2/token?grant_type=client_credentials");
         request.addHeader("Content-Type", "application/x-www-form-urlencoded");
         request.addHeader("Accept", "application/json");

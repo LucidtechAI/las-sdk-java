@@ -68,3 +68,20 @@ To run tests, the following environment variables should be present and contain 
 ```bash
 $ gradle test
 ```
+
+## Publishing
+
+### Prerequisites
+
+* Gradle [help](https://docs.gradle.org/current/userguide/userguide.html)
+* PGP key [help](https://central.sonatype.org/pages/working-with-pgp-signatures.html)
+* gradle.properties [help](https://central.sonatype.org/pages/gradle.html)
+* GRADLE_USER_HOME defined to point at directory containing above file
+* Adjust version in gradle.properties in project root
+* Use suffix "-SNAPSHOT" in version to test publish before publishing to production repo. (0.0.1-SNAPSHOT etc)
+
+### Usage
+
+```sh
+$ make publish
+```

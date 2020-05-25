@@ -1,10 +1,11 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.4'
+    id 'maven'
+    id 'signing'
 }
 
-group 'ai.lucidtech.las.sdk'
-version '0.0.1'
+group = 'ai.lucidtech'
+archivesBaseName = 'las-sdk-java'
 
 sourceCompatibility = 1.8
 
@@ -13,8 +14,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.json:json:+'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation 'org.json:json:20190722'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.12'
+    testImplementation 'junit:junit:4.12'
 }
 
 test {
@@ -23,11 +25,69 @@ test {
     }
 }
 
-intellij {
-    version '2018.2.6'
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
 }
-patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name = "${project.group}:${project.name}"
+                packaging = 'jar'
+                description = 'Java SDK for Lucidtech AI Services'
+                url = 'https://lucidtech.ai'
+
+                scm {
+                    connection = 'scm:git:https://github.com/LucidtechAI/las-sdk-java.git'
+                    developerConnection = 'scm:git:git@github.com:LucidtechAI/las-sdk-java.git'
+                    url = 'https://github.com/LucidtechAI/las-sdk-java'
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'nikita'
+                        name = 'Nikita Antonenkov'
+                        email = 'nikita@lucidtech.ai'
+                    }
+                    developer {
+                        id = 'august'
+                        name = 'August Kvernmo'
+                        email = 'august@lucidtech.ai'
+                    }
+                }
+            }
+        }
+    }
 }
