@@ -1,5 +1,6 @@
 package ai.lucidtech.las.sdk;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.StatusLine;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpEntity;
@@ -17,6 +18,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -89,6 +91,52 @@ public class Client {
      * Creates a document handle, calls POST /documents endpoint
      *
      * @see ContentType
+     * @param content Input stream
+     * @param contentType A mime type for the document handle
+     * @param consentId An identifier to mark the owner of the document handle
+     * @param options Additional options to include in request body
+     * @return Response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject createDocument(
+        InputStream content,
+        ContentType contentType,
+        String consentId,
+        Map<String, Object> options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        byte[] byteArrayContent = IOUtils.toByteArray(content);
+        JSONObject jsonBody = this.createPostDocumentsJsonBody(byteArrayContent, contentType, consentId, options);
+        return this.createDocument(jsonBody);
+    }
+
+    /**
+     * Creates a document handle, calls POST /documents endpoint
+     *
+     * @see ContentType
+     * @param content Input stream
+     * @param contentType A mime type for the document handle
+     * @param consentId An identifier to mark the owner of the document handle
+     * @return Response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject createDocument(
+        InputStream content,
+        ContentType contentType,
+        String consentId
+    ) throws IOException, APIException, MissingAccessTokenException {
+        byte[] byteArrayContent = IOUtils.toByteArray(content);
+        JSONObject jsonBody = this.createPostDocumentsJsonBody(byteArrayContent, contentType, consentId, null);
+        return this.createDocument(jsonBody);
+    }
+
+    /**
+     * Creates a document handle, calls POST /documents endpoint
+     *
+     * @see ContentType
      * @param content Binary data
      * @param contentType A mime type for the document handle
      * @param consentId An identifier to mark the owner of the document handle
@@ -104,18 +152,8 @@ public class Client {
         String consentId,
         Map<String, Object> options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("content", Base64.getEncoder().encodeToString(content));
-        jsonBody.put("contentType", contentType.getMimeType());
-        jsonBody.put("consentId", consentId);
-
-        for (Map.Entry<String, Object> option: options.entrySet()) {
-            jsonBody.put(option.getKey(), option.getValue());
-        }
-
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents", jsonBody);
-        String jsonResponse = this.executeRequest(request);
-        return new JSONObject(jsonResponse);
+        JSONObject jsonBody = this.createPostDocumentsJsonBody(content, contentType, consentId, options);
+        return this.createDocument(jsonBody);
     }
 
     /**
@@ -135,11 +173,31 @@ public class Client {
         ContentType contentType,
         String consentId
     ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject jsonBody = this.createPostDocumentsJsonBody(content, contentType, consentId, null);
+        return this.createDocument(jsonBody);
+    }
+
+    private JSONObject createPostDocumentsJsonBody(
+        byte[] content,
+        ContentType contentType,
+        String consentId,
+        Map<String, Object> options
+    ) {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("content", Base64.getEncoder().encodeToString(content));
         jsonBody.put("contentType", contentType.getMimeType());
         jsonBody.put("consentId", consentId);
 
+        if (options != null) {
+            for (Map.Entry<String, Object> option: options.entrySet()) {
+                jsonBody.put(option.getKey(), option.getValue());
+            }
+        }
+
+        return jsonBody;
+    }
+
+    private JSONObject createDocument(JSONObject jsonBody) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents", jsonBody);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
