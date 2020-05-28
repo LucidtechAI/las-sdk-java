@@ -23,6 +23,8 @@ import java.util.ArrayList;
 
 import org.apache.http.NameValuePair;
 import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -96,6 +98,21 @@ public class ClientTest {
             ContentType contentType = ContentType.fromString(documentMimeType);
 
             JSONObject document = this.client.createDocument(this.content, contentType, this.consentId);
+            Assert.assertTrue(document.has("consentId"));
+            Assert.assertTrue(document.has("contentType"));
+            Assert.assertTrue(document.has("documentId"));
+        }
+    }
+
+    @Test
+    public void testCreateDocumentWithInputStream() throws IOException, APIException, MissingAccessTokenException {
+        String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
+
+        for (String documentMimeType : documentMimeTypes) {
+            ContentType contentType = ContentType.fromString(documentMimeType);
+
+            InputStream input = new ByteArrayInputStream(this.content);
+            JSONObject document = this.client.createDocument(input, contentType, this.consentId);
             Assert.assertTrue(document.has("consentId"));
             Assert.assertTrue(document.has("contentType"));
             Assert.assertTrue(document.has("documentId"));
