@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.UUID;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -51,6 +52,8 @@ public class Credentials {
         this.apiKey = apiKey;
         this.authEndpoint = authEndpoint;
         this.apiEndpoint = apiEndpoint;
+        this.accessToken = UUID.randomUUID().toString().replace("-", "");
+        this.expires = 1834567890;
     }
 
     /**
@@ -59,8 +62,10 @@ public class Credentials {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public String getAccessToken(HttpClient httpClient) throws MissingAccessTokenException {
-        if (accessToken == null || accessToken.isEmpty() || expires < Instant.now().getEpochSecond()) {
+        if (this.accessToken == null || accessToken.isEmpty() || this.expires < Instant.now().getEpochSecond()) {
             try {
+                System.out.println("now: " + Instant.now().getEpochSecond());
+                System.out.println("expires: " + this.expires);
                 JSONObject tokenData = this.getClientCredentials(httpClient);
                 this.accessToken = tokenData.getString("access_token");
                 this.expires = Instant.now().getEpochSecond() + tokenData.getInt("expires_in");

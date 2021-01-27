@@ -33,7 +33,7 @@ import java.util.stream.StreamSupport;
 
 
 public class ClientTest {
-    private static final String CONFIG_RELATIVE_PATH = "config.properties";
+    private static final String CONFIG_RELATIVE_PATH = "config.properties.sample";
 
     private Client client;
     private Properties config;
@@ -41,7 +41,9 @@ public class ClientTest {
     private String batchId;
     private String consentId;
     private String userId;
-    private List<JSONObject> feedback;
+    private String documentId;
+    private String modelId;
+    private List<JSONObject> groundTruth;
     private byte[] content;
 
     @Before
@@ -55,26 +57,22 @@ public class ClientTest {
             ex.printStackTrace();
         }
 
-        Credentials credentials = new Credentials(
-            System.getenv("TEST_LAS_CLIENT_ID"),
-            System.getenv("TEST_LAS_CLIENT_SECRET"),
-            System.getenv("TEST_LAS_API_KEY"),
-            System.getenv("TEST_LAS_AUTH_ENDPOINT"),
-            System.getenv("TEST_LAS_API_ENDPOINT")
-        );
+        Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
 
         this.client = new Client(credentials);
 
-        this.batchId = UUID.randomUUID().toString();
-        this.consentId = UUID.randomUUID().toString();
-        this.userId = UUID.randomUUID().toString();
+        this.batchId = "las:batch:" + UUID.randomUUID().toString().replace("-", "");
+        this.consentId = "las:consent:" + UUID.randomUUID().toString().replace("-", "");
+        this.userId = "las:user:" + UUID.randomUUID().toString().replace("-", "");
+        this.documentId = "las:document:" + UUID.randomUUID().toString().replace("-", "");
+        this.modelId = "las:model:" + UUID.randomUUID().toString().replace("-", "");
         Path path = Paths.get(this.getResourcePath("example.jpeg"));
 
         try {
             this.content = Files.readAllBytes(path); // fails with prism because of file size
         } catch (IOException ex) {}
 
-        this.feedback = Arrays.asList(
+        this.groundTruth = Arrays.asList(
             this.createField("total_amount", "123.00"),
             this.createField("purchase_date", "2019-05-23")
         );
@@ -128,33 +126,31 @@ public class ClientTest {
             this.createField("purchase_date", "2019-05-23")
         );
         JSONArray fields = new JSONArray(fieldList);
-        options.put("feedback", fields);
+        options.put("groundTruth", fields);
 
         for (String documentMimeType : documentMimeTypes) {
             byte[] content = UUID.randomUUID().toString().getBytes();
             ContentType contentType = ContentType.fromString(documentMimeType);
-            String consentId = UUID.randomUUID().toString();
 
-            JSONObject document = this.client.createDocument(content, contentType, consentId, options);
+            JSONObject document = this.client.createDocument(content, contentType, this.consentId, options);
             Assert.assertTrue(document.has("consentId"));
             Assert.assertTrue(document.has("contentType"));
             Assert.assertTrue(document.has("documentId"));
-            Assert.assertTrue(document.has("feedback"));
+            Assert.assertTrue(document.has("groundTruth"));
             Assert.assertTrue(document.has("batchId"));
         }
     }
 
     @Test
     public void testCreatePrediction() throws IOException, APIException, MissingAccessTokenException {
-        String[] modelNames = this.toArray(this.config.getProperty("model.names"));
         String[] documentPaths = this.toArray(this.config.getProperty("document.paths"));
         String[] mimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
 
         for (int i = 0; i < documentPaths.length; ++i) {
-            String modelName = modelNames[i];
+            String modelId = this.modelId;
             ContentType contentType = ContentType.fromString(mimeTypes[i]);
             JSONObject document = this.client.createDocument(this.content, contentType, this.consentId);
-            JSONObject prediction = this.client.createPrediction(document.getString("documentId"), modelName);
+            JSONObject prediction = this.client.createPrediction(document.getString("documentId"), modelId);
             JSONArray fields = prediction.getJSONArray("predictions");
             Assert.assertNotNull(fields);
 
@@ -177,27 +173,26 @@ public class ClientTest {
         for (String documentMimeType : documentMimeTypes) {
             ContentType contentType = ContentType.fromString(documentMimeType);
             JSONObject document = this.client.createDocument(this.content, contentType, this.consentId);
-            JSONObject feedback = new JSONObject();
 
             List<JSONObject> fieldList = Arrays.asList(
                 this.createField("total_amount", "123.00"),
                 this.createField("purchase_date", "2019-05-23")
             );
-            JSONArray fields = new JSONArray(fieldList);
-            feedback.put("feedback", fields);
+            JSONArray groundTruth = new JSONArray(fieldList);
 
-            JSONObject feedbackResponse = this.client.updateDocument(document.getString("documentId"), feedback);
+            System.out.println("documentId: " + document.getString("documentId"));
+            JSONObject groundTruthResponse = this.client.updateDocument(document.getString("documentId"), groundTruth);
 
-            Assert.assertNotNull(feedbackResponse.get("documentId"));
-            Assert.assertNotNull(feedbackResponse.get("consentId"));
-            JSONArray feedbackValue = feedbackResponse.getJSONArray("feedback");
-            Assert.assertNotNull(feedbackValue);
+            Assert.assertNotNull(groundTruthResponse.get("documentId"));
+            Assert.assertNotNull(groundTruthResponse.get("consentId"));
+            JSONArray groundTruthValue = groundTruthResponse.getJSONArray("groundTruth");
+            Assert.assertNotNull(groundTruthValue);
 
-            StreamSupport.stream(feedbackValue.spliterator(), false)
+            StreamSupport.stream(groundTruthValue.spliterator(), false)
                 .map(o -> (JSONObject)o)
-                .forEach(feedbackItem -> {
-                    Assert.assertNotNull(feedbackItem.get("label"));
-                    Assert.assertNotNull(feedbackItem.get("value"));
+                .forEach(groundTruthItem -> {
+                    Assert.assertNotNull(groundTruthItem.get("label"));
+                    Assert.assertNotNull(groundTruthItem.get("value"));
                 });
         }
     }
@@ -250,6 +245,7 @@ public class ClientTest {
     }
 
     private String getResourcePath(String relativePath) {
+        System.out.println("relativePath : " + relativePath);
         return getClass().getResource(relativePath).getFile();
     }
 

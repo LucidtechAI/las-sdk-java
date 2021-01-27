@@ -10,12 +10,14 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.io.File;
 import java.io.InputStream;
@@ -208,7 +210,7 @@ public class Client {
      *
      * @see Client#createDocument
      * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
-     * @param modelName The name of the model to use for inference
+     * @param modelId The name of the model to use for inference
      * @return Prediction on document
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
@@ -216,11 +218,11 @@ public class Client {
      */
     public JSONObject createPrediction(
         String documentId,
-        String modelName
+        String modelId
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
-        jsonBody.put("modelName", modelName);
+        jsonBody.put("modelId", modelId);
 
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", jsonBody);
         String jsonResponse = this.executeRequest(request);
@@ -232,7 +234,7 @@ public class Client {
      *
      * @see Client#createDocument
      * @param documentId The document id to run inference and create a prediction. See createDocument for how to get documentId
-     * @param modelName The name of the model to use for inference
+     * @param modelId The name of the model to use for inference
      * @param options Available options are:
      *   maxPages - maximum number of pages to run predictions on
      *   autoRotate - whether or not to let the API try different rotations on
@@ -243,12 +245,12 @@ public class Client {
      */
     public JSONObject createPrediction(
         String documentId,
-        String modelName,
+        String modelId,
         Map<String, Object> options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
-        jsonBody.put("modelName", modelName);
+        jsonBody.put("modelId", modelId);
 
         for (Map.Entry<String, Object> option: options.entrySet()) {
             jsonBody.put(option.getKey(), option.getValue());
@@ -260,12 +262,12 @@ public class Client {
     }
 
     /**
-     * Create a prediction on a document <i>documentPath</i> by path using model <i>modelName</i>.
+     * Create a prediction on a document <i>documentPath</i> by path using model <i>modelId</i>.
      * This method takes care of creating and uploading a document as well as running inference using
      * model to create prediction on the document.
      *
      * @param documentPath Path to document to run inference on
-     * @param modelName The name of the model to use for inference
+     * @param modelId The name of the model to use for inference
      * @param consentId An identifier to mark the owner of the document handle
      * @return Prediction on document
      * @throws IOException General IOException
@@ -274,7 +276,7 @@ public class Client {
      */
     public Prediction predict(
         String documentPath,
-        String modelName,
+        String modelId,
         String consentId
     ) throws IOException, APIException, MissingAccessTokenException {
         byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
@@ -282,18 +284,18 @@ public class Client {
         JSONObject document = this.createDocument(documentContent, contentType, consentId);
         String documentId = document.getString("documentId");
 
-        JSONObject prediction = this.createPrediction(documentId, modelName);
-        return new Prediction(documentId, consentId, modelName, prediction);
+        JSONObject prediction = this.createPrediction(documentId, modelId);
+        return new Prediction(documentId, consentId, modelId, prediction);
     }
 
     /**
-     * Post feedback to the REST API, calls the POST /documents/{documentId} endpoint.
-     * Posting feedback means posting the ground truth data for the particular document.
+     * Post groundTruth to the REST API, calls the POST /documents/{documentId} endpoint.
+     * Posting groundTruth means posting the ground truth data for the particular document.
      * This enables the API to learn from past mistakes
      *
      * @see Client#createDocument
-     * @param documentId The document id to post feedback to.
-     * @param feedback Feedback to post
+     * @param documentId The document id to post groundTruth to.
+     * @param groundTruth Feedback to post
      * @return Feedback response
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
@@ -301,9 +303,11 @@ public class Client {
      */
     public JSONObject updateDocument(
         String documentId,
-        JSONObject feedback
+        JSONArray groundTruth
     ) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents/" + documentId, feedback);
+        JSONObject body = new JSONObject();
+        body.put("groundTruth", groundTruth);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/documents/" + documentId, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -496,6 +500,13 @@ public class Client {
             } break;
             case "DELETE": {
                 request = new HttpDelete(uri);
+            } break;
+            case "PATCH": {
+                request = new HttpPatch(uri);
+
+                body = jsonBody.toString().getBytes();
+                ByteArrayEntity entity = new ByteArrayEntity(body);
+                ((HttpPatch) request).setEntity(entity);
             } break;
             case "POST": {
                 request = new HttpPost(uri);
