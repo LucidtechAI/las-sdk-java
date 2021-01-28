@@ -42,6 +42,7 @@ public class ClientTest {
     private String batchId;
     private String consentId;
     private String userId;
+    private String logId;
     private String documentId;
     private String modelId;
     private List<JSONObject> groundTruth;
@@ -65,9 +66,10 @@ public class ClientTest {
         this.assetId = "las:asset:" + UUID.randomUUID().toString().replace("-", "");
         this.batchId = "las:batch:" + UUID.randomUUID().toString().replace("-", "");
         this.consentId = "las:consent:" + UUID.randomUUID().toString().replace("-", "");
-        this.userId = "las:user:" + UUID.randomUUID().toString().replace("-", "");
         this.documentId = "las:document:" + UUID.randomUUID().toString().replace("-", "");
+        this.logId = "las:log:" + UUID.randomUUID().toString().replace("-", "");
         this.modelId = "las:model:" + UUID.randomUUID().toString().replace("-", "");
+        this.userId = "las:user:" + UUID.randomUUID().toString().replace("-", "");
         Path path = Paths.get(this.getResourcePath("example.jpeg"));
 
         try {
@@ -272,6 +274,26 @@ public class ClientTest {
         String description = "I'm gonna create a new batch, give me a batch id!";
         JSONObject response = this.client.createBatch(description);
         Assert.assertNotNull(response.get("batchId"));
+    }
+
+    @Test
+    public void testListModels() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject response = this.client.listModels();
+        JSONArray models = response.getJSONArray("models");
+        Assert.assertNotNull(models);
+    }
+
+    @Test
+    public void testListPredictions() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject response = this.client.listPredictions();
+        JSONArray predictions = response.getJSONArray("predictions");
+        Assert.assertNotNull(predictions);
+    }
+
+    @Ignore
+    @Test
+    public void testGetLog() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject response = this.client.getLog(this.logId);
     }
 
     @Ignore

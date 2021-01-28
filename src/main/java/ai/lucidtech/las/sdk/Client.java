@@ -356,6 +356,18 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    public JSONObject getLog(String logId) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/logs/" + logId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    public JSONObject listModels() throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/models");
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
     /**
      * Run inference and create a prediction, calls the POST /predictions endpoint
      *
@@ -410,6 +422,19 @@ public class Client {
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", jsonBody);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
+    }
+
+    /**
+     *
+     * @return All predictions from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject listPredictions() throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions");
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
     }
 
     /**
