@@ -5,6 +5,7 @@ import ai.lucidtech.las.sdk.MissingCredentialsException;
 import ai.lucidtech.las.sdk.MissingAccessTokenException;
 import ai.lucidtech.las.sdk.APIException;
 import ai.lucidtech.las.sdk.OptionalNameAndDescription;
+import ai.lucidtech.las.sdk.OptionalListResource;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -130,9 +131,7 @@ public class ClientTest {
 
     @Test
     public void testListAssetsWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        List<NameValuePair> options = new ArrayList<NameValuePair>();
-        options.add(new BasicNameValuePair("maxResults", "30"));
-        options.add(new BasicNameValuePair("nextToken", "foo"));
+        OptionalListResource options = new OptionalListResource().setMaxResults(30);
         JSONObject response = this.client.listAssets(options);
         JSONArray assets = response.getJSONArray("assets");
         Assert.assertNotNull(assets);

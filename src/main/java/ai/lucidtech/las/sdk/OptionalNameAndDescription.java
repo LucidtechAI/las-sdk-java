@@ -45,7 +45,7 @@ public class OptionalNameAndDescription {
         return this;
     }
 
-    JSONObject addOptions(JSONObject body){
+    public JSONObject addOptions(JSONObject body){
         if (this.name != this.NOT_PROVIDED) {
             body.put("name", this.name);
         }
