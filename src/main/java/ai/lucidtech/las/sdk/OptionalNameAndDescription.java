@@ -22,10 +22,12 @@ import org.json.JSONObject;
 public class OptionalNameAndDescription {
     private String name;
     private String description;
+    private static final String NOT_PROVIDED = "NOT PROVIDED";
+
 
     public OptionalNameAndDescription(){
-        this.name = null;
-        this.description = null;
+        this.name = NOT_PROVIDED;
+        this.description = NOT_PROVIDED;
     }
 
     public OptionalNameAndDescription(String name, String description){
@@ -44,9 +46,12 @@ public class OptionalNameAndDescription {
     }
 
     JSONObject addOptions(JSONObject body){
-        body.put("name", this.name);
-        body.put("description", this.description);
+        if (this.name != this.NOT_PROVIDED) {
+            body.put("name", this.name);
+        }
+        if (this.description != this.NOT_PROVIDED) {
+            body.put("description", this.description);
+        }
         return body;
     }
-
 }

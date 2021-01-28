@@ -106,7 +106,6 @@ public class ClientTest {
         this.assertAsset(asset);
     }
 
-    @Ignore
     @Test
     public void testCreateAssetWithInputStreamAndOptions() throws IOException, APIException, MissingAccessTokenException {
         InputStream input = new ByteArrayInputStream(this.content);
@@ -115,7 +114,6 @@ public class ClientTest {
         this.assertAsset(asset);
 
     }
-    @Ignore
     @Test
     public void testCreateAssetWithInputStream() throws IOException, APIException, MissingAccessTokenException {
         InputStream input = new ByteArrayInputStream(this.content);
