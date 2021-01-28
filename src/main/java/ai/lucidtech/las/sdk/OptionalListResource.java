@@ -24,8 +24,8 @@ import java.util.*;
 
 
 public class OptionalListResource {
-    private int maxResults;
-    private String nextToken;
+    protected int maxResults;
+    protected String nextToken;
 
 
     public OptionalListResource(){

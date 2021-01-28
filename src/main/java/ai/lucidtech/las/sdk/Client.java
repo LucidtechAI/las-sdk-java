@@ -446,8 +446,17 @@ public class Client {
     public JSONObject listPredictions() throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions");
         String response = this.executeRequest(request);
+        return this.listPredictions(new OptionalListResource());
+    }
+
+    public JSONObject listPredictions(
+        OptionalListResource optionalParams
+    ) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions", optionalParams.toList());
+        String response = this.executeRequest(request);
         return new JSONObject(response);
     }
+
 
     public JSONObject createSecret(
         Map<String, String> data,
