@@ -38,6 +38,7 @@ public class ClientTest {
     private Client client;
     private Properties config;
 
+    private String assetId;
     private String batchId;
     private String consentId;
     private String userId;
@@ -61,6 +62,7 @@ public class ClientTest {
 
         this.client = new Client(credentials);
 
+        this.assetId = "las:asset:" + UUID.randomUUID().toString().replace("-", "");
         this.batchId = "las:batch:" + UUID.randomUUID().toString().replace("-", "");
         this.consentId = "las:consent:" + UUID.randomUUID().toString().replace("-", "");
         this.userId = "las:user:" + UUID.randomUUID().toString().replace("-", "");
@@ -99,6 +101,22 @@ public class ClientTest {
         Assert.assertTrue(asset.has("assetId"));
         Assert.assertTrue(asset.has("name"));
         Assert.assertTrue(asset.has("description"));
+    }
+
+    @Test
+    public void testListAssets() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject response = this.client.listAssets();
+        JSONArray assets = response.getJSONArray("assets");
+        Assert.assertNotNull(assets);
+    }
+
+    @Test
+    public void testGetAsset() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject asset = this.client.getAsset(this.assetId);
+        Assert.assertTrue(asset.has("assetId"));
+        Assert.assertTrue(asset.has("name"));
+        Assert.assertTrue(asset.has("description"));
+        Assert.assertTrue(asset.has("content"));
     }
 
     @Test

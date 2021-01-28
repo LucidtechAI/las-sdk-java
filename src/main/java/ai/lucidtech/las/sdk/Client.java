@@ -72,6 +72,18 @@ public class Client {
         return this.createAsset(byteArrayContent, options);
     }
 
+    public JSONObject listAssets() throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/assets");
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    public JSONObject getAsset(String assetId) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/assets/" + assetId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
     /**
      *
      * @param documentId The document id to run inference and create a prediction on
