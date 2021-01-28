@@ -282,19 +282,14 @@ public class ClientTest {
 
     @Ignore // DELETE requests are not supported yet
     @Test
-    public void testDeleteConsentId() throws IOException, APIException, MissingAccessTokenException {
-        String[] documentMimeTypes = this.toArray(this.config.getProperty("document.mime.types"));
+    public void testDeleteDocuments() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject response = this.client.deleteDocuments();
+    }
 
-        for (String documentMimeType : documentMimeTypes) {
-            byte[] content = UUID.randomUUID().toString().getBytes();
-            ContentType contentType = ContentType.fromString(documentMimeType);
-            this.client.createDocument(content, contentType, this.consentId);
-
-            JSONObject response = this.client.deleteConsent(this.consentId);
-            Assert.assertNotNull(response.getString("consentId"));
-            JSONArray documentIds = response.getJSONArray("documentIds");
-            Assert.assertNotNull(documentIds);
-        }
+    @Ignore // DELETE requests are not supported yet
+    @Test
+    public void testDeleteDocumentsWithConsent() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject response = this.client.deleteDocuments(this.consentId);
     }
 
     private String getResourcePath(String relativePath) {

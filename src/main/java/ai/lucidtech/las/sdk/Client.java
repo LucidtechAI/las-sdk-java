@@ -6,6 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -95,6 +96,22 @@ public class Client {
         HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/assets/" + assetId, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
+    }
+
+    /**
+     * Creates a batch handle, calls the POST /batches endpoint
+     * @param description Creates a batch handle, calls the POST /batches endpoint
+     * @return Batch handle id and pre-signed upload url
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject createBatch(String description) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject body = new JSONObject();
+        body.put("description", description);
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
     }
 
     /**
@@ -255,6 +272,89 @@ public class Client {
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
+    /**
+     * Create a prediction on a document <i>documentPath</i> by path using model <i>modelId</i>.
+     * This method takes care of creating and uploading a document as well as running inference using
+     * model to create prediction on the document.
+     *
+     * @param documentPath Path to document to run inference on
+     * @param modelId The name of the model to use for inference
+     * @param consentId An identifier to mark the owner of the document handle
+     * @return Prediction on document
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public Prediction predict(
+        String documentPath,
+        String modelId,
+        String consentId
+    ) throws IOException, APIException, MissingAccessTokenException {
+        byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
+        ContentType contentType = this.getContentType(documentPath);
+        JSONObject document = this.createDocument(documentContent, contentType, consentId);
+        String documentId = document.getString("documentId");
+
+        JSONObject prediction = this.createPrediction(documentId, modelId);
+        return new Prediction(documentId, consentId, modelId, prediction);
+    }
+
+    /**
+     * Delete documents with this consent_id, calls the DELETE /documents endpoint.
+     *
+     * @see Client#createDocument
+     * @return Feedback response
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject deleteDocuments() throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/documents", new JSONObject("{}"));
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    /**
+     * Delete documents with this consent_id, calls the DELETE /documents endpoint.
+     *
+     * @see Client#createDocument
+     * @param consentId Delete documents with this consentId
+     * @return Feedback response
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject deleteDocuments(String consentId) throws IOException, APIException, MissingAccessTokenException {
+        List<NameValuePair> consent = new ArrayList<NameValuePair>();
+        consent.add(new BasicNameValuePair("consentId", consentId));
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/documents", consent);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    /**
+     * Post groundTruth to the REST API, calls the POST /documents/{documentId} endpoint.
+     * Posting groundTruth means posting the ground truth data for the particular document.
+     * This enables the API to learn from past mistakes
+     *
+     * @see Client#createDocument
+     * @param documentId The document id to post groundTruth to.
+     * @param groundTruth Feedback to post
+     * @return Feedback response
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject updateDocument(
+        String documentId,
+        JSONArray groundTruth
+    ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject body = new JSONObject();
+        body.put("groundTruth", groundTruth);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/documents/" + documentId, body);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
 
     /**
      * Run inference and create a prediction, calls the POST /predictions endpoint
@@ -308,93 +408,6 @@ public class Client {
         }
 
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", jsonBody);
-        String jsonResponse = this.executeRequest(request);
-        return new JSONObject(jsonResponse);
-    }
-
-    /**
-     * Create a prediction on a document <i>documentPath</i> by path using model <i>modelId</i>.
-     * This method takes care of creating and uploading a document as well as running inference using
-     * model to create prediction on the document.
-     *
-     * @param documentPath Path to document to run inference on
-     * @param modelId The name of the model to use for inference
-     * @param consentId An identifier to mark the owner of the document handle
-     * @return Prediction on document
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public Prediction predict(
-        String documentPath,
-        String modelId,
-        String consentId
-    ) throws IOException, APIException, MissingAccessTokenException {
-        byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
-        ContentType contentType = this.getContentType(documentPath);
-        JSONObject document = this.createDocument(documentContent, contentType, consentId);
-        String documentId = document.getString("documentId");
-
-        JSONObject prediction = this.createPrediction(documentId, modelId);
-        return new Prediction(documentId, consentId, modelId, prediction);
-    }
-
-    /**
-     * Post groundTruth to the REST API, calls the POST /documents/{documentId} endpoint.
-     * Posting groundTruth means posting the ground truth data for the particular document.
-     * This enables the API to learn from past mistakes
-     *
-     * @see Client#createDocument
-     * @param documentId The document id to post groundTruth to.
-     * @param groundTruth Feedback to post
-     * @return Feedback response
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject updateDocument(
-        String documentId,
-        JSONArray groundTruth
-    ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject body = new JSONObject();
-        body.put("groundTruth", groundTruth);
-        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/documents/" + documentId, body);
-        String jsonResponse = this.executeRequest(request);
-        return new JSONObject(jsonResponse);
-    }
-
-    /**
-     * Creates a batch handle, calls the POST /batches endpoint
-     * @param description Creates a batch handle, calls the POST /batches endpoint
-     * @return Batch handle id and pre-signed upload url
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject createBatch(String description) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject body = new JSONObject();
-        body.put("description", description);
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
-        String response = this.executeRequest(request);
-        return new JSONObject(response);
-    }
-
-    /**
-     * Delete documents with this consent_id, calls the DELETE /consent/{consentId} endpoint.
-     *
-     * @see Client#createDocument
-     * @param consentId Delete documents with this consentId
-     * @return Feedback response
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject deleteConsent(String consentId) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest(
-            "DELETE",
-            "/consents/" + consentId,
-            new JSONObject("{}")
-        );
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
