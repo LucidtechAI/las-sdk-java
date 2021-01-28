@@ -45,6 +45,7 @@ public class ClientTest {
     private String logId;
     private String documentId;
     private String modelId;
+    private String secretId;
     private List<JSONObject> groundTruth;
     private byte[] content;
 
@@ -69,6 +70,7 @@ public class ClientTest {
         this.documentId = "las:document:" + UUID.randomUUID().toString().replace("-", "");
         this.logId = "las:log:" + UUID.randomUUID().toString().replace("-", "");
         this.modelId = "las:model:" + UUID.randomUUID().toString().replace("-", "");
+        this.secretId = "las:secret:" + UUID.randomUUID().toString().replace("-", "");
         this.userId = "las:user:" + UUID.randomUUID().toString().replace("-", "");
         Path path = Paths.get(this.getResourcePath("example.jpeg"));
 
@@ -124,6 +126,17 @@ public class ClientTest {
     @Test
     public void testListAssets() throws IOException, APIException, MissingAccessTokenException {
         JSONObject response = this.client.listAssets();
+        JSONArray assets = response.getJSONArray("assets");
+        Assert.assertNotNull(assets);
+    }
+
+    @Test
+    public void testListAssetsWithOptions() throws IOException, APIException, MissingAccessTokenException {
+        Map<String, Object> options = new HashMap<String, Object>(){{
+          put("maxResults", 100);
+          put("nextToke", "abc");
+        }};
+        JSONObject response = this.client.listAssets(options);
         JSONArray assets = response.getJSONArray("assets");
         Assert.assertNotNull(assets);
     }
@@ -299,13 +312,47 @@ public class ClientTest {
         Assert.assertNotNull(predictions);
     }
 
-    @Ignore
     @Test
     public void testGetLog() throws IOException, APIException, MissingAccessTokenException {
         JSONObject response = this.client.getLog(this.logId);
     }
 
-    @Ignore
+    private void assertSecret(JSONObject secret) throws IOException {
+        Assert.assertTrue(secret.has("secretId"));
+        Assert.assertTrue(secret.has("name"));
+        Assert.assertTrue(secret.has("description"));
+    }
+
+    @Test
+    public void testCreateSecretWithOptions() throws IOException, APIException, MissingAccessTokenException {
+        Map<String, String> data = new HashMap<String, String>(){{ put("username", "foo"); }};
+        Map<String, Object> options = new HashMap<String, Object>(){{ put("name", "bar"); }};
+        JSONObject secret = this.client.createSecret(data, options);
+        this.assertSecret(secret);
+    }
+
+    @Test
+    public void testCreateSecret() throws IOException, APIException, MissingAccessTokenException {
+        Map<String, String> data = new HashMap<String, String>(){{ put("username", "foo"); }};
+        JSONObject secret = this.client.createSecret(data);
+        this.assertSecret(secret);
+    }
+
+    @Test
+    public void testListSecrets() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject response = this.client.listSecrets();
+        JSONArray secrets = response.getJSONArray("secrets");
+        Assert.assertNotNull(secrets);
+    }
+
+    @Test
+    public void testUpdateSecret() throws IOException, APIException, MissingAccessTokenException {
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("name", "foo");
+        JSONObject secret = this.client.updateSecret(this.secretId, options);
+        this.assertSecret(secret);
+    }
+
     @Test
     public void testGetUser() throws IOException, APIException, MissingAccessTokenException {
         JSONObject response = this.client.getUser(this.userId);

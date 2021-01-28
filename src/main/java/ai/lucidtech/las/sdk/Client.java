@@ -69,23 +69,27 @@ public class Client {
         InputStream content,
         Map<String, Object> options
     ) throws IOException, APIException, MissingAccessTokenException {
-        byte[] byteArrayContent = IOUtils.toByteArray(content);
-        return this.createAsset(byteArrayContent, options);
+        return this.createAsset(IOUtils.toByteArray(content), options);
     }
 
     public JSONObject createAsset(InputStream content) throws IOException, APIException, MissingAccessTokenException {
-        byte[] byteArrayContent = IOUtils.toByteArray(content);
-        return this.createAsset(byteArrayContent, new HashMap<String, Object>());
+        return this.createAsset(IOUtils.toByteArray(content), new HashMap<String, Object>());
     }
 
     public JSONObject createAsset(byte[] content) throws IOException, APIException, MissingAccessTokenException {
         return this.createAsset(content, new HashMap<String, Object>());
     }
 
-    public JSONObject listAssets() throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/assets");
+    public JSONObject listAssets(
+        List<NameValuePair> options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/asssets", options);
         String response = this.executeRequest(request);
         return new JSONObject(response);
+    }
+
+    public JSONObject listAssets() throws IOException, APIException, MissingAccessTokenException {
+        return this.listAssets(new List<NameValuePair>());
     }
 
     public JSONObject getAsset(String assetId) throws IOException, APIException, MissingAccessTokenException {
@@ -444,6 +448,46 @@ public class Client {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions");
         String response = this.executeRequest(request);
         return new JSONObject(response);
+    }
+
+    public JSONObject createSecret(
+        Map<String, String> data,
+        Map<String, Object> options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject jsonBody = new JSONObject(){{ put("data", data); }};
+
+        if (options != null) {
+            for (Map.Entry<String, Object> option: options.entrySet()) {
+                jsonBody.put(option.getKey(), option.getValue());
+            }
+        }
+
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/secrets", jsonBody);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    public JSONObject createSecret(Map<String, String> data) throws IOException, APIException, MissingAccessTokenException {
+        return this.createSecret(data, new HashMap<String, Object>());
+    }
+
+    public JSONObject listSecrets() throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/secrets");
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    public JSONObject updateSecret(
+        String secretId,
+        Map<String, Object> options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject body = new JSONObject();
+        for (Map.Entry<String, Object> option: options.entrySet()) {
+            body.put(option.getKey(), option.getValue());
+        }
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/secrets/" + secretId, body);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
     }
 
     /**
