@@ -46,6 +46,32 @@ public class Client {
         this.httpClient = HttpClientBuilder.create().build();
     }
 
+    public JSONObject createAsset(
+        byte[] content,
+        Map<String, Object> options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("content", Base64.getEncoder().encodeToString(content));
+
+        if (options != null) {
+            for (Map.Entry<String, Object> option: options.entrySet()) {
+                jsonBody.put(option.getKey(), option.getValue());
+            }
+        }
+
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/assets", jsonBody);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    public JSONObject createAsset(
+        InputStream content,
+        Map<String, Object> options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        byte[] byteArrayContent = IOUtils.toByteArray(content);
+        return this.createAsset(byteArrayContent, options);
+    }
+
     /**
      *
      * @param documentId The document id to run inference and create a prediction on
