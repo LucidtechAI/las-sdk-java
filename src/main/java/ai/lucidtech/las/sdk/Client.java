@@ -83,13 +83,14 @@ public class Client {
     public JSONObject listAssets(
         List<NameValuePair> options
     ) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/asssets", options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/assets", options);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
 
     public JSONObject listAssets() throws IOException, APIException, MissingAccessTokenException {
-        return this.listAssets(new List<NameValuePair>());
+
+        return this.listAssets(new ArrayList<NameValuePair>());
     }
 
     public JSONObject getAsset(String assetId) throws IOException, APIException, MissingAccessTokenException {

@@ -132,10 +132,9 @@ public class ClientTest {
 
     @Test
     public void testListAssetsWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        Map<String, Object> options = new HashMap<String, Object>(){{
-          put("maxResults", 100);
-          put("nextToke", "abc");
-        }};
+        List<NameValuePair> options = new ArrayList<NameValuePair>();
+        options.add(new BasicNameValuePair("maxResults", "30"));
+        options.add(new BasicNameValuePair("nextToken", "foo"));
         JSONObject response = this.client.listAssets(options);
         JSONArray assets = response.getJSONArray("assets");
         Assert.assertNotNull(assets);
