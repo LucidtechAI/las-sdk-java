@@ -73,6 +73,15 @@ public class Client {
         return this.createAsset(byteArrayContent, options);
     }
 
+    public JSONObject createAsset(InputStream content) throws IOException, APIException, MissingAccessTokenException {
+        byte[] byteArrayContent = IOUtils.toByteArray(content);
+        return this.createAsset(byteArrayContent, new HashMap<String, Object>());
+    }
+
+    public JSONObject createAsset(byte[] content) throws IOException, APIException, MissingAccessTokenException {
+        return this.createAsset(content, new HashMap<String, Object>());
+    }
+
     public JSONObject listAssets() throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/assets");
         String response = this.executeRequest(request);

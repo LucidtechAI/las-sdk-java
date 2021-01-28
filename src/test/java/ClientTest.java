@@ -82,27 +82,43 @@ public class ClientTest {
         );
     }
 
-    @Test
-    public void testCreateAsset() throws IOException, APIException, MissingAccessTokenException {
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("name", "foo");
 
-        JSONObject asset = this.client.createAsset(this.content, options);
+    private void assertAsset(JSONObject asset) throws IOException {
         Assert.assertTrue(asset.has("assetId"));
+        Assert.assertTrue(asset.has("content"));
         Assert.assertTrue(asset.has("name"));
         Assert.assertTrue(asset.has("description"));
     }
 
     @Test
-    public void testCreateAssetWithInputStream() throws IOException, APIException, MissingAccessTokenException {
+    public void testCreateAsset() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject asset = this.client.createAsset(this.content);
+        this.assertAsset(asset);
+    }
+
+    @Test
+    public void testCreateAssetWithOptions() throws IOException, APIException, MissingAccessTokenException {
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("name", "foo");
+
+        JSONObject asset = this.client.createAsset(this.content, options);
+        this.assertAsset(asset);
+    }
+
+    @Test
+    public void testCreateAssetWithInputStreamAndOptions() throws IOException, APIException, MissingAccessTokenException {
         InputStream input = new ByteArrayInputStream(this.content);
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("description", "foo");
+        JSONObject asset = this.client.createAsset(input, options);
+        this.assertAsset(asset);
 
-        JSONObject asset = this.client.createAsset(this.content, options);
-        Assert.assertTrue(asset.has("assetId"));
-        Assert.assertTrue(asset.has("name"));
-        Assert.assertTrue(asset.has("description"));
+    }
+    @Test
+    public void testCreateAssetWithInputStream() throws IOException, APIException, MissingAccessTokenException {
+        InputStream input = new ByteArrayInputStream(this.content);
+        JSONObject asset = this.client.createAsset(input);
+        this.assertAsset(asset);
     }
 
     @Test
@@ -115,10 +131,7 @@ public class ClientTest {
     @Test
     public void testGetAsset() throws IOException, APIException, MissingAccessTokenException {
         JSONObject asset = this.client.getAsset(this.assetId);
-        Assert.assertTrue(asset.has("assetId"));
-        Assert.assertTrue(asset.has("name"));
-        Assert.assertTrue(asset.has("description"));
-        Assert.assertTrue(asset.has("content"));
+        this.assertAsset(asset);
     }
 
     @Test
@@ -126,11 +139,7 @@ public class ClientTest {
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("name", "foo");
         JSONObject asset = this.client.updateAsset(this.assetId, options);
-
-        Assert.assertTrue(asset.has("assetId"));
-        Assert.assertTrue(asset.has("name"));
-        Assert.assertTrue(asset.has("description"));
-        Assert.assertTrue(asset.has("content"));
+        this.assertAsset(asset);
     }
 
     @Test
