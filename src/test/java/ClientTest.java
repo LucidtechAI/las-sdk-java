@@ -120,6 +120,18 @@ public class ClientTest {
     }
 
     @Test
+    public void testUpdateAsset() throws IOException, APIException, MissingAccessTokenException {
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("name", "foo");
+        JSONObject asset = this.client.updateAsset(this.assetId, options);
+
+        Assert.assertTrue(asset.has("assetId"));
+        Assert.assertTrue(asset.has("name"));
+        Assert.assertTrue(asset.has("description"));
+        Assert.assertTrue(asset.has("content"));
+    }
+
+    @Test
     public void testGetDocument() throws IOException, APIException, MissingAccessTokenException {
         ContentType contentType = ContentType.fromString("image/jpeg");
         JSONObject newDocument = this.client.createDocument(this.content, contentType, this.consentId);

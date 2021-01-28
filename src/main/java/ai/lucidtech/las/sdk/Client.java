@@ -84,6 +84,19 @@ public class Client {
         return new JSONObject(response);
     }
 
+    public JSONObject updateAsset(
+        String assetId,
+        Map<String, Object> options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject body = new JSONObject();
+        for (Map.Entry<String, Object> option: options.entrySet()) {
+            body.put(option.getKey(), option.getValue());
+        }
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/assets/" + assetId, body);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
     /**
      *
      * @param documentId The document id to run inference and create a prediction on
