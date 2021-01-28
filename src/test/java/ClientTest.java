@@ -4,6 +4,7 @@ import ai.lucidtech.las.sdk.ContentType;
 import ai.lucidtech.las.sdk.MissingCredentialsException;
 import ai.lucidtech.las.sdk.MissingAccessTokenException;
 import ai.lucidtech.las.sdk.APIException;
+import ai.lucidtech.las.sdk.OptionalNameAndDescription;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -100,22 +101,21 @@ public class ClientTest {
 
     @Test
     public void testCreateAssetWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("name", "foo");
-
+        OptionalNameAndDescription options = new OptionalNameAndDescription().setName("foo");
         JSONObject asset = this.client.createAsset(this.content, options);
         this.assertAsset(asset);
     }
 
+    @Ignore
     @Test
     public void testCreateAssetWithInputStreamAndOptions() throws IOException, APIException, MissingAccessTokenException {
         InputStream input = new ByteArrayInputStream(this.content);
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("description", "foo");
+        OptionalNameAndDescription options = new OptionalNameAndDescription().setName("foo");
         JSONObject asset = this.client.createAsset(input, options);
         this.assertAsset(asset);
 
     }
+    @Ignore
     @Test
     public void testCreateAssetWithInputStream() throws IOException, APIException, MissingAccessTokenException {
         InputStream input = new ByteArrayInputStream(this.content);

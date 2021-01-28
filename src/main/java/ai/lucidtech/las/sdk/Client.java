@@ -49,15 +49,13 @@ public class Client {
 
     public JSONObject createAsset(
         byte[] content,
-        Map<String, Object> options
+        OptionalNameAndDescription options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("content", Base64.getEncoder().encodeToString(content));
 
         if (options != null) {
-            for (Map.Entry<String, Object> option: options.entrySet()) {
-                jsonBody.put(option.getKey(), option.getValue());
-            }
+            jsonBody = options.addOptions(jsonBody);
         }
 
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/assets", jsonBody);
@@ -67,17 +65,17 @@ public class Client {
 
     public JSONObject createAsset(
         InputStream content,
-        Map<String, Object> options
+        OptionalNameAndDescription options
     ) throws IOException, APIException, MissingAccessTokenException {
         return this.createAsset(IOUtils.toByteArray(content), options);
     }
 
     public JSONObject createAsset(InputStream content) throws IOException, APIException, MissingAccessTokenException {
-        return this.createAsset(IOUtils.toByteArray(content), new HashMap<String, Object>());
+        return this.createAsset(IOUtils.toByteArray(content), new OptionalNameAndDescription());
     }
 
     public JSONObject createAsset(byte[] content) throws IOException, APIException, MissingAccessTokenException {
-        return this.createAsset(content, new HashMap<String, Object>());
+        return this.createAsset(content, new OptionalNameAndDescription());
     }
 
     public JSONObject listAssets(
