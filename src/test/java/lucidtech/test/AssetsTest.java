@@ -94,7 +94,10 @@ public class AssetsTest {
 
     @Test
     public void testUpdateAsset() throws IOException, APIException, MissingAccessTokenException {
-        UpdateAssetOptions options = new UpdateAssetOptions().setName("foo").setDescription("bar");
+        UpdateAssetOptions options = new UpdateAssetOptions()
+        .setName("foo")
+        .setDescription("bar")
+        .setContent(this.service.content());
         JSONObject asset = this.client.updateAsset(this.service.assetId(), options);
         this.assertAsset(asset);
     }
