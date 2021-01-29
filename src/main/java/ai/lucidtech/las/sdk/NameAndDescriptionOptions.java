@@ -3,18 +3,18 @@ package ai.lucidtech.las.sdk;
 import org.json.JSONObject;
 
 
-public class OptionalNameAndDescription<T> {
+public class NameAndDescriptionOptions<T> {
     private String name;
     private String description;
     private static final String NOT_PROVIDED = "NOT PROVIDED";
 
 
-    public OptionalNameAndDescription(){
+    public NameAndDescriptionOptions(){
         this.name = NOT_PROVIDED;
         this.description = NOT_PROVIDED;
     }
 
-    public OptionalNameAndDescription(String name, String description){
+    public NameAndDescriptionOptions(String name, String description){
         this.name = name;
         this.description = description;
     }
