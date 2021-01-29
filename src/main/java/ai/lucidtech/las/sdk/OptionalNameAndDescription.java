@@ -1,26 +1,16 @@
 package ai.lucidtech.las.sdk;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.Base64;
-import java.util.UUID;
-
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.util.EntityUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.NameValuePair;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
 import org.json.JSONObject;
 
 
-public class OptionalNameAndDescription {
+public class OptionalNameAndDescription<T> {
     private String name;
     private String description;
     private static final String NOT_PROVIDED = "NOT PROVIDED";
@@ -36,14 +26,14 @@ public class OptionalNameAndDescription {
         this.description = description;
     }
 
-    public OptionalNameAndDescription setName(String name){
+    public T setName(String name){
         this.name = name;
-        return this;
+        return (T) this;
     }
 
-    public OptionalNameAndDescription setDescription(String description){
+    public T setDescription(String description){
         this.description = description;
-        return this;
+        return (T) this;
     }
 
     public JSONObject addOptions(JSONObject body){

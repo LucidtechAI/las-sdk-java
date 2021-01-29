@@ -103,16 +103,14 @@ public class ClientTest {
 
     @Test
     public void testCreateAssetWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        OptionalNameAndDescription options = new OptionalNameAndDescription().setName("foo");
-        JSONObject asset = this.client.createAsset(this.content, options);
+        JSONObject asset = this.client.createAsset(this.content);
         this.assertAsset(asset);
     }
 
     @Test
     public void testCreateAssetWithInputStreamAndOptions() throws IOException, APIException, MissingAccessTokenException {
         InputStream input = new ByteArrayInputStream(this.content);
-        OptionalNameAndDescription options = new OptionalNameAndDescription().setName("foo");
-        JSONObject asset = this.client.createAsset(input, options);
+        JSONObject asset = this.client.createAsset(input);
         this.assertAsset(asset);
 
     }
