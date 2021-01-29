@@ -30,10 +30,8 @@ import java.util.stream.StreamSupport;
 
 
 public class AssetsTest {
-    private static final String CONFIG_RELATIVE_PATH = "config.properties.sample";
 
     private Client client;
-    private Properties config;
     private Service service;
 
     private byte[] content;
@@ -41,23 +39,11 @@ public class AssetsTest {
     @Before
     public void setUp() throws MissingCredentialsException {
         this.service = new Service();
-        String configPath = this.getResourcePath(AssetsTest.CONFIG_RELATIVE_PATH);
-
-        try(FileInputStream input = new FileInputStream(configPath)) {
-            this.config = new Properties();
-            this.config.load(input);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
 
         Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
 
         this.client = new Client(credentials);
-        Path path = Paths.get(this.getResourcePath("example.jpeg"));
-
-        try {
-            this.content = Files.readAllBytes(path); // fails with prism because of file size
-        } catch (IOException ex) {}
+        this.content = "0xe04fd020ea3a6910a2d808002b30309d".getBytes();
 
     }
 
