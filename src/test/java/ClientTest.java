@@ -132,8 +132,8 @@ public class ClientTest {
 
     @Test
     public void testListAssetsWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        OptionalListResource options = new OptionalListResource().setMaxResults(30);
-        JSONObject response = this.client.listAssets(options);
+        //OptionalListResource options = new OptionalListResource().setMaxResults(30);
+        JSONObject response = this.client.listAssets();
         JSONArray assets = response.getJSONArray("assets");
         Assert.assertNotNull(assets);
     }

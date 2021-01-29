@@ -16,6 +16,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.NameValuePair;
 import org.json.JSONObject;
 
 

@@ -1,7 +1,5 @@
 package ai.lucidtech.las.sdk;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.UUID;
@@ -23,7 +21,7 @@ import org.json.JSONObject;
 import java.util.*;
 
 
-public class ListDocumentsOptions extends OptionalListResource {
+public class ListDocumentsOptions extends OptionalListResource<ListDocumentsOptions> {
     private String batchId;
     private String consentId;
 
@@ -43,17 +41,6 @@ public class ListDocumentsOptions extends OptionalListResource {
         this.batchId = batchId;
         return this;
     }
-
-    public ListDocumentsOptions setMaxResults(int maxResults){
-        this.maxResults = maxResults;
-        return this;
-    }
-
-    public ListDocumentsOptions setNextToken(String nextToken){
-        this.nextToken = nextToken;
-        return this;
-    }
-
 
     public List<NameValuePair> toList(){
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();

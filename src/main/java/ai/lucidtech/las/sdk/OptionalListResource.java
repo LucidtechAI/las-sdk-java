@@ -23,7 +23,7 @@ import org.json.JSONObject;
 import java.util.*;
 
 
-public class OptionalListResource {
+public class OptionalListResource<T> {
     protected int maxResults;
     protected String nextToken;
 
@@ -46,9 +46,9 @@ public class OptionalListResource {
         this.nextToken = nextToken;
     }
 
-    public OptionalListResource setMaxResults(int maxResults){
+    public T setMaxResults(int maxResults){
         this.maxResults = maxResults;
-        return this;
+        return (T) this;
     }
 
     public OptionalListResource setNextToken(String nextToken){
