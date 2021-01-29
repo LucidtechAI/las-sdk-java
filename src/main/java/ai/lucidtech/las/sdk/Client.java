@@ -78,17 +78,15 @@ public class Client {
         return this.createAsset(content, new OptionalNameAndDescription());
     }
 
-    public JSONObject listAssets(
-      ListResourcesOptions options
-    ) throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listAssets(ListAssetsOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/assets", options.toList());
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
 
     public JSONObject listAssets() throws IOException, APIException, MissingAccessTokenException {
-
-        return this.listAssets(new ListResourcesOptions());
+        return this.listAssets(new ListAssetsOptions());
     }
 
     public JSONObject getAsset(String assetId) throws IOException, APIException, MissingAccessTokenException {
@@ -142,31 +140,21 @@ public class Client {
 
     /**
      *
-     * @return All documents from REST API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject listDocuments() throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents");
-        String response = this.executeRequest(request);
-        return new JSONObject(response);
-    }
-
-    /**
-     *
      * @param options Available options are:
      * @return documents from REST API filtered using the passed options
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject listDocuments(
-        ListDocumentsOptions options
-    ) throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listDocuments(ListDocumentsOptions options)
+        throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents", options.toList());
         String response = this.executeRequest(request);
         return new JSONObject(response);
+    }
+
+    public JSONObject listDocuments() throws IOException, APIException, MissingAccessTokenException {
+        return this.listDocuments(new ListDocumentsOptions());
     }
 
     /**
@@ -444,13 +432,11 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listPredictions() throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions");
-        String response = this.executeRequest(request);
-        return this.listPredictions(new ListResourcesOptions());
+        return this.listPredictions(new ListPredictionsOptions());
     }
 
     public JSONObject listPredictions(
-        ListResourcesOptions options
+        ListPredictionsOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions", options.toList());
         String response = this.executeRequest(request);
@@ -481,6 +467,13 @@ public class Client {
 
     public JSONObject listSecrets() throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/secrets");
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    public JSONObject listSecrets(ListSecretsOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/secrets", options.toList());
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
