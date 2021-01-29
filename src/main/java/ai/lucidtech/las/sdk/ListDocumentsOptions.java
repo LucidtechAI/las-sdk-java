@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ListDocumentsOptions extends OptionalListResource<ListDocumentsOptions> {
+public class ListDocumentsOptions extends ListResourcesOptions<ListDocumentsOptions> {
     private String batchId;
     private String consentId;
 

@@ -79,7 +79,7 @@ public class Client {
     }
 
     public JSONObject listAssets(
-      OptionalListResource options
+      ListResourcesOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/assets", options.toList());
         String response = this.executeRequest(request);
@@ -88,7 +88,7 @@ public class Client {
 
     public JSONObject listAssets() throws IOException, APIException, MissingAccessTokenException {
 
-        return this.listAssets(new OptionalListResource());
+        return this.listAssets(new ListResourcesOptions());
     }
 
     public JSONObject getAsset(String assetId) throws IOException, APIException, MissingAccessTokenException {
@@ -446,11 +446,11 @@ public class Client {
     public JSONObject listPredictions() throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions");
         String response = this.executeRequest(request);
-        return this.listPredictions(new OptionalListResource());
+        return this.listPredictions(new ListResourcesOptions());
     }
 
     public JSONObject listPredictions(
-        OptionalListResource options
+        ListResourcesOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions", options.toList());
         String response = this.executeRequest(request);

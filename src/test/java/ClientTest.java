@@ -5,7 +5,7 @@ import ai.lucidtech.las.sdk.MissingCredentialsException;
 import ai.lucidtech.las.sdk.MissingAccessTokenException;
 import ai.lucidtech.las.sdk.APIException;
 import ai.lucidtech.las.sdk.OptionalNameAndDescription;
-import ai.lucidtech.las.sdk.OptionalListResource;
+import ai.lucidtech.las.sdk.ListResourcesOptions;
 import ai.lucidtech.las.sdk.ListDocumentsOptions;
 
 import org.apache.http.message.BasicNameValuePair;
@@ -130,7 +130,7 @@ public class ClientTest {
 
     @Test
     public void testListAssetsWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        //OptionalListResource options = new OptionalListResource().setMaxResults(30);
+        //ListResourcesOptions options = new ListResourcesOptions().setMaxResults(30);
         JSONObject response = this.client.listAssets();
         JSONArray assets = response.getJSONArray("assets");
         Assert.assertNotNull(assets);

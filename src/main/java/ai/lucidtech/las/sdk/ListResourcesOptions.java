@@ -8,25 +8,25 @@ import java.util.List;
 
 
 
-public class OptionalListResource<T> {
+public class ListResourcesOptions<T> {
     protected int maxResults;
     protected String nextToken;
 
 
-    public OptionalListResource(){
+    public ListResourcesOptions(){
         this.maxResults = 0;
         this.nextToken = null;
     }
 
-    public OptionalListResource(int maxResults){
+    public ListResourcesOptions(int maxResults){
         this(maxResults, null);
     }
 
-    public OptionalListResource(String nextToken){
+    public ListResourcesOptions(String nextToken){
         this(0, nextToken);
     }
 
-    public OptionalListResource(int maxResults, String nextToken){
+    public ListResourcesOptions(int maxResults, String nextToken){
         this.maxResults = maxResults;
         this.nextToken = nextToken;
     }
@@ -36,7 +36,7 @@ public class OptionalListResource<T> {
         return (T) this;
     }
 
-    public OptionalListResource setNextToken(String nextToken){
+    public ListResourcesOptions setNextToken(String nextToken){
         this.nextToken = nextToken;
         return this;
     }
