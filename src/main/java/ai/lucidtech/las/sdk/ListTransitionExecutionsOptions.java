@@ -6,7 +6,7 @@ import org.apache.http.NameValuePair;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
 public class ListTransitionExecutionsOptions extends ListResourcesOptions<ListTransitionExecutionsOptions>, ListSortableOptions<ListTransitionExecutionsOptions>{
     private String executionId;
 
@@ -28,3 +28,4 @@ public class ListTransitionExecutionsOptions extends ListResourcesOptions<ListTr
         return super.addOptions(parameters);
     }
 }
+*/
