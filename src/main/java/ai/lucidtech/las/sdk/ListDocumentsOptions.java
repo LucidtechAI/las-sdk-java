@@ -23,33 +23,33 @@ import org.json.JSONObject;
 import java.util.*;
 
 
-public class ListDocumentParameters extends OptionalListResource {
+public class ListDocumentsOptions extends OptionalListResource {
     private String batchId;
     private String consentId;
 
 
-    public ListDocumentParameters(){
+    public ListDocumentsOptions(){
         super();
         this.batchId = null;
         this.consentId = null;
     }
 
-    public ListDocumentParameters setConsentId(String consentId){
+    public ListDocumentsOptions setConsentId(String consentId){
         this.consentId = consentId;
         return this;
     }
 
-    public ListDocumentParameters setBatchId(String batchId){
+    public ListDocumentsOptions setBatchId(String batchId){
         this.batchId = batchId;
         return this;
     }
 
-    public ListDocumentParameters setMaxResults(int maxResults){
+    public ListDocumentsOptions setMaxResults(int maxResults){
         this.maxResults = maxResults;
         return this;
     }
 
-    public ListDocumentParameters setNextToken(String nextToken){
+    public ListDocumentsOptions setNextToken(String nextToken){
         this.nextToken = nextToken;
         return this;
     }

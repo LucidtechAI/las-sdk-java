@@ -6,7 +6,7 @@ import ai.lucidtech.las.sdk.MissingAccessTokenException;
 import ai.lucidtech.las.sdk.APIException;
 import ai.lucidtech.las.sdk.OptionalNameAndDescription;
 import ai.lucidtech.las.sdk.OptionalListResource;
-import ai.lucidtech.las.sdk.ListDocumentParameters;
+import ai.lucidtech.las.sdk.ListDocumentsOptions;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -280,7 +280,7 @@ public class ClientTest {
 
     @Test
     public void testListFilteredDocuments() throws IOException, APIException, MissingAccessTokenException {
-        ListDocumentParameters options = new ListDocumentParameters().setMaxResults(3).setBatchId(this.batchId);
+        ListDocumentsOptions options = new ListDocumentsOptions().setMaxResults(3).setBatchId(this.batchId);
         JSONObject response = this.client.listDocuments(options);
         JSONArray documents = response.getJSONArray("documents");
         Assert.assertNotNull(documents);
