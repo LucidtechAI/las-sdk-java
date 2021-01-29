@@ -43,13 +43,7 @@ public class ListResourcesOptions<T> {
 
     public List<NameValuePair> toList(){
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        if( this.maxResults != 0){
-            parameters.add(new BasicNameValuePair("maxResults", Integer.toString(this.maxResults)));
-        }
-        if(this.nextToken != null){
-            parameters.add(new BasicNameValuePair("nextToken", this.nextToken));
-        }
-        return parameters;
+        return this.addOptions(parameters);
     }
 
     public List<NameValuePair> addOptions(List<NameValuePair> parameters){
