@@ -1,7 +1,6 @@
 package lucidtech.test;
 
-import ai.lucidtech.las.sdk.Client;
-import ai.lucidtech.las.sdk.ListAssetsOptions;
+import ai.lucidtech.las.sdk.*;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -10,6 +9,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Ignore;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 
 import java.util.Properties;
 import java.util.List;
@@ -48,14 +51,16 @@ public class AssetsTest {
 
     @Test
     public void testCreateAssetWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject asset = this.client.createAsset(this.service.content());
+        CreateAssetOptions options = new CreateAssetOptions().setName("foo").setDescription("bar");
+        JSONObject asset = this.client.createAsset(this.service.content(), options);
         this.assertAsset(asset);
     }
 
     @Test
     public void testCreateAssetWithInputStreamAndOptions() throws IOException, APIException, MissingAccessTokenException {
         InputStream input = new ByteArrayInputStream(this.service.content());
-        JSONObject asset = this.client.createAsset(input);
+        CreateAssetOptions options = new CreateAssetOptions().setName("foo").setDescription("bar");
+        JSONObject asset = this.client.createAsset(input, options);
         this.assertAsset(asset);
 
     }
