@@ -38,4 +38,9 @@ public class NameAndDescriptionOptions<T> {
         }
         return body;
     }
+
+    public JSONObject toJson(){
+        JSONObject body = new JSONObject();
+        return this.addOptions(body);
+    }
 }

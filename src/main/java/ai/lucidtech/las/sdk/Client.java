@@ -97,13 +97,9 @@ public class Client {
 
     public JSONObject updateAsset(
         String assetId,
-        Map<String, Object> options
+        UpdateAssetOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject body = new JSONObject();
-        for (Map.Entry<String, Object> option: options.entrySet()) {
-            body.put(option.getKey(), option.getValue());
-        }
-        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/assets/" + assetId, body);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/assets/" + assetId, options.toJson());
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
