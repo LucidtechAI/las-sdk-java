@@ -11,7 +11,6 @@ public class ListDocumentsOptions extends ListResourcesOptions<ListDocumentsOpti
     private String batchId;
     private String consentId;
 
-
     public ListDocumentsOptions(){
         super();
         this.batchId = null;
@@ -36,7 +35,6 @@ public class ListDocumentsOptions extends ListResourcesOptions<ListDocumentsOpti
         if(this.consentId != null){
             parameters.add(new BasicNameValuePair("consentId", this.consentId));
         }
-
         return super.addOptions(parameters);
     }
 }

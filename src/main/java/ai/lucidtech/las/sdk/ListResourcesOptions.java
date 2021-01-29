@@ -36,15 +36,15 @@ public class ListResourcesOptions<T> {
         return (T) this;
     }
 
-    public ListResourcesOptions setNextToken(String nextToken){
+    public T setNextToken(String nextToken){
         this.nextToken = nextToken;
-        return this;
+        return (T) this;
     }
 
     public List<NameValuePair> toList(){
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
         if( this.maxResults != 0){
-            parameters.add(new BasicNameValuePair("maxResults", new Integer(this.maxResults).toString()));
+            parameters.add(new BasicNameValuePair("maxResults", Integer.toString(this.maxResults)));
         }
         if(this.nextToken != null){
             parameters.add(new BasicNameValuePair("nextToken", this.nextToken));
@@ -54,7 +54,7 @@ public class ListResourcesOptions<T> {
 
     public List<NameValuePair> addOptions(List<NameValuePair> parameters){
         if( this.maxResults != 0){
-            parameters.add(new BasicNameValuePair("maxResults", new Integer(this.maxResults).toString()));
+            parameters.add(new BasicNameValuePair("maxResults", Integer.toString(this.maxResults)));
         }
         if(this.nextToken != null){
             parameters.add(new BasicNameValuePair("nextToken", this.nextToken));
