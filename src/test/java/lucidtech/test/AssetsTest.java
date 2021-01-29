@@ -1,6 +1,7 @@
 package lucidtech.test;
 
-import ai.lucidtech.las.sdk.*;
+import ai.lucidtech.las.sdk.Client;
+import ai.lucidtech.las.sdk.ListAssetsOptions;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -12,21 +13,12 @@ import org.junit.Ignore;
 
 import java.util.Properties;
 import java.util.List;
-import java.util.UUID;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 
 import org.apache.http.NameValuePair;
-import java.io.FileInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
-import java.util.stream.StreamSupport;
 
 
 public class AssetsTest {
@@ -34,19 +26,12 @@ public class AssetsTest {
     private Client client;
     private Service service;
 
-    private byte[] content;
-
     @Before
     public void setUp() throws MissingCredentialsException {
         this.service = new Service();
-
         Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
-
         this.client = new Client(credentials);
-        this.content = "0xe04fd020ea3a6910a2d808002b30309d".getBytes();
-
     }
-
 
     private void assertAsset(JSONObject asset) throws IOException {
         Assert.assertTrue(asset.has("assetId"));
@@ -57,26 +42,26 @@ public class AssetsTest {
 
     @Test
     public void testCreateAsset() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject asset = this.client.createAsset(this.content);
+        JSONObject asset = this.client.createAsset(this.service.content());
         this.assertAsset(asset);
     }
 
     @Test
     public void testCreateAssetWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject asset = this.client.createAsset(this.content);
+        JSONObject asset = this.client.createAsset(this.service.content());
         this.assertAsset(asset);
     }
 
     @Test
     public void testCreateAssetWithInputStreamAndOptions() throws IOException, APIException, MissingAccessTokenException {
-        InputStream input = new ByteArrayInputStream(this.content);
+        InputStream input = new ByteArrayInputStream(this.service.content());
         JSONObject asset = this.client.createAsset(input);
         this.assertAsset(asset);
 
     }
     @Test
     public void testCreateAssetWithInputStream() throws IOException, APIException, MissingAccessTokenException {
-        InputStream input = new ByteArrayInputStream(this.content);
+        InputStream input = new ByteArrayInputStream(this.service.content());
         JSONObject asset = this.client.createAsset(input);
         this.assertAsset(asset);
     }
@@ -108,20 +93,5 @@ public class AssetsTest {
         options.put("name", "foo");
         JSONObject asset = this.client.updateAsset(this.service.assetId(), options);
         this.assertAsset(asset);
-    }
-
-    private String getResourcePath(String relativePath) {
-        System.out.println("relativePath : " + relativePath);
-        return getClass().getResource(relativePath).getFile();
-    }
-
-    private String[] toArray(String s) {
-        return Arrays.stream(s.split(",")).map(String::trim).toArray(String[]::new); }
-
-    private JSONObject createField(String label, String value) {
-        JSONObject field = new JSONObject();
-        field.put("label", label);
-        field.put("value", value);
-        return field;
     }
 }

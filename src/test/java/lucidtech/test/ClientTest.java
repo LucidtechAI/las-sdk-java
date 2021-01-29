@@ -1,4 +1,5 @@
-/*package lucidtech.test;
+/*
+package lucidtech.test;
 
 import ai.lucidtech.las.sdk.*;
 
@@ -30,21 +31,9 @@ import java.util.stream.StreamSupport;
 
 
 public class ClientTest {
-    private static final String CONFIG_RELATIVE_PATH = "config.properties.sample";
-
     private Client client;
     private Properties config;
 
-    private String assetId;
-    private String batchId;
-    private String consentId;
-    private String userId;
-    private String logId;
-    private String documentId;
-    private String modelId;
-    private String secretId;
-    private List<JSONObject> groundTruth;
-    private byte[] content;
 
     @Before
     public void setUp() throws MissingCredentialsException {

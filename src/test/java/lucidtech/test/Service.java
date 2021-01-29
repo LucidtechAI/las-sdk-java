@@ -2,31 +2,8 @@ package lucidtech.test;
 
 import ai.lucidtech.las.sdk.*;
 
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.Ignore;
-
-import java.util.Properties;
-import java.util.List;
 import java.util.UUID;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-
-import org.apache.http.NameValuePair;
-import java.io.FileInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
-import java.util.stream.StreamSupport;
+import java.util.Random;
 
 
 public class Service {
@@ -81,5 +58,11 @@ public class Service {
 
     public String workflowExecutionId(){
         return  "las:workflowExecution:" + this.hexUuid();
+    }
+
+    public byte[] content(){
+        byte[] b = new byte[20];
+        new Random().nextBytes(b);
+        return b;
     }
 }
