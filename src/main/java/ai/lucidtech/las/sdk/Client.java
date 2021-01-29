@@ -362,10 +362,14 @@ public class Client {
         return new JSONObject(response);
     }
 
-    public JSONObject listModels() throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/models");
+    public JSONObject listModels(ListModelsOptions options) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/models", options.toList());
         String response = this.executeRequest(request);
         return new JSONObject(response);
+    }
+
+    public JSONObject listModels() throws IOException, APIException, MissingAccessTokenException {
+        return listModels(new ListModelsOptions());
     }
 
     /**
@@ -435,9 +439,8 @@ public class Client {
         return this.listPredictions(new ListPredictionsOptions());
     }
 
-    public JSONObject listPredictions(
-        ListPredictionsOptions options
-    ) throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listPredictions(ListPredictionsOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions", options.toList());
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -466,9 +469,7 @@ public class Client {
     }
 
     public JSONObject listSecrets() throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/secrets");
-        String response = this.executeRequest(request);
-        return new JSONObject(response);
+        return this.listSecrets(new ListSecretsOptions());
     }
 
     public JSONObject listSecrets(ListSecretsOptions options)
@@ -491,6 +492,17 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    public JSONObject listTransitions() throws IOException, APIException, MissingAccessTokenException {
+        return this.listTransitions(new ListTransitionsOptions());
+    }
+
+    public JSONObject listTransitions(ListTransitionsOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/transitions", options.toList());
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
     /**
      * Get information about user, calls the GET /users/{user_id} endpoint.
      * @param userId The user_id to get consent hash for
@@ -501,6 +513,17 @@ public class Client {
      */
     public JSONObject getUser(String userId) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/users/" + userId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    public JSONObject listWorkflows() throws IOException, APIException, MissingAccessTokenException {
+        return this.listWorkflows(new ListWorkflowsOptions());
+    }
+
+    public JSONObject listWorkflows(ListWorkflowsOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/workflows", options.toList());
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
