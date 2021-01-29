@@ -1,3 +1,5 @@
+package lucidtech.test;
+
 import ai.lucidtech.las.sdk.*;
 
 import org.apache.http.message.BasicNameValuePair;
@@ -122,7 +124,7 @@ public class ClientTest {
 
     @Test
     public void testListAssetsWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        //ListResourcesOptions options = new ListResourcesOptions().setMaxResults(30);
+        ListAssetsOptions options = new ListAssetsOptions().setMaxResults(30).setNextToken("foo");
         JSONObject response = this.client.listAssets();
         JSONArray assets = response.getJSONArray("assets");
         Assert.assertNotNull(assets);
@@ -284,13 +286,6 @@ public class ClientTest {
     }
 
     @Test
-    public void testListModels() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject response = this.client.listModels();
-        JSONArray models = response.getJSONArray("models");
-        Assert.assertNotNull(models);
-    }
-
-    @Test
     public void testListPredictions() throws IOException, APIException, MissingAccessTokenException {
         JSONObject response = this.client.listPredictions();
         JSONArray predictions = response.getJSONArray("predictions");
@@ -357,7 +352,9 @@ public class ClientTest {
 
     private String getResourcePath(String relativePath) {
         System.out.println("relativePath : " + relativePath);
-        return getClass().getResource(relativePath).getFile();
+        System.out.println("class: " + getClass());
+        System.out.println("resource: " + ClientTest.class.getResource(relativePath));
+        return ClientTest.class.getResource(relativePath).getFile();
     }
 
     private String[] toArray(String s) {
