@@ -360,7 +360,8 @@ public class Client {
         return new JSONObject(response);
     }
 
-    public JSONObject listModels(ListModelsOptions options) throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listModels(ListModelsOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/models", options.toList());
         String response = this.executeRequest(request);
         return new JSONObject(response);
