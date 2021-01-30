@@ -384,12 +384,15 @@ public class Client {
      */
     public JSONObject createPrediction(
         String documentId,
-        String modelId
+        String modelId,
+        CreatePredictionOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("documentId", documentId);
         jsonBody.put("modelId", modelId);
-
+        if (options != null) {
+            jsonBody = options.addOptions(jsonBody);
+        }
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", jsonBody);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -411,20 +414,9 @@ public class Client {
      */
     public JSONObject createPrediction(
         String documentId,
-        String modelId,
-        Map<String, Object> options
+        String modelId
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("documentId", documentId);
-        jsonBody.put("modelId", modelId);
-
-        for (Map.Entry<String, Object> option: options.entrySet()) {
-            jsonBody.put(option.getKey(), option.getValue());
-        }
-
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", jsonBody);
-        String jsonResponse = this.executeRequest(request);
-        return new JSONObject(jsonResponse);
+        return this.createPrediction(documentId, modelId, new CreatePredictionOptions());
     }
 
     /**
