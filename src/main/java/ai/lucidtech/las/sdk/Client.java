@@ -112,12 +112,14 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject createBatch(String description) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject body = new JSONObject();
-        body.put("description", description);
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
+    public JSONObject createBatch(CreateBatchOptions options) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", options.toJson());
         String response = this.executeRequest(request);
         return new JSONObject(response);
+    }
+
+    public JSONObject createBatch() throws IOException, APIException, MissingAccessTokenException {
+        return this.createBatch(new CreateBatchOptions());
     }
 
     /**
