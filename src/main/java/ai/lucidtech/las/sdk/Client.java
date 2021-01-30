@@ -486,6 +486,28 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    public JSONObject createTransition(
+        String transitionType,
+        CreateTransitionOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("transitionType", transitionType);
+
+        if (options != null) {
+            jsonBody = options.addOptions(jsonBody);
+        }
+
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/transitions", jsonBody);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    public JSONObject createTransition(
+        String transitionType
+    ) throws IOException, APIException, MissingAccessTokenException {
+        return this.createTransition(transitionType, new CreateTransitionOptions());
+    }
+
     public JSONObject listTransitions() throws IOException, APIException, MissingAccessTokenException {
         return this.listTransitions(new ListTransitionsOptions());
     }

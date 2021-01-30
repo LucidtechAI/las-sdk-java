@@ -61,6 +61,12 @@ public class Service {
         return  "las:workflowExecution:" + this.hexUuid();
     }
 
+    public JSONObject schema(){
+        return new JSONObject(){{
+            put("$schema", "https://json-schema.org/draft-04/schema#");
+        }};
+    }
+
     public JSONObject credentials(){
         return new JSONObject(){{
             put("username", hexUuid());
