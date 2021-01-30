@@ -531,6 +531,14 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    public JSONObject executeTransition(
+        String transitionId
+    ) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/transitions/" + transitionId + "/executions");
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
     /**
      * Get information about user, calls the GET /users/{user_id} endpoint.
      * @param userId The user_id to get consent hash for

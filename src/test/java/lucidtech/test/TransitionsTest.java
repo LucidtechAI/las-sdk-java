@@ -41,6 +41,17 @@ public class TransitionsTest {
         this.client = new Client(credentials);
     }
 
+    private void assertTransitionExecution(JSONObject execution) throws IOException {
+        Assert.assertTrue(execution.has("transitionId"));
+        Assert.assertTrue(execution.has("executionId"));
+        Assert.assertTrue(execution.has("status"));
+        Assert.assertTrue(execution.has("input"));
+        Assert.assertTrue(execution.has("completedBy"));
+        Assert.assertTrue(execution.has("startTime"));
+        Assert.assertTrue(execution.has("endTime"));
+        Assert.assertTrue(execution.has("logId"));
+    }
+
     private void assertTransition(JSONObject transition) throws IOException {
         Assert.assertTrue(transition.has("transitionId"));
         Assert.assertTrue(transition.has("inputJsonSchema"));
@@ -122,6 +133,12 @@ public class TransitionsTest {
         UpdateTransitionOptions options = new UpdateTransitionOptions().setName("foo");
         JSONObject transition = this.client.updateTransition(this.service.transitionId(), options);
         this.assertTransition(transition);
+    }
+
+    @Test
+    public void testExecuteTransition() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject execution = this.client.executeTransition(this.service.transitionId());
+        //this.assertTransitionExecution(execution);
     }
 
 }
