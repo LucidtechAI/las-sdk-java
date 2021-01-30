@@ -444,24 +444,31 @@ public class Client {
 
 
     public JSONObject createSecret(
-        Map<String, String> data,
-        Map<String, Object> options
+        JSONObject data,
+        CreateSecretOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject jsonBody = new JSONObject(){{ put("data", data); }};
-
         if (options != null) {
-            for (Map.Entry<String, Object> option: options.entrySet()) {
-                jsonBody.put(option.getKey(), option.getValue());
-            }
+            jsonBody = options.addOptions(jsonBody);
         }
-
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/secrets", jsonBody);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
 
-    public JSONObject createSecret(Map<String, String> data) throws IOException, APIException, MissingAccessTokenException {
-        return this.createSecret(data, new HashMap<String, Object>());
+    public JSONObject createSecret(Map<String, String> data, CreateSecretOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
+        return this.createSecret(new JSONObject(data), new CreateSecretOptions());
+    }
+
+    public JSONObject createSecret(Map<String, String> data)
+    throws IOException, APIException, MissingAccessTokenException {
+        return this.createSecret(data, new CreateSecretOptions());
+    }
+
+    public JSONObject createSecret(JSONObject data)
+    throws IOException, APIException, MissingAccessTokenException {
+        return this.createSecret(data, new CreateSecretOptions());
     }
 
     public JSONObject listSecrets() throws IOException, APIException, MissingAccessTokenException {
@@ -477,13 +484,9 @@ public class Client {
 
     public JSONObject updateSecret(
         String secretId,
-        Map<String, Object> options
+        UpdateSecretOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject body = new JSONObject();
-        for (Map.Entry<String, Object> option: options.entrySet()) {
-            body.put(option.getKey(), option.getValue());
-        }
-        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/secrets/" + secretId, body);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/secrets/" + secretId, options.toJson());
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }

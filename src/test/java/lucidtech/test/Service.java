@@ -5,6 +5,7 @@ import ai.lucidtech.las.sdk.*;
 import java.util.UUID;
 import java.util.Random;
 
+import org.json.JSONObject;
 
 public class Service {
 
@@ -58,6 +59,14 @@ public class Service {
 
     public String workflowExecutionId(){
         return  "las:workflowExecution:" + this.hexUuid();
+    }
+
+    public JSONObject credentials(){
+        JSONObject credentials = new JSONObject(){{
+            put("username", hexUuid());
+            put("password", hexUuid());
+        }};
+        return credentials;
     }
 
     public byte[] content(){

@@ -8,30 +8,30 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.IOException;
-import java.util.Base64;
+import java.util.Map;
 
 
-public class UpdateAssetOptions extends NameAndDescriptionOptions<UpdateAssetOptions> {
-    private byte[] content;
+public class UpdateSecretOptions extends NameAndDescriptionOptions<UpdateSecretOptions> {
+    private JSONObject data;
 
-    public UpdateAssetOptions(){
+    public UpdateSecretOptions(){
         super();
-        this.content = null;
+        this.data = null;
     }
 
-    public UpdateAssetOptions setContent(byte[] content){
-        this.content = content;
+    public UpdateSecretOptions setData(JSONObject data){
+        this.data = data;
         return this;
     }
 
-    public UpdateAssetOptions setContent(InputStream content) throws IOException {
-        this.content = IOUtils.toByteArray(content);
+    public UpdateSecretOptions setData(Map<String, String> data){
+        this.data = new JSONObject(data);
         return this;
     }
 
     public JSONObject addOptions(JSONObject body){
-        if (this.content != null) {
-            body.put("content", Base64.getEncoder().encodeToString(this.content));
+        if (this.data != null) {
+            body.put("data", this.data);
         }
         return super.addOptions(body);
     }
