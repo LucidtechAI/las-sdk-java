@@ -106,15 +106,22 @@ public class TransitionsTest {
         Assert.assertNotNull(transitions);
     }
 
-/*
     @Test
     public void testUpdateTransition() throws IOException, APIException, MissingAccessTokenException {
         UpdateTransitionOptions options = new UpdateTransitionOptions()
         .setName("foo")
         .setDescription("bar")
-        .setContent(this.service.content());
+        .setInSchema(this.service.schema())
+        .setOutSchema(this.service.schema());
         JSONObject transition = this.client.updateTransition(this.service.transitionId(), options);
         this.assertTransition(transition);
     }
-    */
+
+    @Test
+    public void testUpdateTransitionWithOptions() throws IOException, APIException, MissingAccessTokenException {
+        UpdateTransitionOptions options = new UpdateTransitionOptions().setName("foo");
+        JSONObject transition = this.client.updateTransition(this.service.transitionId(), options);
+        this.assertTransition(transition);
+    }
+
 }
