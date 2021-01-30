@@ -1,8 +1,6 @@
 package ai.lucidtech.las.sdk;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.NameValuePair;
 
 import org.json.JSONObject;
 

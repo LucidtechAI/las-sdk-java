@@ -2,7 +2,6 @@ package lucidtech.test;
 
 import ai.lucidtech.las.sdk.*;
 
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -10,18 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Ignore;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.IOException;
-
-import java.util.Properties;
-import java.util.List;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-
-import org.apache.http.NameValuePair;
 
 
 public class SecretsTest {
@@ -65,7 +53,7 @@ public class SecretsTest {
     @Test
     public void testListSecretsWithOptions() throws IOException, APIException, MissingAccessTokenException {
         ListSecretsOptions options = new ListSecretsOptions().setMaxResults(30).setNextToken("foo");
-        JSONObject response = this.client.listSecrets();
+        JSONObject response = this.client.listSecrets(options);
         JSONArray secrets = response.getJSONArray("secrets");
         Assert.assertNotNull(secrets);
     }

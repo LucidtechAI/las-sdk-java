@@ -2,7 +2,6 @@ package lucidtech.test;
 
 import ai.lucidtech.las.sdk.*;
 
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -13,15 +12,6 @@ import org.junit.Ignore;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
-
-import java.util.Properties;
-import java.util.List;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-
-import org.apache.http.NameValuePair;
 
 
 public class AssetsTest {
@@ -81,7 +71,7 @@ public class AssetsTest {
     @Test
     public void testListAssetsWithOptions() throws IOException, APIException, MissingAccessTokenException {
         ListAssetsOptions options = new ListAssetsOptions().setMaxResults(30).setNextToken("foo");
-        JSONObject response = this.client.listAssets();
+        JSONObject response = this.client.listAssets(options);
         JSONArray assets = response.getJSONArray("assets");
         Assert.assertNotNull(assets);
     }

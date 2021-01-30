@@ -62,11 +62,10 @@ public class Service {
     }
 
     public JSONObject credentials(){
-        JSONObject credentials = new JSONObject(){{
+        return new JSONObject(){{
             put("username", hexUuid());
             put("password", hexUuid());
         }};
-        return credentials;
     }
 
     public byte[] content(){
