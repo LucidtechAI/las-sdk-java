@@ -54,11 +54,11 @@ public class Service {
     }
 
     public String transitionExecutionId(){
-        return  "las:transitionExecution:" + this.hexUuid();
+        return  "las:transition-execution:" + this.hexUuid();
     }
 
     public String workflowExecutionId(){
-        return  "las:workflowExecution:" + this.hexUuid();
+        return  "las:workflow-execution:" + this.hexUuid();
     }
 
     public JSONObject schema(){

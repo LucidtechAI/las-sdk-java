@@ -5,11 +5,11 @@ import org.apache.http.NameValuePair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 
-
-public class ListSortablesOptions<T> {
-    protected String status;
+public class ListSortablesOptions<T> extends ListResourcesOptions<T> {
+    protected List<String> status;
     protected String sortBy;
     protected String order;
 
@@ -21,14 +21,19 @@ public class ListSortablesOptions<T> {
     }
 
     public ListSortablesOptions(String status, String sortBy, String order){
-        this.status = status;
+        this.status = Arrays.asList(status);
         this.sortBy = sortBy;
         this.order = order;
 
     }
 
-    public T setStatus(String status){
+    public T setStatus(List<String> status){
         this.status = status;
+        return (T) this;
+    }
+
+    public T setStatus(String status){
+        this.status = Arrays.asList(status);
         return (T) this;
     }
 
@@ -49,7 +54,9 @@ public class ListSortablesOptions<T> {
 
     public List<NameValuePair> addOptions(List<NameValuePair> parameters){
         if( this.status != null){
-            parameters.add(new BasicNameValuePair("status", this.status));
+            for (String s : this.status) {
+                parameters.add(new BasicNameValuePair("status", s));
+            }
         }
         if( this.sortBy != null){
             parameters.add(new BasicNameValuePair("sortBy", this.sortBy));
@@ -57,6 +64,6 @@ public class ListSortablesOptions<T> {
         if(this.order != null){
             parameters.add(new BasicNameValuePair("order", this.order));
         }
-        return parameters;
+        return super.addOptions(parameters);
     }
 }

@@ -534,9 +534,18 @@ public class Client {
     public JSONObject executeTransition(
         String transitionId
     ) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/transitions/" + transitionId + "/executions");
+        String path = "/transitions/" + transitionId + "/executions";
+        HttpUriRequest request = this.createAuthorizedRequest("POST", path, new JSONObject());
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
+    }
+
+    public JSONObject listTransitionExecutions(String transitionId, ListTransitionExecutionsOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
+        String path = "/transitions/" + transitionId + "/executions";
+        HttpUriRequest request = this.createAuthorizedRequest("GET", path, options.toList());
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
     }
 
     /**

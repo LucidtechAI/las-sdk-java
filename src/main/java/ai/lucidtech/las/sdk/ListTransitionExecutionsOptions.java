@@ -5,10 +5,12 @@ import org.apache.http.NameValuePair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
-/*
-public class ListTransitionExecutionsOptions extends ListResourcesOptions<ListTransitionExecutionsOptions>, ListSortableOptions<ListTransitionExecutionsOptions>{
-    private String executionId;
+
+public class ListTransitionExecutionsOptions extends ListSortablesOptions<ListTransitionExecutionsOptions> {
+    //private List<String> status;
+    private List<String> executionId;
 
     public ListTransitionExecutionsOptions(){
         super();
@@ -20,12 +22,18 @@ public class ListTransitionExecutionsOptions extends ListResourcesOptions<ListTr
         return this;
     }
 
+    public ListTransitionExecutionsOptions setExecutionId(String executionId){
+        this.executionId = Arrays.asList(executionId);
+        return this;
+    }
+
     public List<NameValuePair> toList(){
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
         if( this.executionId != null){
-            parameters.add(new BasicNameValuePair("executionId", this.executionId));
+            for (String e : this.executionId) {
+                parameters.add(new BasicNameValuePair("executionId", e));
+            }
         }
         return super.addOptions(parameters);
     }
 }
-*/

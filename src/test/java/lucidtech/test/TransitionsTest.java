@@ -12,6 +12,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
+import java.util.Arrays;
+import java.util.List;
 
 public class TransitionsTest {
 
@@ -138,7 +140,22 @@ public class TransitionsTest {
     @Test
     public void testExecuteTransition() throws IOException, APIException, MissingAccessTokenException {
         JSONObject execution = this.client.executeTransition(this.service.transitionId());
-        //this.assertTransitionExecution(execution);
+        this.assertTransitionExecution(execution);
+    }
+
+    @Test
+    public void testListTransitionExecutionsWithOptions() throws IOException, APIException, MissingAccessTokenException {
+        List<String> status = Arrays.asList("succeeded");
+        ListTransitionExecutionsOptions options = new ListTransitionExecutionsOptions()
+        .setMaxResults(30)
+        .setNextToken("foo")
+        .setStatus(status)
+        .setExecutionId(this.service.transitionExecutionId())
+        .setSortBy("endTime")
+        .setOrder("ascending");
+        JSONObject response = this.client.listTransitionExecutions(this.service.transitionId(), options);
+        JSONArray executions = response.getJSONArray("executions");
+        Assert.assertNotNull(executions);
     }
 
 }
