@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 
 public class ListTransitionExecutionsOptions extends ListSortablesOptions<ListTransitionExecutionsOptions> {
-    //private List<String> status;
     private List<String> executionId;
 
     public ListTransitionExecutionsOptions(){

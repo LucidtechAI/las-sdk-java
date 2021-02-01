@@ -609,15 +609,6 @@ public class Client {
         return this.listUsers(new ListUsersOptions());
     }
 
-    public JSONObject updateUser(
-        String userId,
-        UpdateUserOptions options
-    ) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/users/" + userId, options.toJson());
-        String jsonResponse = this.executeRequest(request);
-        return new JSONObject(jsonResponse);
-    }
-
     /**
      * Get information about user, calls the GET /users/{user_id} endpoint.
      * @param userId The user_id to get consent hash for
@@ -632,6 +623,37 @@ public class Client {
         return new JSONObject(response);
     }
 
+    public JSONObject updateUser(
+        String userId,
+        UpdateUserOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/users/" + userId, options.toJson());
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    public JSONObject createWorkflow(
+        JSONObject specification,
+        CreateWorkflowOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("specification", specification);
+
+        if (options != null) {
+            jsonBody = options.addOptions(jsonBody);
+        }
+
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/workflows", jsonBody);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    public JSONObject createWorkflow(
+        JSONObject specification
+    ) throws IOException, APIException, MissingAccessTokenException {
+        return this.createWorkflow(specification, new CreateWorkflowOptions());
+    }
+
     public JSONObject listWorkflows() throws IOException, APIException, MissingAccessTokenException {
         return this.listWorkflows(new ListWorkflowsOptions());
     }
@@ -639,6 +661,55 @@ public class Client {
     public JSONObject listWorkflows(ListWorkflowsOptions options)
     throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/workflows", options.toList());
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    public JSONObject updateWorkflow(
+        String workflowId,
+        UpdateWorkflowOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest(
+            "PATCH",
+            "/workflows/" + workflowId, options.toJson()
+        );
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    public JSONObject executeWorkflow(
+        String workflowId,
+        JSONObject content
+    ) throws IOException, APIException, MissingAccessTokenException {
+        String path = "/workflows/" + workflowId + "/executions";
+        HttpUriRequest request = this.createAuthorizedRequest("POST", path, content);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    public JSONObject deleteWorkflow(String workflowId) throws IOException, APIException, MissingAccessTokenException {
+        String path = "/workflows/" + workflowId;
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", path);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    public JSONObject listWorkflowExecutions(String workflowId, ListWorkflowExecutionsOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
+        String path = "/workflows/" + workflowId + "/executions";
+        HttpUriRequest request = this.createAuthorizedRequest("GET", path, options.toList());
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    public JSONObject listWorkflowExecutions(String workflowId)
+    throws IOException, APIException, MissingAccessTokenException {
+        return this.listWorkflowExecutions(workflowId, new ListWorkflowExecutionsOptions());
+    }
+
+    public JSONObject deleteWorkflowExecution(String workflowId, String executionId) throws IOException, APIException, MissingAccessTokenException {
+        String path = "/workflows/" + workflowId + "/executions/" + executionId;
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", path);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
