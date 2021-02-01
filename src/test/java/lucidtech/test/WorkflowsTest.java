@@ -16,8 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 
 
-import org.powermock.api.mockito.PowerMockito;
-
 public class WorkflowsTest extends ClientTest {
 
     private JSONObject specification(){

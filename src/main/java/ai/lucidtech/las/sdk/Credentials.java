@@ -52,8 +52,8 @@ public class Credentials {
         this.apiKey = apiKey;
         this.authEndpoint = authEndpoint;
         this.apiEndpoint = apiEndpoint;
-        this.accessToken = UUID.randomUUID().toString().replace("-", "");
-        this.expires = 1834567890;
+        this.accessToken = null;
+        this.expires = 0;
     }
 
     /**
