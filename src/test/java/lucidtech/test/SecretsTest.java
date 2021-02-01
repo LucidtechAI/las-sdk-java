@@ -11,17 +11,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 
-public class SecretsTest {
-
-    private Client client;
-    private Service service;
-
-    @Before
-    public void setUp() throws MissingCredentialsException {
-        this.service = new Service();
-        Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
-        this.client = new Client(credentials);
-    }
+public class SecretsTest extends ClientTest {
 
     private void assertSecret(JSONObject secret) throws IOException {
         Assert.assertTrue(secret.has("secretId"));

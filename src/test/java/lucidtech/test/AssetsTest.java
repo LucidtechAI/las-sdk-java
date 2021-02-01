@@ -13,17 +13,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 
-public class AssetsTest {
-
-    private Client client;
-    private Service service;
-
-    @Before
-    public void setUp() throws MissingCredentialsException {
-        this.service = new Service();
-        Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
-        this.client = new Client(credentials);
-    }
+public class AssetsTest extends ClientTest {
 
     private void assertAsset(JSONObject asset) throws IOException {
         Assert.assertTrue(asset.has("assetId"));

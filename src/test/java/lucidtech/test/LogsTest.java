@@ -10,17 +10,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 
-public class LogsTest {
-
-    private Client client;
-    private Service service;
-
-    @Before
-    public void setUp() throws MissingCredentialsException {
-        Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
-        this.client = new Client(credentials);
-        this.service = new Service();
-    }
+public class LogsTest  extends ClientTest {
 
     private void assertLog(JSONObject log) throws IOException {
         Assert.assertTrue(log.has("logId"));

@@ -15,17 +15,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class WorkflowsTest {
 
-    private Client client;
-    private Service service;
+import org.powermock.api.mockito.PowerMockito;
 
-    @Before
-    public void setUp() throws MissingCredentialsException {
-        this.service = new Service();
-        Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
-        this.client = new Client(credentials);
-    }
+public class WorkflowsTest extends ClientTest {
 
     private JSONObject specification(){
         JSONObject specification = new JSONObject();

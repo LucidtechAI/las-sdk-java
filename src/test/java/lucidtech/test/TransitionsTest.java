@@ -15,10 +15,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class TransitionsTest {
-
-    private Client client;
-    private Service service;
+public class TransitionsTest extends ClientTest {
 
     public JSONObject getManualParameters(){
         JSONObject assets = new JSONObject();
@@ -34,13 +31,6 @@ public class TransitionsTest {
         parameters.put("imageUrl", "foo");
         parameters.put("secretId", this.service.secretId());
         return parameters;
-    }
-
-    @Before
-    public void setUp() throws MissingCredentialsException {
-        this.service = new Service();
-        Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
-        this.client = new Client(credentials);
     }
 
     private void assertTransitionExecution(JSONObject execution) throws IOException {
