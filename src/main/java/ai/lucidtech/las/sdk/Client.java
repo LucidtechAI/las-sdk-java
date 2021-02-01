@@ -578,6 +578,26 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    public JSONObject createUser(
+        String email,
+        CreateUserOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject jsonBody = new JSONObject();
+        jsonBody.put("email", email);
+
+        if (options != null) {
+            jsonBody = options.addOptions(jsonBody);
+        }
+
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/users", jsonBody);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    public JSONObject createUser(String email) throws IOException, APIException, MissingAccessTokenException {
+        return this.createUser(email, new CreateUserOptions());
+    }
+
     /**
      * Get information about user, calls the GET /users/{user_id} endpoint.
      * @param userId The user_id to get consent hash for

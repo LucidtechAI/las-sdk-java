@@ -79,4 +79,12 @@ public class Service {
         new Random().nextBytes(b);
         return b;
     }
+
+    public String email(){
+        return "foo@bar.com";
+    }
+
+    public String avatar(){
+        return "jpeg-string";
+    }
 }
