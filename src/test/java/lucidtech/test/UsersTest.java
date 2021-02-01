@@ -53,7 +53,6 @@ public class UsersTest {
 
     }
 
-/*
     @Test
     public void testListUsers() throws IOException, APIException, MissingAccessTokenException {
         JSONObject response = this.client.listUsers();
@@ -69,6 +68,7 @@ public class UsersTest {
         Assert.assertNotNull(users);
     }
 
+/*
     @Test
     public void testGetUser() throws IOException, APIException, MissingAccessTokenException {
         JSONObject user = this.client.getUser(this.service.userId());

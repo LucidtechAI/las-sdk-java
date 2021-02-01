@@ -598,6 +598,17 @@ public class Client {
         return this.createUser(email, new CreateUserOptions());
     }
 
+    public JSONObject listUsers(ListUsersOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/users", options.toList());
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    public JSONObject listUsers() throws IOException, APIException, MissingAccessTokenException {
+        return this.listUsers(new ListUsersOptions());
+    }
+
     /**
      * Get information about user, calls the GET /users/{user_id} endpoint.
      * @param userId The user_id to get consent hash for
