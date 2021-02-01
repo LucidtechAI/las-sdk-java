@@ -165,4 +165,13 @@ public class TransitionsTest {
         Assert.assertNotNull(executions);
     }
 
+    @Test
+    public void testGetTransitionExecution() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject execution = this.client.getTransitionExecution(
+            this.service.transitionId(),
+            this.service.transitionExecutionId()
+        );
+        this.assertTransitionExecution(execution);
+    }
+
 }
