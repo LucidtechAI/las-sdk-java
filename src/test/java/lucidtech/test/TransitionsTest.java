@@ -144,6 +144,13 @@ public class TransitionsTest {
     }
 
     @Test
+    public void testListTransitionExecutions() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject response = this.client.listTransitionExecutions(this.service.transitionId());
+        JSONArray executions = response.getJSONArray("executions");
+        Assert.assertNotNull(executions);
+    }
+
+    @Test
     public void testListTransitionExecutionsWithOptions() throws IOException, APIException, MissingAccessTokenException {
         List<String> status = Arrays.asList("succeeded");
         ListTransitionExecutionsOptions options = new ListTransitionExecutionsOptions()

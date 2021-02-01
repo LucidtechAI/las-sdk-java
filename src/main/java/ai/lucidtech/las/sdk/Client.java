@@ -548,6 +548,11 @@ public class Client {
         return new JSONObject(response);
     }
 
+    public JSONObject listTransitionExecutions(String transitionId)
+    throws IOException, APIException, MissingAccessTokenException {
+        return this.listTransitionExecutions(transitionId, new ListTransitionExecutionsOptions());
+    }
+
     /**
      * Get information about user, calls the GET /users/{user_id} endpoint.
      * @param userId The user_id to get consent hash for
