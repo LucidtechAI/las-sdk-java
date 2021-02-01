@@ -174,4 +174,30 @@ public class TransitionsTest {
         this.assertTransitionExecution(execution);
     }
 
+    @Test
+    public void testUpdateTransitionExecutionSucceeded() throws IOException, APIException, MissingAccessTokenException {
+        UpdateTransitionExecutionOptions options = new UpdateTransitionExecutionOptions()
+        .setOutput(new JSONObject(){{ put("out", "foo"); }});
+        JSONObject execution = this.client.updateTransitionExecution(
+            this.service.transitionId(),
+            this.service.transitionExecutionId(),
+            "succeeded",
+            options
+        );
+        this.assertTransitionExecution(execution);
+    }
+
+    @Test
+    public void testUpdateTransitionExecutionFailed() throws IOException, APIException, MissingAccessTokenException {
+        UpdateTransitionExecutionOptions options = new UpdateTransitionExecutionOptions()
+        .setError(new JSONObject(){{ put("message", "foo"); }});
+        JSONObject execution = this.client.updateTransitionExecution(
+            this.service.transitionId(),
+            this.service.transitionExecutionId(),
+            "failed",
+            options
+        );
+        this.assertTransitionExecution(execution);
+    }
+
 }
