@@ -68,7 +68,6 @@ public class UsersTest {
         Assert.assertNotNull(users);
     }
 
-/*
     @Test
     public void testGetUser() throws IOException, APIException, MissingAccessTokenException {
         JSONObject user = this.client.getUser(this.service.userId());
@@ -79,10 +78,8 @@ public class UsersTest {
     public void testUpdateUser() throws IOException, APIException, MissingAccessTokenException {
         UpdateUserOptions options = new UpdateUserOptions()
         .setName("foo")
-        .setDescription("bar")
-        .setContent(this.service.content());
+        .setAvatar(this.service.avatar());
         JSONObject user = this.client.updateUser(this.service.userId(), options);
         this.assertUser(user);
     }
-   */
 }

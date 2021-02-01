@@ -609,6 +609,15 @@ public class Client {
         return this.listUsers(new ListUsersOptions());
     }
 
+    public JSONObject updateUser(
+        String userId,
+        UpdateUserOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/users/" + userId, options.toJson());
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
     /**
      * Get information about user, calls the GET /users/{user_id} endpoint.
      * @param userId The user_id to get consent hash for
