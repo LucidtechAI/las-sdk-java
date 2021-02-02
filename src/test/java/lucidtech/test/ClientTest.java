@@ -32,26 +32,11 @@ public class ClientTest {
     @Before
     public void setUp() throws MissingCredentialsException, MissingAccessTokenException {
         this.service = new Service();
-
         Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
         Credentials spyCredentials = spy(credentials);
         doReturn("foo").when(spyCredentials).getAccessToken(any(HttpClient.class));
-
         this.client = new Client(spyCredentials);
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        System.out.println("getAccessToken: " + spyCredentials.getAccessToken(httpClient));
 
-    }
-
-    @Test
-    public void testMocking() throws IOException, APIException, MissingAccessTokenException {
-        List<String> list = new ArrayList<String>();
-        List<String> spyList = spy(list);
-
-        Assert.assertEquals(0, spyList.size());
-
-        doReturn(100).when(spyList).size();
-        Assert.assertEquals(100, spyList.size());
     }
 }
 

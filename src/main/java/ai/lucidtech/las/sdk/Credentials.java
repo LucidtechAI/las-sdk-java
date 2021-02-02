@@ -64,8 +64,6 @@ public class Credentials {
     public String getAccessToken(HttpClient httpClient) throws MissingAccessTokenException {
         if (this.accessToken == null || accessToken.isEmpty() || this.expires < Instant.now().getEpochSecond()) {
             try {
-                System.out.println("now: " + Instant.now().getEpochSecond());
-                System.out.println("expires: " + this.expires);
                 JSONObject tokenData = this.getClientCredentials(httpClient);
                 this.accessToken = tokenData.getString("access_token");
                 this.expires = Instant.now().getEpochSecond() + tokenData.getInt("expires_in");
