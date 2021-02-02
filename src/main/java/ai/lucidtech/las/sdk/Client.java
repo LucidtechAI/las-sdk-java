@@ -715,6 +715,7 @@ public class Client {
     }
 
     private String executeRequest(HttpUriRequest request) throws IOException, APIException {
+        System.out.println("request: " + request);
         HttpResponse httpResponse= this.httpClient.execute(request);
         HttpEntity responseEntity = httpResponse.getEntity();
         StatusLine statusLine = httpResponse.getStatusLine();
