@@ -52,7 +52,7 @@ public class WorkflowsTest extends ClientTest {
         CreateWorkflowOptions options = new CreateWorkflowOptions()
         .setName("foo")
         .setDescription("bar")
-        .setErrorConfig(new JSONObject(){{ put("email", service.email()); }});
+        .setErrorConfig(new JSONObject(){{ put("email", Service.email()); }});
 
         JSONObject workflow = this.client.createWorkflow(this.specification(), options);
         this.assertWorkflow(workflow);
@@ -80,7 +80,7 @@ public class WorkflowsTest extends ClientTest {
         UpdateWorkflowOptions options = new UpdateWorkflowOptions()
         .setName("foo")
         .setDescription("bar");
-        JSONObject workflow = this.client.updateWorkflow(this.service.workflowId(), options);
+        JSONObject workflow = this.client.updateWorkflow(Service.workflowId(), options);
         this.assertWorkflow(workflow);
     }
 
@@ -88,19 +88,19 @@ public class WorkflowsTest extends ClientTest {
     public void testExecuteWorkflow() throws IOException, APIException, MissingAccessTokenException {
         JSONObject content  = new JSONObject();
         content.put("input", new JSONObject());
-        JSONObject execution = this.client.executeWorkflow(this.service.workflowId(), content);
+        JSONObject execution = this.client.executeWorkflow(Service.workflowId(), content);
         this.assertWorkflowExecution(execution);
     }
 
     @Test
     public void testDeleteWorkflow() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject workflow = this.client.deleteWorkflow(this.service.workflowId());
+        JSONObject workflow = this.client.deleteWorkflow(Service.workflowId());
         this.assertWorkflow(workflow);
     }
 
     @Test
     public void testListWorkflowExecutions() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject response = this.client.listWorkflowExecutions(this.service.workflowId());
+        JSONObject response = this.client.listWorkflowExecutions(Service.workflowId());
         JSONArray executions = response.getJSONArray("executions");
         Assert.assertNotNull(executions);
     }
@@ -114,7 +114,7 @@ public class WorkflowsTest extends ClientTest {
         .setStatus(status)
         .setSortBy("endTime")
         .setOrder("ascending");
-        JSONObject response = this.client.listWorkflowExecutions(this.service.workflowId(), options);
+        JSONObject response = this.client.listWorkflowExecutions(Service.workflowId(), options);
         JSONArray executions = response.getJSONArray("executions");
         Assert.assertNotNull(executions);
     }
@@ -122,8 +122,8 @@ public class WorkflowsTest extends ClientTest {
     @Test
     public void testDeleteWorkflowExecution() throws IOException, APIException, MissingAccessTokenException {
         JSONObject execution = this.client.deleteWorkflowExecution(
-            this.service.workflowId(),
-            this.service.workflowExecutionId()
+            Service.workflowId(),
+            Service.workflowExecutionId()
         );
         this.assertWorkflowExecution(execution);
     }

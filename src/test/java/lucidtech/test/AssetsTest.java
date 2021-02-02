@@ -24,20 +24,20 @@ public class AssetsTest extends ClientTest {
 
     @Test
     public void testCreateAsset() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject asset = this.client.createAsset(this.service.content());
+        JSONObject asset = this.client.createAsset(Service.content());
         this.assertAsset(asset);
     }
 
     @Test
     public void testCreateAssetWithOptions() throws IOException, APIException, MissingAccessTokenException {
         CreateAssetOptions options = new CreateAssetOptions().setName("foo").setDescription("bar");
-        JSONObject asset = this.client.createAsset(this.service.content(), options);
+        JSONObject asset = this.client.createAsset(Service.content(), options);
         this.assertAsset(asset);
     }
 
     @Test
     public void testCreateAssetWithInputStreamAndOptions() throws IOException, APIException, MissingAccessTokenException {
-        InputStream input = new ByteArrayInputStream(this.service.content());
+        InputStream input = new ByteArrayInputStream(Service.content());
         CreateAssetOptions options = new CreateAssetOptions().setName("foo").setDescription("bar");
         JSONObject asset = this.client.createAsset(input, options);
         this.assertAsset(asset);
@@ -45,7 +45,7 @@ public class AssetsTest extends ClientTest {
     }
     @Test
     public void testCreateAssetWithInputStream() throws IOException, APIException, MissingAccessTokenException {
-        InputStream input = new ByteArrayInputStream(this.service.content());
+        InputStream input = new ByteArrayInputStream(Service.content());
         JSONObject asset = this.client.createAsset(input);
         this.assertAsset(asset);
     }
@@ -67,7 +67,7 @@ public class AssetsTest extends ClientTest {
 
     @Test
     public void testGetAsset() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject asset = this.client.getAsset(this.service.assetId());
+        JSONObject asset = this.client.getAsset(Service.assetId());
         this.assertAsset(asset);
     }
 
@@ -76,8 +76,8 @@ public class AssetsTest extends ClientTest {
         UpdateAssetOptions options = new UpdateAssetOptions()
         .setName("foo")
         .setDescription("bar")
-        .setContent(this.service.content());
-        JSONObject asset = this.client.updateAsset(this.service.assetId(), options);
+        .setContent(Service.content());
+        JSONObject asset = this.client.updateAsset(Service.assetId(), options);
         this.assertAsset(asset);
     }
 }

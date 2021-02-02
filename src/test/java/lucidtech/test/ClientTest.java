@@ -27,11 +27,9 @@ import static org.mockito.ArgumentMatchers.any;
 public class ClientTest {
 
     protected Client client;
-    protected Service service;
 
     @Before
     public void setUp() throws MissingCredentialsException, MissingAccessTokenException {
-        this.service = new Service();
         Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
         Credentials spyCredentials = spy(credentials);
         doReturn("foo").when(spyCredentials).getAccessToken(any(HttpClient.class));

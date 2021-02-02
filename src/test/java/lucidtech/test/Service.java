@@ -9,82 +9,82 @@ import org.json.JSONObject;
 
 public class Service {
 
-    public String hexUuid(){
+    public static String hexUuid(){
         return UUID.randomUUID().toString().replace("-", "");
     }
 
-    public String assetId(){
-        return  "las:asset:" + this.hexUuid();
+    public static String assetId(){
+        return  "las:asset:" + hexUuid();
     }
 
-    public String batchId(){
-        return  "las:batch:" + this.hexUuid();
+    public static String batchId(){
+        return  "las:batch:" + hexUuid();
     }
 
-    public String consentId(){
-        return  "las:consent:" + this.hexUuid();
+    public static String consentId(){
+        return  "las:consent:" + hexUuid();
     }
 
-    public String documentId(){
-        return  "las:document:" + this.hexUuid();
+    public static String documentId(){
+        return  "las:document:" + hexUuid();
     }
 
-    public String modelId(){
-        return  "las:model:" + this.hexUuid();
+    public static String modelId(){
+        return  "las:model:" + hexUuid();
     }
 
-    public String logId(){
-        return  "las:log:" + this.hexUuid();
+    public static String logId(){
+        return  "las:log:" + hexUuid();
     }
 
-    public String secretId(){
-        return  "las:secret:" + this.hexUuid();
+    public static String secretId(){
+        return  "las:secret:" + hexUuid();
     }
 
-    public String userId(){
-        return  "las:user:" + this.hexUuid();
+    public static String userId(){
+        return  "las:user:" + hexUuid();
     }
 
-    public String transitionId(){
-        return  "las:transition:" + this.hexUuid();
+    public static String transitionId(){
+        return  "las:transition:" + hexUuid();
     }
 
-    public String workflowId(){
-        return  "las:workflow:" + this.hexUuid();
+    public static String workflowId(){
+        return  "las:workflow:" + hexUuid();
     }
 
-    public String transitionExecutionId(){
-        return  "las:transition-execution:" + this.hexUuid();
+    public static String transitionExecutionId(){
+        return  "las:transition-execution:" + hexUuid();
     }
 
-    public String workflowExecutionId(){
-        return  "las:workflow-execution:" + this.hexUuid();
+    public static String workflowExecutionId(){
+        return  "las:workflow-execution:" + hexUuid();
     }
 
-    public JSONObject schema(){
+    public static JSONObject schema(){
         return new JSONObject(){{
             put("$schema", "https://json-schema.org/draft-04/schema#");
         }};
     }
 
-    public JSONObject credentials(){
+    public static JSONObject credentials(){
         return new JSONObject(){{
             put("username", hexUuid());
             put("password", hexUuid());
         }};
     }
 
-    public byte[] content(){
+    public static byte[] content(){
         byte[] b = new byte[20];
         new Random().nextBytes(b);
         return b;
     }
 
-    public String email(){
+    public static String email(){
         return "foo@bar.com";
     }
 
-    public String avatar(){
+    public static String avatar(){
         return "jpeg-string";
     }
 }

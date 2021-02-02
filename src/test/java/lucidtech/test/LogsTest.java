@@ -20,7 +20,7 @@ public class LogsTest  extends ClientTest {
 
     @Test
     public void testGetLog() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject log = this.client.getLog(this.service.logId());
+        JSONObject log = this.client.getLog(Service.logId());
         this.assertLog(log);
     }
 

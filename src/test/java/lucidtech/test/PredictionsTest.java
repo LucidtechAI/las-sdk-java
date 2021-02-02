@@ -20,14 +20,14 @@ public class PredictionsTest extends ClientTest {
 
     @Test
     public void testCreatePrediction() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject prediction = this.client.createPrediction(this.service.documentId(), this.service.modelId());
+        JSONObject prediction = this.client.createPrediction(Service.documentId(), Service.modelId());
         this.assertPrediction(prediction);
     }
 
     @Test
     public void testCreatePredictionWithOptions() throws IOException, APIException, MissingAccessTokenException {
         CreatePredictionOptions options = new CreatePredictionOptions().setMaxPages(3).setAutoRotate(true);
-        JSONObject prediction = this.client.createPrediction(this.service.documentId(), this.service.modelId(), options);
+        JSONObject prediction = this.client.createPrediction(Service.documentId(), Service.modelId(), options);
         this.assertPrediction(prediction);
     }
 

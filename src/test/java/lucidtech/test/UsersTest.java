@@ -24,21 +24,21 @@ public class UsersTest extends ClientTest {
 
     @Test
     public void testCreateUser() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject user = this.client.createUser(this.service.email());
+        JSONObject user = this.client.createUser(Service.email());
         this.assertUser(user);
     }
 
     @Test
     public void testCreateUserWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        CreateUserOptions options = new CreateUserOptions().setName("foo").setAvatar(this.service.avatar());
-        JSONObject user = this.client.createUser(this.service.email(), options);
+        CreateUserOptions options = new CreateUserOptions().setName("foo").setAvatar(Service.avatar());
+        JSONObject user = this.client.createUser(Service.email(), options);
         this.assertUser(user);
     }
 
     @Test
     public void testCreateUserWithAvatarBytes() throws IOException, APIException, MissingAccessTokenException {
-        CreateUserOptions options = new CreateUserOptions().setName("foo").setAvatar(this.service.content());
-        JSONObject user = this.client.createUser(this.service.email(), options);
+        CreateUserOptions options = new CreateUserOptions().setName("foo").setAvatar(Service.content());
+        JSONObject user = this.client.createUser(Service.email(), options);
         this.assertUser(user);
 
     }
@@ -60,7 +60,7 @@ public class UsersTest extends ClientTest {
 
     @Test
     public void testGetUser() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject user = this.client.getUser(this.service.userId());
+        JSONObject user = this.client.getUser(Service.userId());
         this.assertUser(user);
     }
 
@@ -68,8 +68,8 @@ public class UsersTest extends ClientTest {
     public void testUpdateUser() throws IOException, APIException, MissingAccessTokenException {
         UpdateUserOptions options = new UpdateUserOptions()
         .setName("foo")
-        .setAvatar(this.service.avatar());
-        JSONObject user = this.client.updateUser(this.service.userId(), options);
+        .setAvatar(Service.avatar());
+        JSONObject user = this.client.updateUser(Service.userId(), options);
         this.assertUser(user);
     }
 }

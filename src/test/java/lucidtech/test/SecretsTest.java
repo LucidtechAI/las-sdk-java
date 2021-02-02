@@ -21,14 +21,14 @@ public class SecretsTest extends ClientTest {
 
     @Test
     public void testCreateSecret() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject secret = this.client.createSecret(this.service.credentials());
+        JSONObject secret = this.client.createSecret(Service.credentials());
         this.assertSecret(secret);
     }
 
     @Test
     public void testCreateSecretWithOptions() throws IOException, APIException, MissingAccessTokenException {
         CreateSecretOptions options = new CreateSecretOptions().setName("foo").setDescription("bar");
-        JSONObject secret = this.client.createSecret(this.service.credentials(), options);
+        JSONObject secret = this.client.createSecret(Service.credentials(), options);
         this.assertSecret(secret);
     }
 
@@ -52,8 +52,8 @@ public class SecretsTest extends ClientTest {
         UpdateSecretOptions options = new UpdateSecretOptions()
         .setName("foo")
         .setDescription("bar")
-        .setData(this.service.credentials());
-        JSONObject secret = this.client.updateSecret(this.service.secretId(), options);
+        .setData(Service.credentials());
+        JSONObject secret = this.client.updateSecret(Service.secretId(), options);
         this.assertSecret(secret);
     }
 }
