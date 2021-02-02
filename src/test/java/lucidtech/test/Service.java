@@ -9,6 +9,10 @@ import org.json.JSONObject;
 
 public class Service {
 
+    private Service() {
+        throw new AssertionError();
+    }
+
     public static String hexUuid(){
         return UUID.randomUUID().toString().replace("-", "");
     }
