@@ -51,14 +51,14 @@ public class Client {
         byte[] content,
         CreateAssetOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("content", Base64.getEncoder().encodeToString(content));
+        JSONObject body = new JSONObject();
+        body.put("content", Base64.getEncoder().encodeToString(content));
 
         if (options != null) {
-            jsonBody = options.addOptions(jsonBody);
+            body = options.addOptions(body);
         }
 
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/assets", jsonBody);
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/assets", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -175,8 +175,8 @@ public class Client {
         Map<String, Object> options
     ) throws IOException, APIException, MissingAccessTokenException {
         byte[] byteArrayContent = IOUtils.toByteArray(content);
-        JSONObject jsonBody = this.createPostDocumentsJsonBody(byteArrayContent, contentType, consentId, options);
-        return this.createDocument(jsonBody);
+        JSONObject body = this.createPostDocumentsJsonBody(byteArrayContent, contentType, consentId, options);
+        return this.createDocument(body);
     }
 
     /**
@@ -197,8 +197,8 @@ public class Client {
         String consentId
     ) throws IOException, APIException, MissingAccessTokenException {
         byte[] byteArrayContent = IOUtils.toByteArray(content);
-        JSONObject jsonBody = this.createPostDocumentsJsonBody(byteArrayContent, contentType, consentId, null);
-        return this.createDocument(jsonBody);
+        JSONObject body = this.createPostDocumentsJsonBody(byteArrayContent, contentType, consentId, null);
+        return this.createDocument(body);
     }
 
     /**
@@ -220,8 +220,8 @@ public class Client {
         String consentId,
         Map<String, Object> options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject jsonBody = this.createPostDocumentsJsonBody(content, contentType, consentId, options);
-        return this.createDocument(jsonBody);
+        JSONObject body = this.createPostDocumentsJsonBody(content, contentType, consentId, options);
+        return this.createDocument(body);
     }
 
     /**
@@ -241,8 +241,8 @@ public class Client {
         ContentType contentType,
         String consentId
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject jsonBody = this.createPostDocumentsJsonBody(content, contentType, consentId, null);
-        return this.createDocument(jsonBody);
+        JSONObject body = this.createPostDocumentsJsonBody(content, contentType, consentId, null);
+        return this.createDocument(body);
     }
 
     private JSONObject createPostDocumentsJsonBody(
@@ -251,22 +251,22 @@ public class Client {
         String consentId,
         Map<String, Object> options
     ) {
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("content", Base64.getEncoder().encodeToString(content));
-        jsonBody.put("contentType", contentType.getMimeType());
-        jsonBody.put("consentId", consentId);
+        JSONObject body = new JSONObject();
+        body.put("content", Base64.getEncoder().encodeToString(content));
+        body.put("contentType", contentType.getMimeType());
+        body.put("consentId", consentId);
 
         if (options != null) {
             for (Map.Entry<String, Object> option: options.entrySet()) {
-                jsonBody.put(option.getKey(), option.getValue());
+                body.put(option.getKey(), option.getValue());
             }
         }
 
-        return jsonBody;
+        return body;
     }
 
-    private JSONObject createDocument(JSONObject jsonBody) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents", jsonBody);
+    private JSONObject createDocument(JSONObject body) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -387,13 +387,13 @@ public class Client {
         String modelId,
         CreatePredictionOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("documentId", documentId);
-        jsonBody.put("modelId", modelId);
+        JSONObject body = new JSONObject();
+        body.put("documentId", documentId);
+        body.put("modelId", modelId);
         if (options != null) {
-            jsonBody = options.addOptions(jsonBody);
+            body = options.addOptions(body);
         }
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", jsonBody);
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -442,11 +442,11 @@ public class Client {
         JSONObject data,
         CreateSecretOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject jsonBody = new JSONObject(){{ put("data", data); }};
+        JSONObject body = new JSONObject(){{ put("data", data); }};
         if (options != null) {
-            jsonBody = options.addOptions(jsonBody);
+            body = options.addOptions(body);
         }
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/secrets", jsonBody);
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/secrets", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -490,14 +490,14 @@ public class Client {
         String transitionType,
         CreateTransitionOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("transitionType", transitionType);
+        JSONObject body = new JSONObject();
+        body.put("transitionType", transitionType);
 
         if (options != null) {
-            jsonBody = options.addOptions(jsonBody);
+            body = options.addOptions(body);
         }
 
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/transitions", jsonBody);
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/transitions", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -582,14 +582,14 @@ public class Client {
         String email,
         CreateUserOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("email", email);
+        JSONObject body = new JSONObject();
+        body.put("email", email);
 
         if (options != null) {
-            jsonBody = options.addOptions(jsonBody);
+            body = options.addOptions(body);
         }
 
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/users", jsonBody);
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/users", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -636,14 +636,14 @@ public class Client {
         JSONObject specification,
         CreateWorkflowOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("specification", specification);
+        JSONObject body = new JSONObject();
+        body.put("specification", specification);
 
         if (options != null) {
-            jsonBody = options.addOptions(jsonBody);
+            body = options.addOptions(body);
         }
 
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/workflows", jsonBody);
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/workflows", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
