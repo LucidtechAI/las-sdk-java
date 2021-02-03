@@ -14,17 +14,14 @@ public class NameAndDescriptionOptions<T> {
         this.description = NOT_PROVIDED;
     }
 
-    public NameAndDescriptionOptions(String name, String description){
-        this.name = name;
-        this.description = description;
-    }
-
     public T setName(String name){
+        assert name != this.NOT_PROVIDED : "name must have another value";
         this.name = name;
         return (T) this;
     }
 
     public T setDescription(String description){
+        assert description != this.NOT_PROVIDED : "description must have another value";
         this.description = description;
         return (T) this;
     }
