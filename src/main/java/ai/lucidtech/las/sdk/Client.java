@@ -112,7 +112,8 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject createBatch(CreateBatchOptions options) throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject createBatch(CreateBatchOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", options.toJson());
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -159,52 +160,6 @@ public class Client {
      * Creates a document handle, calls POST /documents endpoint
      *
      * @see ContentType
-     * @param content Input stream
-     * @param contentType A mime type for the document handle
-     * @param consentId An identifier to mark the owner of the document handle
-     * @param options Additional options to include in request body
-     * @return Response from API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject createDocument(
-        InputStream content,
-        ContentType contentType,
-        String consentId,
-        Map<String, Object> options
-    ) throws IOException, APIException, MissingAccessTokenException {
-        byte[] byteArrayContent = IOUtils.toByteArray(content);
-        JSONObject body = this.createPostDocumentsJsonBody(byteArrayContent, contentType, consentId, options);
-        return this.createDocument(body);
-    }
-
-    /**
-     * Creates a document handle, calls POST /documents endpoint
-     *
-     * @see ContentType
-     * @param content Input stream
-     * @param contentType A mime type for the document handle
-     * @param consentId An identifier to mark the owner of the document handle
-     * @return Response from API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject createDocument(
-        InputStream content,
-        ContentType contentType,
-        String consentId
-    ) throws IOException, APIException, MissingAccessTokenException {
-        byte[] byteArrayContent = IOUtils.toByteArray(content);
-        JSONObject body = this.createPostDocumentsJsonBody(byteArrayContent, contentType, consentId, null);
-        return this.createDocument(body);
-    }
-
-    /**
-     * Creates a document handle, calls POST /documents endpoint
-     *
-     * @see ContentType
      * @param content Binary data
      * @param contentType A mime type for the document handle
      * @param consentId An identifier to mark the owner of the document handle
@@ -217,84 +172,80 @@ public class Client {
     public JSONObject createDocument(
         byte[] content,
         ContentType contentType,
-        String consentId,
-        Map<String, Object> options
+        CreateDocumentOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject body = this.createPostDocumentsJsonBody(content, contentType, consentId, options);
-        return this.createDocument(body);
-    }
-
-    /**
-     * Creates a document handle, calls POST /documents endpoint
-     *
-     * @see ContentType
-     * @param content Binary data
-     * @param contentType A mime type for the document handle
-     * @param consentId An identifier to mark the owner of the document handle
-     * @return Response from API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject createDocument(
-        byte[] content,
-        ContentType contentType,
-        String consentId
-    ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject body = this.createPostDocumentsJsonBody(content, contentType, consentId, null);
-        return this.createDocument(body);
-    }
-
-    private JSONObject createPostDocumentsJsonBody(
-        byte[] content,
-        ContentType contentType,
-        String consentId,
-        Map<String, Object> options
-    ) {
         JSONObject body = new JSONObject();
         body.put("content", Base64.getEncoder().encodeToString(content));
         body.put("contentType", contentType.getMimeType());
-        body.put("consentId", consentId);
 
         if (options != null) {
-            for (Map.Entry<String, Object> option: options.entrySet()) {
-                body.put(option.getKey(), option.getValue());
-            }
+            body = options.addOptions(body);
         }
 
-        return body;
-    }
-
-    private JSONObject createDocument(JSONObject body) throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
+
     /**
-     * Create a prediction on a document <i>documentPath</i> by path using model <i>modelId</i>.
-     * This method takes care of creating and uploading a document as well as running inference using
-     * model to create prediction on the document.
+     * Creates a document handle, calls POST /documents endpoint
      *
-     * @param documentPath Path to document to run inference on
-     * @param modelId The name of the model to use for inference
+     * @see ContentType
+     * @param content Input stream
+     * @param contentType A mime type for the document handle
      * @param consentId An identifier to mark the owner of the document handle
-     * @return Prediction on document
+     * @param options Additional options to include in request body
+     * @return Response from API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public Prediction predict(
-        String documentPath,
-        String modelId,
-        String consentId
+    public JSONObject createDocument(
+        InputStream content,
+        ContentType contentType,
+        CreateDocumentOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        byte[] documentContent = Files.readAllBytes(Paths.get(documentPath));
-        ContentType contentType = this.getContentType(documentPath);
-        JSONObject document = this.createDocument(documentContent, contentType, consentId);
-        String documentId = document.getString("documentId");
+        byte[] byteArrayContent = IOUtils.toByteArray(content);
+        return this.createDocument(byteArrayContent, contentType, options);
+    }
 
-        JSONObject prediction = this.createPrediction(documentId, modelId);
-        return new Prediction(documentId, consentId, modelId, prediction);
+    /**
+     * Creates a document handle, calls POST /documents endpoint
+     *
+     * @see ContentType
+     * @param content Input stream
+     * @param contentType A mime type for the document handle
+     * @param consentId An identifier to mark the owner of the document handle
+     * @return Response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject createDocument(
+        InputStream content,
+        ContentType contentType
+    ) throws IOException, APIException, MissingAccessTokenException {
+        byte[] byteArrayContent = IOUtils.toByteArray(content);
+        return this.createDocument(byteArrayContent, contentType, new CreateDocumentOptions());
+    }
+
+    /**
+     * Creates a document handle, calls POST /documents endpoint
+     *
+     * @see ContentType
+     * @param content Binary data
+     * @param contentType A mime type for the document handle
+     * @param consentId An identifier to mark the owner of the document handle
+     * @return Response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject createDocument(
+        byte[] content,
+        ContentType contentType
+    ) throws IOException, APIException, MissingAccessTokenException {
+        return this.createDocument(content, contentType, new CreateDocumentOptions());
     }
 
     /**
