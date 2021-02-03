@@ -104,7 +104,7 @@ public class WorkflowsTest extends ClientTest {
 
     @Test
     public void testListWorkflowExecutionsWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        List<String> status = Arrays.asList("succeeded");
+        List<WorkflowExecutionStatus> status = Arrays.asList(WorkflowExecutionStatus.SUCCEEDED);
         ListWorkflowExecutionsOptions options = new ListWorkflowExecutionsOptions()
         .setMaxResults(30)
         .setNextToken("foo")

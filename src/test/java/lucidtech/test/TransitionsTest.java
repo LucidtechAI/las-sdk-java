@@ -138,13 +138,25 @@ public class TransitionsTest extends ClientTest {
     }
 
     @Test
+    public void testListTransitionExecutionsWithExecutionId() throws IOException, APIException, MissingAccessTokenException {
+        ListTransitionExecutionsOptions options = new ListTransitionExecutionsOptions()
+        .setMaxResults(30)
+        .setNextToken("foo")
+        .setExecutionId(TestUtils.transitionExecutionId())
+        .setSortBy("endTime")
+        .setOrder("ascending");
+        JSONObject response = this.client.listTransitionExecutions(TestUtils.transitionId(), options);
+        JSONArray executions = response.getJSONArray("executions");
+        Assert.assertNotNull(executions);
+    }
+
+    @Test
     public void testListTransitionExecutionsWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        List<String> status = Arrays.asList("succeeded");
+        List<TransitionExecutionStatus> status = Arrays.asList(TransitionExecutionStatus.SUCCEEDED);
         ListTransitionExecutionsOptions options = new ListTransitionExecutionsOptions()
         .setMaxResults(30)
         .setNextToken("foo")
         .setStatus(status)
-        .setExecutionId(TestUtils.transitionExecutionId())
         .setSortBy("endTime")
         .setOrder("ascending");
         JSONObject response = this.client.listTransitionExecutions(TestUtils.transitionId(), options);

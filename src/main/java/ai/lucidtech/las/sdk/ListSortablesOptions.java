@@ -9,25 +9,13 @@ import java.util.Arrays;
 
 
 public class ListSortablesOptions<T> extends ListResourcesOptions<T> {
-    protected List<String> status;
     protected String sortBy;
     protected String order;
 
 
     public ListSortablesOptions(){
-        this.status = null;
         this.sortBy = null;
         this.order = null;
-    }
-
-    public T setStatus(List<String> status){
-        this.status = status;
-        return (T) this;
-    }
-
-    public T setStatus(String status){
-        this.status = Arrays.asList(status);
-        return (T) this;
     }
 
     public T setSortBy(String sortBy){
@@ -46,11 +34,6 @@ public class ListSortablesOptions<T> extends ListResourcesOptions<T> {
     }
 
     public List<NameValuePair> addOptions(List<NameValuePair> parameters){
-        if( this.status != null){
-            for (String s : this.status) {
-                parameters.add(new BasicNameValuePair("status", s));
-            }
-        }
         if( this.sortBy != null){
             parameters.add(new BasicNameValuePair("sortBy", this.sortBy));
         }
