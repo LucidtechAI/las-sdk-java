@@ -5,11 +5,8 @@ import ai.lucidtech.las.sdk.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.IOException;
 
 import java.util.Arrays;
@@ -19,8 +16,8 @@ public class TransitionsTest extends ClientTest {
 
     public JSONObject getManualParameters(){
         JSONObject assets = new JSONObject();
-        assets.put("jsRemoteComponent", Service.assetId());
-        assets.put("thresholds", Service.assetId());
+        assets.put("jsRemoteComponent", TestUtils.assetId());
+        assets.put("thresholds", TestUtils.assetId());
         JSONObject parameters = new JSONObject();
         parameters.put("assets", assets);
         return parameters;
@@ -29,7 +26,7 @@ public class TransitionsTest extends ClientTest {
     public JSONObject getDockerParameters(){
         JSONObject parameters = new JSONObject();
         parameters.put("imageUrl", "foo");
-        parameters.put("secretId", Service.secretId());
+        parameters.put("secretId", TestUtils.secretId());
         return parameters;
     }
 
@@ -72,8 +69,8 @@ public class TransitionsTest extends ClientTest {
         CreateTransitionOptions options = new CreateTransitionOptions()
         .setName("foo")
         .setDescription("bar")
-        .setInSchema(Service.schema())
-        .setOutSchema(Service.schema())
+        .setInSchema(TestUtils.schema())
+        .setOutSchema(TestUtils.schema())
         .setParameters(this.getManualParameters());
         JSONObject transition = this.client.createTransition("manual", options);
         this.assertTransition(transition);
@@ -84,8 +81,8 @@ public class TransitionsTest extends ClientTest {
         CreateTransitionOptions options = new CreateTransitionOptions()
         .setName("foo")
         .setDescription("bar")
-        .setInSchema(Service.schema())
-        .setOutSchema(Service.schema())
+        .setInSchema(TestUtils.schema())
+        .setOutSchema(TestUtils.schema())
         .setParameters(this.getDockerParameters());
         JSONObject transition = this.client.createTransition("docker", options);
         this.assertTransition(transition);
@@ -114,28 +111,28 @@ public class TransitionsTest extends ClientTest {
         UpdateTransitionOptions options = new UpdateTransitionOptions()
         .setName("foo")
         .setDescription("bar")
-        .setInSchema(Service.schema())
-        .setOutSchema(Service.schema());
-        JSONObject transition = this.client.updateTransition(Service.transitionId(), options);
+        .setInSchema(TestUtils.schema())
+        .setOutSchema(TestUtils.schema());
+        JSONObject transition = this.client.updateTransition(TestUtils.transitionId(), options);
         this.assertTransition(transition);
     }
 
     @Test
     public void testUpdateTransitionWithOptions() throws IOException, APIException, MissingAccessTokenException {
         UpdateTransitionOptions options = new UpdateTransitionOptions().setName("foo");
-        JSONObject transition = this.client.updateTransition(Service.transitionId(), options);
+        JSONObject transition = this.client.updateTransition(TestUtils.transitionId(), options);
         this.assertTransition(transition);
     }
 
     @Test
     public void testExecuteTransition() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject execution = this.client.executeTransition(Service.transitionId());
+        JSONObject execution = this.client.executeTransition(TestUtils.transitionId());
         this.assertTransitionExecution(execution);
     }
 
     @Test
     public void testListTransitionExecutions() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject response = this.client.listTransitionExecutions(Service.transitionId());
+        JSONObject response = this.client.listTransitionExecutions(TestUtils.transitionId());
         JSONArray executions = response.getJSONArray("executions");
         Assert.assertNotNull(executions);
     }
@@ -147,10 +144,10 @@ public class TransitionsTest extends ClientTest {
         .setMaxResults(30)
         .setNextToken("foo")
         .setStatus(status)
-        .setExecutionId(Service.transitionExecutionId())
+        .setExecutionId(TestUtils.transitionExecutionId())
         .setSortBy("endTime")
         .setOrder("ascending");
-        JSONObject response = this.client.listTransitionExecutions(Service.transitionId(), options);
+        JSONObject response = this.client.listTransitionExecutions(TestUtils.transitionId(), options);
         JSONArray executions = response.getJSONArray("executions");
         Assert.assertNotNull(executions);
     }
@@ -158,8 +155,8 @@ public class TransitionsTest extends ClientTest {
     @Test
     public void testGetTransitionExecution() throws IOException, APIException, MissingAccessTokenException {
         JSONObject execution = this.client.getTransitionExecution(
-            Service.transitionId(),
-            Service.transitionExecutionId()
+            TestUtils.transitionId(),
+            TestUtils.transitionExecutionId()
         );
         this.assertTransitionExecution(execution);
     }
@@ -169,8 +166,8 @@ public class TransitionsTest extends ClientTest {
         UpdateTransitionExecutionOptions options = new UpdateTransitionExecutionOptions()
         .setOutput(new JSONObject(){{ put("out", "foo"); }});
         JSONObject execution = this.client.updateTransitionExecution(
-            Service.transitionId(),
-            Service.transitionExecutionId(),
+            TestUtils.transitionId(),
+            TestUtils.transitionExecutionId(),
             "succeeded",
             options
         );
@@ -182,8 +179,8 @@ public class TransitionsTest extends ClientTest {
         UpdateTransitionExecutionOptions options = new UpdateTransitionExecutionOptions()
         .setError(new JSONObject(){{ put("message", "foo"); }});
         JSONObject execution = this.client.updateTransitionExecution(
-            Service.transitionId(),
-            Service.transitionExecutionId(),
+            TestUtils.transitionId(),
+            TestUtils.transitionExecutionId(),
             "failed",
             options
         );

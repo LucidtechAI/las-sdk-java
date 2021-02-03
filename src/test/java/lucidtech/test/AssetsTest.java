@@ -5,7 +5,6 @@ import ai.lucidtech.las.sdk.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -24,20 +23,20 @@ public class AssetsTest extends ClientTest {
 
     @Test
     public void testCreateAsset() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject asset = this.client.createAsset(Service.content());
+        JSONObject asset = this.client.createAsset(TestUtils.content());
         this.assertAsset(asset);
     }
 
     @Test
     public void testCreateAssetWithOptions() throws IOException, APIException, MissingAccessTokenException {
         CreateAssetOptions options = new CreateAssetOptions().setName("foo").setDescription("bar");
-        JSONObject asset = this.client.createAsset(Service.content(), options);
+        JSONObject asset = this.client.createAsset(TestUtils.content(), options);
         this.assertAsset(asset);
     }
 
     @Test
     public void testCreateAssetWithInputStreamAndOptions() throws IOException, APIException, MissingAccessTokenException {
-        InputStream input = new ByteArrayInputStream(Service.content());
+        InputStream input = new ByteArrayInputStream(TestUtils.content());
         CreateAssetOptions options = new CreateAssetOptions().setName("foo").setDescription("bar");
         JSONObject asset = this.client.createAsset(input, options);
         this.assertAsset(asset);
@@ -45,7 +44,7 @@ public class AssetsTest extends ClientTest {
     }
     @Test
     public void testCreateAssetWithInputStream() throws IOException, APIException, MissingAccessTokenException {
-        InputStream input = new ByteArrayInputStream(Service.content());
+        InputStream input = new ByteArrayInputStream(TestUtils.content());
         JSONObject asset = this.client.createAsset(input);
         this.assertAsset(asset);
     }
@@ -67,7 +66,7 @@ public class AssetsTest extends ClientTest {
 
     @Test
     public void testGetAsset() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject asset = this.client.getAsset(Service.assetId());
+        JSONObject asset = this.client.getAsset(TestUtils.assetId());
         this.assertAsset(asset);
     }
 
@@ -76,8 +75,8 @@ public class AssetsTest extends ClientTest {
         UpdateAssetOptions options = new UpdateAssetOptions()
         .setName("foo")
         .setDescription("bar")
-        .setContent(Service.content());
-        JSONObject asset = this.client.updateAsset(Service.assetId(), options);
+        .setContent(TestUtils.content());
+        JSONObject asset = this.client.updateAsset(TestUtils.assetId(), options);
         this.assertAsset(asset);
     }
 }

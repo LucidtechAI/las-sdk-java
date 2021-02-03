@@ -5,7 +5,6 @@ import ai.lucidtech.las.sdk.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -20,14 +19,14 @@ public class PredictionsTest extends ClientTest {
 
     @Test
     public void testCreatePrediction() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject prediction = this.client.createPrediction(Service.documentId(), Service.modelId());
+        JSONObject prediction = this.client.createPrediction(TestUtils.documentId(), TestUtils.modelId());
         this.assertPrediction(prediction);
     }
 
     @Test
     public void testCreatePredictionWithOptions() throws IOException, APIException, MissingAccessTokenException {
         CreatePredictionOptions options = new CreatePredictionOptions().setMaxPages(3).setAutoRotate(true);
-        JSONObject prediction = this.client.createPrediction(Service.documentId(), Service.modelId(), options);
+        JSONObject prediction = this.client.createPrediction(TestUtils.documentId(), TestUtils.modelId(), options);
         this.assertPrediction(prediction);
     }
 

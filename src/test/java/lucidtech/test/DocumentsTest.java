@@ -5,7 +5,6 @@ import ai.lucidtech.las.sdk.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -24,7 +23,7 @@ public class DocumentsTest extends ClientTest {
 
     @Test
     public void testCreateDocument() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject document = this.client.createDocument(Service.content(), ContentType.PDF);
+        JSONObject document = this.client.createDocument(TestUtils.content(), ContentType.PDF);
         this.assertDocument(document);
     }
 
@@ -33,21 +32,21 @@ public class DocumentsTest extends ClientTest {
         JSONArray groundTruth = new JSONArray();
         groundTruth.put(new JSONObject(){{ put("label", "totalAmount"); put("value", "100.00"); }});
         CreateDocumentOptions options = new CreateDocumentOptions()
-            .setConsentId(Service.consentId())
-            .setBatchId(Service.batchId())
+            .setConsentId(TestUtils.consentId())
+            .setBatchId(TestUtils.batchId())
             .setGroundTruth(groundTruth);
-        JSONObject document = this.client.createDocument(Service.content(), ContentType.PDF, options);
+        JSONObject document = this.client.createDocument(TestUtils.content(), ContentType.PDF, options);
         this.assertDocument(document);
     }
 
     @Test
     public void testCreateDocumentWithInputStreamAndOptions() throws IOException, APIException, MissingAccessTokenException {
-        InputStream input = new ByteArrayInputStream(Service.content());
+        InputStream input = new ByteArrayInputStream(TestUtils.content());
         JSONArray groundTruth = new JSONArray();
         groundTruth.put(new JSONObject(){{ put("label", "totalAmount"); put("value", "100.00"); }});
         CreateDocumentOptions options = new CreateDocumentOptions()
-            .setConsentId(Service.consentId())
-            .setBatchId(Service.batchId())
+            .setConsentId(TestUtils.consentId())
+            .setBatchId(TestUtils.batchId())
             .setGroundTruth(groundTruth);
         JSONObject document = this.client.createDocument(input, ContentType.PDF, options);
         this.assertDocument(document);
@@ -55,7 +54,7 @@ public class DocumentsTest extends ClientTest {
     }
     @Test
     public void testCreateDocumentWithInputStream() throws IOException, APIException, MissingAccessTokenException {
-        InputStream input = new ByteArrayInputStream(Service.content());
+        InputStream input = new ByteArrayInputStream(TestUtils.content());
         JSONObject document = this.client.createDocument(input, ContentType.PDF);
         this.assertDocument(document);
     }
@@ -70,8 +69,8 @@ public class DocumentsTest extends ClientTest {
     @Test
     public void testListDocumentsWithOptions() throws IOException, APIException, MissingAccessTokenException {
         ListDocumentsOptions options = new ListDocumentsOptions()
-            .setConsentId(Service.consentId())
-            .setBatchId(Service.batchId())
+            .setConsentId(TestUtils.consentId())
+            .setBatchId(TestUtils.batchId())
             .setMaxResults(30)
             .setNextToken("foo");
         JSONObject response = this.client.listDocuments(options);
@@ -88,14 +87,14 @@ public class DocumentsTest extends ClientTest {
 
     @Test
     public void testDeleteDocumentsWithConsentId() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject document = this.client.deleteDocuments(Service.consentId());
+        JSONObject document = this.client.deleteDocuments(TestUtils.consentId());
         JSONArray documents = document.getJSONArray("documents");
         Assert.assertNotNull(documents);
     }
 
     @Test
     public void testGetDocument() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject document = this.client.getDocument(Service.documentId());
+        JSONObject document = this.client.getDocument(TestUtils.documentId());
         this.assertDocument(document);
     }
 
@@ -103,7 +102,7 @@ public class DocumentsTest extends ClientTest {
     public void testUpdateDocument() throws IOException, APIException, MissingAccessTokenException {
         JSONArray groundTruth = new JSONArray();
         groundTruth.put(new JSONObject(){{ put("label", "totalAmount"); put("value", "100.00"); }});
-        JSONObject document = this.client.updateDocument(Service.documentId(), groundTruth);
+        JSONObject document = this.client.updateDocument(TestUtils.documentId(), groundTruth);
         this.assertDocument(document);
     }
 }

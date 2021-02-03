@@ -7,9 +7,9 @@ import java.util.Random;
 
 import org.json.JSONObject;
 
-public class Service {
+public final class TestUtils {
 
-    private Service() {
+    private TestUtils() {
         throw new AssertionError();
     }
 

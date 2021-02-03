@@ -5,11 +5,8 @@ import ai.lucidtech.las.sdk.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.IOException;
 
 
@@ -24,21 +21,21 @@ public class UsersTest extends ClientTest {
 
     @Test
     public void testCreateUser() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject user = this.client.createUser(Service.email());
+        JSONObject user = this.client.createUser(TestUtils.email());
         this.assertUser(user);
     }
 
     @Test
     public void testCreateUserWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        CreateUserOptions options = new CreateUserOptions().setName("foo").setAvatar(Service.avatar());
-        JSONObject user = this.client.createUser(Service.email(), options);
+        CreateUserOptions options = new CreateUserOptions().setName("foo").setAvatar(TestUtils.avatar());
+        JSONObject user = this.client.createUser(TestUtils.email(), options);
         this.assertUser(user);
     }
 
     @Test
     public void testCreateUserWithAvatarBytes() throws IOException, APIException, MissingAccessTokenException {
-        CreateUserOptions options = new CreateUserOptions().setName("foo").setAvatar(Service.content());
-        JSONObject user = this.client.createUser(Service.email(), options);
+        CreateUserOptions options = new CreateUserOptions().setName("foo").setAvatar(TestUtils.content());
+        JSONObject user = this.client.createUser(TestUtils.email(), options);
         this.assertUser(user);
 
     }
@@ -60,7 +57,7 @@ public class UsersTest extends ClientTest {
 
     @Test
     public void testGetUser() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject user = this.client.getUser(Service.userId());
+        JSONObject user = this.client.getUser(TestUtils.userId());
         this.assertUser(user);
     }
 
@@ -68,8 +65,8 @@ public class UsersTest extends ClientTest {
     public void testUpdateUser() throws IOException, APIException, MissingAccessTokenException {
         UpdateUserOptions options = new UpdateUserOptions()
         .setName("foo")
-        .setAvatar(Service.avatar());
-        JSONObject user = this.client.updateUser(Service.userId(), options);
+        .setAvatar(TestUtils.avatar());
+        JSONObject user = this.client.updateUser(TestUtils.userId(), options);
         this.assertUser(user);
     }
 }

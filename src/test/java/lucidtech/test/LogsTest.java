@@ -4,7 +4,6 @@ import ai.lucidtech.las.sdk.*;
 
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -20,7 +19,7 @@ public class LogsTest  extends ClientTest {
 
     @Test
     public void testGetLog() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject log = this.client.getLog(Service.logId());
+        JSONObject log = this.client.getLog(TestUtils.logId());
         this.assertLog(log);
     }
 

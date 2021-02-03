@@ -2,8 +2,6 @@ package ai.lucidtech.las.sdk;
 
 import org.json.JSONObject;
 
-import java.util.Map;
-
 
 public class UpdateTransitionExecutionOptions {
     private JSONObject output;

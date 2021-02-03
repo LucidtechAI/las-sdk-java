@@ -5,7 +5,6 @@ import ai.lucidtech.las.sdk.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -21,14 +20,14 @@ public class SecretsTest extends ClientTest {
 
     @Test
     public void testCreateSecret() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject secret = this.client.createSecret(Service.credentials());
+        JSONObject secret = this.client.createSecret(TestUtils.credentials());
         this.assertSecret(secret);
     }
 
     @Test
     public void testCreateSecretWithOptions() throws IOException, APIException, MissingAccessTokenException {
         CreateSecretOptions options = new CreateSecretOptions().setName("foo").setDescription("bar");
-        JSONObject secret = this.client.createSecret(Service.credentials(), options);
+        JSONObject secret = this.client.createSecret(TestUtils.credentials(), options);
         this.assertSecret(secret);
     }
 
@@ -52,8 +51,8 @@ public class SecretsTest extends ClientTest {
         UpdateSecretOptions options = new UpdateSecretOptions()
         .setName("foo")
         .setDescription("bar")
-        .setData(Service.credentials());
-        JSONObject secret = this.client.updateSecret(Service.secretId(), options);
+        .setData(TestUtils.credentials());
+        JSONObject secret = this.client.updateSecret(TestUtils.secretId(), options);
         this.assertSecret(secret);
     }
 }

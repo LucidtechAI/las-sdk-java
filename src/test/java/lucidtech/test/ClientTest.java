@@ -3,24 +3,11 @@ package lucidtech.test;
 import ai.lucidtech.las.sdk.*;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.powermock.api.mockito.PowerMockito;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.ArgumentMatchers.any;
 
 
