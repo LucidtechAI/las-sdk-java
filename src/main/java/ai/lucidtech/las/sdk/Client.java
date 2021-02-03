@@ -201,6 +201,14 @@ public class Client {
         return new JSONObject(response);
     }
 
+    /**
+     * Creates a batch, calls the POST /batches endpoint.
+     *
+     * @return Batch response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
     public JSONObject createBatch() throws IOException, APIException, MissingAccessTokenException {
         return this.createBatch(null);
     }
