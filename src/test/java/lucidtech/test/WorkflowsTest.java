@@ -110,7 +110,7 @@ public class WorkflowsTest extends ClientTest {
         .setNextToken("foo")
         .setStatus(status)
         .setSortBy("endTime")
-        .setOrder("ascending");
+        .setOrder(Order.ASCENDING);
         JSONObject response = this.client.listWorkflowExecutions(TestUtils.workflowId(), options);
         JSONArray executions = response.getJSONArray("executions");
         Assert.assertNotNull(executions);

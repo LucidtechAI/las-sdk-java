@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class ListSortablesOptions<T> extends ListResourcesOptions<T> {
     protected String sortBy;
-    protected String order;
+    protected Order order;
 
 
     public ListSortablesOptions(){
@@ -23,7 +23,7 @@ public class ListSortablesOptions<T> extends ListResourcesOptions<T> {
         return (T) this;
     }
 
-    public T setOrder(String order){
+    public T setOrder(Order order){
         this.order = order;
         return (T) this;
     }
@@ -38,7 +38,7 @@ public class ListSortablesOptions<T> extends ListResourcesOptions<T> {
             parameters.add(new BasicNameValuePair("sortBy", this.sortBy));
         }
         if(this.order != null){
-            parameters.add(new BasicNameValuePair("order", this.order));
+            parameters.add(new BasicNameValuePair("order", this.order.value));
         }
         return super.addOptions(parameters);
     }

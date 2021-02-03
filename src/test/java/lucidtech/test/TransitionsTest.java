@@ -100,7 +100,7 @@ public class TransitionsTest extends ClientTest {
         ListTransitionsOptions options = new ListTransitionsOptions()
         .setMaxResults(30)
         .setNextToken("foo")
-        .setTransitionType("manual");
+        .setTransitionType(TransitionType.MANUAL);
         JSONObject response = this.client.listTransitions(options);
         JSONArray transitions = response.getJSONArray("transitions");
         Assert.assertNotNull(transitions);
@@ -144,7 +144,7 @@ public class TransitionsTest extends ClientTest {
         .setNextToken("foo")
         .setExecutionId(TestUtils.transitionExecutionId())
         .setSortBy("endTime")
-        .setOrder("ascending");
+        .setOrder(Order.DESCENDING);
         JSONObject response = this.client.listTransitionExecutions(TestUtils.transitionId(), options);
         JSONArray executions = response.getJSONArray("executions");
         Assert.assertNotNull(executions);
@@ -158,7 +158,7 @@ public class TransitionsTest extends ClientTest {
         .setNextToken("foo")
         .setStatus(status)
         .setSortBy("endTime")
-        .setOrder("ascending");
+        .setOrder(Order.ASCENDING);
         JSONObject response = this.client.listTransitionExecutions(TestUtils.transitionId(), options);
         JSONArray executions = response.getJSONArray("executions");
         Assert.assertNotNull(executions);
