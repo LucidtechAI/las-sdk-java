@@ -5,20 +5,20 @@ import org.json.JSONObject;
 
 public class CreateTransitionOptions extends NameAndDescriptionOptions<CreateTransitionOptions> {
     private JSONObject parameters;
-    private JSONObject inSchema;
-    private JSONObject outSchema;
+    private JSONObject inputJsonSchema;
+    private JSONObject outputJsonSchema;
 
 
     public CreateTransitionOptions(){
         this.parameters = null;
-        this.inSchema = null;
-        this.outSchema = null;
+        this.inputJsonSchema = null;
+        this.outputJsonSchema = null;
     }
 
     public CreateTransitionOptions(JSONObject parameters){
         this.parameters = parameters;
-        this.inSchema = null;
-        this.outSchema = null;
+        this.inputJsonSchema = null;
+        this.outputJsonSchema = null;
     }
 
     public CreateTransitionOptions setParameters(JSONObject schema){
@@ -26,13 +26,13 @@ public class CreateTransitionOptions extends NameAndDescriptionOptions<CreateTra
         return this;
     }
 
-    public CreateTransitionOptions setInSchema(JSONObject schema){
-        this.inSchema = schema;
+    public CreateTransitionOptions setInputJsonSchema(JSONObject schema){
+        this.inputJsonSchema = schema;
         return this;
     }
 
-    public CreateTransitionOptions setOutSchema(JSONObject schema){
-        this.outSchema = schema;
+    public CreateTransitionOptions setOutputJsonSchema(JSONObject schema){
+        this.outputJsonSchema = schema;
         return this;
     }
 
@@ -40,11 +40,11 @@ public class CreateTransitionOptions extends NameAndDescriptionOptions<CreateTra
         if (this.parameters != null) {
             body.put("parameters", this.parameters);
         }
-        if (this.inSchema != null) {
-            body.put("inputJsonSchema", this.inSchema);
+        if (this.inputJsonSchema != null) {
+            body.put("inputJsonSchema", this.inputJsonSchema);
         }
-        if (this.outSchema != null) {
-            body.put("outputJsonSchema", this.outSchema);
+        if (this.outputJsonSchema != null) {
+            body.put("outputJsonSchema", this.outputJsonSchema);
         }
         return super.addOptions(body);
     }

@@ -57,7 +57,7 @@ public class Credentials {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public String getAccessToken(HttpClient httpClient) throws MissingAccessTokenException {
-        if (this.accessToken == null || accessToken.isEmpty() || this.expires < Instant.now().getEpochSecond()) {
+        if (this.accessToken == null || this.accessToken.isEmpty() || this.expires < Instant.now().getEpochSecond()) {
             try {
                 JSONObject tokenData = this.getClientCredentials(httpClient);
                 this.accessToken = tokenData.getString("access_token");

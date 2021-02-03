@@ -4,31 +4,31 @@ import org.json.JSONObject;
 
 
 public class UpdateTransitionOptions extends NameAndDescriptionOptions<UpdateTransitionOptions> {
-    private JSONObject inSchema;
-    private JSONObject outSchema;
+    private JSONObject inputJsonSchema;
+    private JSONObject outputJsonSchema;
 
 
     public UpdateTransitionOptions(){
-        this.inSchema = null;
-        this.outSchema = null;
+        this.inputJsonSchema = null;
+        this.outputJsonSchema = null;
     }
 
-    public UpdateTransitionOptions setInSchema(JSONObject schema){
-        this.inSchema = schema;
+    public UpdateTransitionOptions setInputJsonSchema(JSONObject schema){
+        this.inputJsonSchema = schema;
         return this;
     }
 
-    public UpdateTransitionOptions setOutSchema(JSONObject schema){
-        this.outSchema = schema;
+    public UpdateTransitionOptions setOutputJsonSchema(JSONObject schema){
+        this.outputJsonSchema = schema;
         return this;
     }
 
     public JSONObject addOptions(JSONObject body){
-        if (this.inSchema != null) {
-            body.put("inputJsonSchema", this.inSchema);
+        if (this.inputJsonSchema != null) {
+            body.put("inputJsonSchema", this.inputJsonSchema);
         }
-        if (this.outSchema != null) {
-            body.put("outputJsonSchema", this.outSchema);
+        if (this.outputJsonSchema != null) {
+            body.put("outputJsonSchema", this.outputJsonSchema);
         }
         return super.addOptions(body);
     }

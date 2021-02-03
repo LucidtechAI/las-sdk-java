@@ -69,8 +69,8 @@ public class TransitionsTest extends ClientTest {
         CreateTransitionOptions options = new CreateTransitionOptions()
         .setName("foo")
         .setDescription("bar")
-        .setInSchema(TestUtils.schema())
-        .setOutSchema(TestUtils.schema())
+        .setInputJsonSchema(TestUtils.schema())
+        .setOutputJsonSchema(TestUtils.schema())
         .setParameters(this.getManualParameters());
         JSONObject transition = this.client.createTransition("manual", options);
         this.assertTransition(transition);
@@ -81,8 +81,8 @@ public class TransitionsTest extends ClientTest {
         CreateTransitionOptions options = new CreateTransitionOptions()
         .setName("foo")
         .setDescription("bar")
-        .setInSchema(TestUtils.schema())
-        .setOutSchema(TestUtils.schema())
+        .setInputJsonSchema(TestUtils.schema())
+        .setOutputJsonSchema(TestUtils.schema())
         .setParameters(this.getDockerParameters());
         JSONObject transition = this.client.createTransition("docker", options);
         this.assertTransition(transition);
@@ -111,8 +111,8 @@ public class TransitionsTest extends ClientTest {
         UpdateTransitionOptions options = new UpdateTransitionOptions()
         .setName("foo")
         .setDescription("bar")
-        .setInSchema(TestUtils.schema())
-        .setOutSchema(TestUtils.schema());
+        .setInputJsonSchema(TestUtils.schema())
+        .setOutputJsonSchema(TestUtils.schema());
         JSONObject transition = this.client.updateTransition(TestUtils.transitionId(), options);
         this.assertTransition(transition);
     }

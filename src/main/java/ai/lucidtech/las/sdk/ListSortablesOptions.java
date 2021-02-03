@@ -20,13 +20,6 @@ public class ListSortablesOptions<T> extends ListResourcesOptions<T> {
         this.order = null;
     }
 
-    public ListSortablesOptions(String status, String sortBy, String order){
-        this.status = Arrays.asList(status);
-        this.sortBy = sortBy;
-        this.order = order;
-
-    }
-
     public T setStatus(List<String> status){
         this.status = status;
         return (T) this;

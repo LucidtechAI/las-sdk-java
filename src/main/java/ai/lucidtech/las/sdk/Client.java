@@ -146,7 +146,7 @@ public class Client {
     }
 
     /**
-     *  Get asset from the REST API, calls the GET /assets/{assetId} endpoint.
+     *  Get asset, calls the GET /assets/{assetId} endpoint.
      *
      * @param assetId Id of the asset
      * @return Asset response from REST API
@@ -366,7 +366,7 @@ public class Client {
     }
 
     /**
-     *  Get document from the REST API, calls the GET /documents/{documentId} endpoint.
+     *  Get document, calls the GET /documents/{documentId} endpoint.
      *
      * @param documentId Id of the document
      * @return Document response from REST API
@@ -381,9 +381,7 @@ public class Client {
     }
 
     /**
-     * Post groundTruth to the REST API, calls the POST /documents/{documentId} endpoint.
-     * Posting groundTruth means posting the ground truth data for the particular document.
-     * This enables the API to learn from past mistakes
+     * Update ground truth for a document, calls the PATCH /documents/{documentId} endpoint.
      *
      * @see Client#createDocument
      * @param documentId The document id to post groundTruth to.
@@ -405,7 +403,7 @@ public class Client {
     }
 
     /**
-     *  Get log from the REST API, calls the GET /logs/{logId} endpoint.
+     *  Get log, calls the GET /logs/{logId} endpoint.
      *
      * @param logId Id of the log
      * @return Log response from REST API
@@ -435,7 +433,6 @@ public class Client {
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
-
 
     /**
      *  List models available, calls the GET /models endpoint.
@@ -836,7 +833,7 @@ public class Client {
      * Creates a new user, calls the POST /users endpoint.
 
      * @see CreateUserOptions
-     * @param email Email to the new user
+     * @param email Email of the new user
      * @param options Additional options to include in request body
      * @return User response from API
      * @throws IOException General IOException

@@ -14,11 +14,6 @@ public class UserOptions<T> {
         this.avatar = null;
     }
 
-    public UserOptions(String name, String avatar){
-        this.name = name;
-        this.avatar = avatar;
-    }
-
     public T setName(String name){
         this.name = name;
         return (T) this;

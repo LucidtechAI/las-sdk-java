@@ -4,12 +4,12 @@ import org.json.JSONObject;
 
 
 public class CreatePredictionOptions {
-    private int maxPages;
+    private Integer maxPages;
     private Boolean autoRotate;
 
 
     public CreatePredictionOptions(){
-        this.maxPages = 0;
+        this.maxPages = null;
         this.autoRotate = null;
     }
 
@@ -29,7 +29,7 @@ public class CreatePredictionOptions {
     }
 
     public JSONObject addOptions(JSONObject body){
-        if (this.maxPages != 0) {
+        if (this.maxPages != null) {
             body.put("maxPages", this.maxPages);
         }
         if (this.autoRotate != null) {

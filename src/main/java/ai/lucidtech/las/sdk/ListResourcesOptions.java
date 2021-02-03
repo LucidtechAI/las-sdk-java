@@ -9,12 +9,12 @@ import java.util.List;
 
 
 public class ListResourcesOptions<T> {
-    protected int maxResults;
+    protected Integer maxResults;
     protected String nextToken;
 
 
     public ListResourcesOptions(){
-        this.maxResults = 0;
+        this.maxResults = null;
         this.nextToken = null;
     }
 
@@ -47,7 +47,7 @@ public class ListResourcesOptions<T> {
     }
 
     public List<NameValuePair> addOptions(List<NameValuePair> parameters){
-        if( this.maxResults != 0){
+        if( this.maxResults != null){
             parameters.add(new BasicNameValuePair("maxResults", Integer.toString(this.maxResults)));
         }
         if(this.nextToken != null){
