@@ -304,7 +304,7 @@ public class Client {
     }
 
     /**
-     *  List documents available for inference, calls the GET /documents endpoint.
+     *  List documents, calls the GET /documents endpoint.
      *
      * @see ListDocumentsOptions
      * @param options Additional options to pass along as query parameters
@@ -321,7 +321,7 @@ public class Client {
     }
 
     /**
-     *  List documents available for inference, calls the GET /documents endpoint.
+     *  List documents, calls the GET /documents endpoint.
      *
      * @return Documents response from REST API
      * @throws IOException General IOException
