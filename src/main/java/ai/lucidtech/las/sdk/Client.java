@@ -124,39 +124,6 @@ public class Client {
     }
 
     /**
-     *
-     * @param documentId The document id to run inference and create a prediction on
-     * @return response from the API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject getDocument(String documentId) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents/" + documentId);
-        String response = this.executeRequest(request);
-        return new JSONObject(response);
-    }
-
-    /**
-     *
-     * @param options Available options are:
-     * @return documents from REST API filtered using the passed options
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject listDocuments(ListDocumentsOptions options)
-        throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents", options.toList());
-        String response = this.executeRequest(request);
-        return new JSONObject(response);
-    }
-
-    public JSONObject listDocuments() throws IOException, APIException, MissingAccessTokenException {
-        return this.listDocuments(new ListDocumentsOptions());
-    }
-
-    /**
      * Creates a document handle, calls POST /documents endpoint
      *
      * @see ContentType
@@ -248,6 +215,38 @@ public class Client {
         return this.createDocument(content, contentType, new CreateDocumentOptions());
     }
 
+    /**
+     *
+     * @param documentId The document id to run inference and create a prediction on
+     * @return response from the API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject getDocument(String documentId) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents/" + documentId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
+     *
+     * @param options Available options are:
+     * @return documents from REST API filtered using the passed options
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject listDocuments(ListDocumentsOptions options)
+        throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents", options.toList());
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    public JSONObject listDocuments() throws IOException, APIException, MissingAccessTokenException {
+        return this.listDocuments(new ListDocumentsOptions());
+    }
     /**
      * Delete documents with this consent_id, calls the DELETE /documents endpoint.
      *
