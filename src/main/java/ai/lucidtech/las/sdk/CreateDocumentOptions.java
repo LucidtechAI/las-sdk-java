@@ -26,7 +26,7 @@ public class CreateDocumentOptions {
         return this;
     }
 
-    public CreateDocumentOptions setBatchId(JSONArray groundTruth){
+    public CreateDocumentOptions setGroundTruth(JSONArray groundTruth){
         this.groundTruth = groundTruth;
         return this;
     }
@@ -40,7 +40,7 @@ public class CreateDocumentOptions {
             body.put("batchId", this.batchId);
         }
         if (this.groundTruth != null) {
-            body.put("groundTruth", groundTruth);
+            body.put("groundTruth", this.groundTruth);
         }
         return body;
     }

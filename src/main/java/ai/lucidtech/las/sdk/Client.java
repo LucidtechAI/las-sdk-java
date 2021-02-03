@@ -258,9 +258,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject deleteDocuments() throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/documents", new JSONObject("{}"));
-        String jsonResponse = this.executeRequest(request);
-        return new JSONObject(jsonResponse);
+        return this.deleteDocuments(null);
     }
 
     /**
@@ -275,7 +273,9 @@ public class Client {
      */
     public JSONObject deleteDocuments(String consentId) throws IOException, APIException, MissingAccessTokenException {
         List<NameValuePair> consent = new ArrayList<NameValuePair>();
-        consent.add(new BasicNameValuePair("consentId", consentId));
+        if (consentId != null) {
+            consent.add(new BasicNameValuePair("consentId", consentId));
+        }
         HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/documents", consent);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
