@@ -127,7 +127,8 @@ public class Client {
      */
     public JSONObject listAssets(ListAssetsOptions options)
     throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/assets", options.toList());
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/assets", queryParameters);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -315,7 +316,8 @@ public class Client {
      */
     public JSONObject listDocuments(ListDocumentsOptions options)
         throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents", options.toList());
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/documents", queryParameters);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -429,7 +431,8 @@ public class Client {
      */
     public JSONObject listModels(ListModelsOptions options)
     throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/models", options.toList());
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/models", queryParameters);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -505,7 +508,8 @@ public class Client {
      */
     public JSONObject listPredictions(ListPredictionsOptions options)
     throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions", options.toList());
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions", queryParameters);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -602,7 +606,8 @@ public class Client {
      */
     public JSONObject listSecrets(ListSecretsOptions options)
     throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/secrets", options.toList());
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/secrets", queryParameters);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -693,7 +698,8 @@ public class Client {
      */
     public JSONObject listTransitions(ListTransitionsOptions options)
     throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/transitions", options.toList());
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/transitions", queryParameters);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -762,8 +768,9 @@ public class Client {
      */
     public JSONObject listTransitionExecutions(String transitionId, ListTransitionExecutionsOptions options)
     throws IOException, APIException, MissingAccessTokenException {
+        List<NameValuePair> queryParameters = getQueryParameters(options);
         String path = "/transitions/" + transitionId + "/executions";
-        HttpUriRequest request = this.createAuthorizedRequest("GET", path, options.toList());
+        HttpUriRequest request = this.createAuthorizedRequest("GET", path, queryParameters);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -879,7 +886,8 @@ public class Client {
      */
     public JSONObject listUsers(ListUsersOptions options)
     throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/users", options.toList());
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/users", queryParameters);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -893,7 +901,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listUsers() throws IOException, APIException, MissingAccessTokenException {
-        return this.listUsers(new ListUsersOptions());
+        return this.listUsers(null);
     }
 
     /**
@@ -1004,7 +1012,8 @@ public class Client {
      */
     public JSONObject listWorkflows(ListWorkflowsOptions options)
     throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/workflows", options.toList());
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/workflows", queryParameters);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -1092,8 +1101,9 @@ public class Client {
      */
     public JSONObject listWorkflowExecutions(String workflowId, ListWorkflowExecutionsOptions options)
     throws IOException, APIException, MissingAccessTokenException {
+        List<NameValuePair> queryParameters = getQueryParameters(options);
         String path = "/workflows/" + workflowId + "/executions";
-        HttpUriRequest request = this.createAuthorizedRequest("GET", path, options.toList());
+        HttpUriRequest request = this.createAuthorizedRequest("GET", path, queryParameters);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
@@ -1276,4 +1286,15 @@ public class Client {
 
         return request;
     }
+
+    private List<NameValuePair> getQueryParameters(ListResourcesOptions options){
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+
+        if (options != null) {
+            parameters = options.addOptions(parameters);
+        }
+
+        return parameters;
+    }
+
 }
