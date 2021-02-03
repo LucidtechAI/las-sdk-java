@@ -1,30 +1,33 @@
 package ai.lucidtech.las.sdk;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import java.util.*;
+
 import org.apache.commons.io.IOUtils;
-import org.apache.http.StatusLine;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
-import org.json.JSONArray;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 public class Client {
