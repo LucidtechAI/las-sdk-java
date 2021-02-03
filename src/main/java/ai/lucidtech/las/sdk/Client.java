@@ -461,10 +461,6 @@ public class Client {
         return this.createTransition(transitionType, null);
     }
 
-    public JSONObject listTransitions() throws IOException, APIException, MissingAccessTokenException {
-        return this.listTransitions(new ListTransitionsOptions());
-    }
-
     public JSONObject listTransitions(ListTransitionsOptions options)
     throws IOException, APIException, MissingAccessTokenException {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/transitions", options.toList());
@@ -472,14 +468,16 @@ public class Client {
         return new JSONObject(response);
     }
 
+    public JSONObject listTransitions() throws IOException, APIException, MissingAccessTokenException {
+        return this.listTransitions(new ListTransitionsOptions());
+    }
+
     public JSONObject updateTransition(
         String transitionId,
         UpdateTransitionOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest(
-            "PATCH",
-            "/transitions/" + transitionId, options.toJson()
-        );
+        String path = "/transitions/" + transitionId;
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, options.toJson());
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -506,7 +504,8 @@ public class Client {
         return this.listTransitionExecutions(transitionId, new ListTransitionExecutionsOptions());
     }
 
-    public JSONObject getTransitionExecution(String transitionId, String executionId) throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject getTransitionExecution(String transitionId, String executionId)
+    throws IOException, APIException, MissingAccessTokenException {
         String path = "/transitions/" + transitionId + "/executions/" + executionId;
         HttpUriRequest request = this.createAuthorizedRequest("GET", path);
         String response = this.executeRequest(request);
@@ -522,19 +521,14 @@ public class Client {
         JSONObject body = new JSONObject();
         body.put("status", status);
         body = options.addOptions(body);
-        HttpUriRequest request = this.createAuthorizedRequest(
-            "PATCH",
-            "/transitions/" + transitionId + "/executions/" + executionId,
-            body
-        );
+        String path = "/transitions/" + transitionId + "/executions/" + executionId;
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
 
-    public JSONObject createUser(
-        String email,
-        CreateUserOptions options
-    ) throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject createUser(String email, CreateUserOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
         body.put("email", email);
 
@@ -585,6 +579,12 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    public JSONObject deleteUser(String userId) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/users/" + userId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
     public JSONObject createWorkflow(
         JSONObject specification,
         CreateWorkflowOptions options
@@ -630,6 +630,13 @@ public class Client {
         return new JSONObject(jsonResponse);
     }
 
+    public JSONObject deleteWorkflow(String workflowId) throws IOException, APIException, MissingAccessTokenException {
+        String path = "/workflows/" + workflowId;
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", path);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
     public JSONObject executeWorkflow(
         String workflowId,
         JSONObject content
@@ -638,13 +645,6 @@ public class Client {
         HttpUriRequest request = this.createAuthorizedRequest("POST", path, content);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
-    }
-
-    public JSONObject deleteWorkflow(String workflowId) throws IOException, APIException, MissingAccessTokenException {
-        String path = "/workflows/" + workflowId;
-        HttpUriRequest request = this.createAuthorizedRequest("DELETE", path);
-        String response = this.executeRequest(request);
-        return new JSONObject(response);
     }
 
     public JSONObject listWorkflowExecutions(String workflowId, ListWorkflowExecutionsOptions options)
