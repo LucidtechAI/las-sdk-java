@@ -20,18 +20,14 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 
 public class Client {
-    private static List<String> VALID_CONTENT_TYPES = Arrays.asList("image/jpeg", "application/pdf");
 
     private HttpClient httpClient;
     private Credentials credentials;
@@ -688,11 +684,6 @@ public class Client {
         return EntityUtils.toString(responseEntity);
     }
 
-    private byte[] readDocument(String documentPath) throws IOException {
-        File file = new File(documentPath);
-        return Files.readAllBytes(file.toPath());
-    }
-
     private URI createUri(String path) throws URISyntaxException {
         String apiEndpoint = this.credentials.getApiEndpoint();
         return new URI(apiEndpoint + path);
@@ -708,16 +699,6 @@ public class Client {
         builder.addParameters(queryParams);
 
         return builder.build();
-    }
-
-    private ContentType getContentType(String documentPath) throws IOException {
-        File file = new File(documentPath);
-        String contentType = Files.probeContentType(file.toPath());
-        if (VALID_CONTENT_TYPES.contains(contentType)) {
-            return ContentType.fromString(contentType);
-        }
-
-        throw new RuntimeException("ContentType not supported: " + contentType);
     }
 
     private HttpUriRequest createAuthorizedRequest(String method, String path) throws MissingAccessTokenException {
