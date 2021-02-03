@@ -71,11 +71,11 @@ public class Client {
     }
 
     public JSONObject createAsset(InputStream content) throws IOException, APIException, MissingAccessTokenException {
-        return this.createAsset(IOUtils.toByteArray(content), new CreateAssetOptions());
+        return this.createAsset(IOUtils.toByteArray(content), null);
     }
 
     public JSONObject createAsset(byte[] content) throws IOException, APIException, MissingAccessTokenException {
-        return this.createAsset(content, new CreateAssetOptions());
+        return this.createAsset(content, null);
     }
 
     public JSONObject listAssets(ListAssetsOptions options)
@@ -114,13 +114,17 @@ public class Client {
      */
     public JSONObject createBatch(CreateBatchOptions options)
     throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", options.toJson());
+        JSONObject body = new JSONObject();
+        if (options != null){
+            body = options.addOptions(body);
+        }
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
         String response = this.executeRequest(request);
         return new JSONObject(response);
     }
 
     public JSONObject createBatch() throws IOException, APIException, MissingAccessTokenException {
-        return this.createBatch(new CreateBatchOptions());
+        return this.createBatch(null);
     }
 
     /**
@@ -193,7 +197,7 @@ public class Client {
         ContentType contentType
     ) throws IOException, APIException, MissingAccessTokenException {
         byte[] byteArrayContent = IOUtils.toByteArray(content);
-        return this.createDocument(byteArrayContent, contentType, new CreateDocumentOptions());
+        return this.createDocument(byteArrayContent, contentType, null);
     }
 
     /**
@@ -212,7 +216,7 @@ public class Client {
         byte[] content,
         ContentType contentType
     ) throws IOException, APIException, MissingAccessTokenException {
-        return this.createDocument(content, contentType, new CreateDocumentOptions());
+        return this.createDocument(content, contentType, null);
     }
 
     /**
@@ -366,7 +370,14 @@ public class Client {
         String documentId,
         String modelId
     ) throws IOException, APIException, MissingAccessTokenException {
-        return this.createPrediction(documentId, modelId, new CreatePredictionOptions());
+        return this.createPrediction(documentId, modelId, null);
+    }
+
+    public JSONObject listPredictions(ListPredictionsOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions", options.toList());
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
     }
 
     /**
@@ -379,14 +390,6 @@ public class Client {
     public JSONObject listPredictions() throws IOException, APIException, MissingAccessTokenException {
         return this.listPredictions(new ListPredictionsOptions());
     }
-
-    public JSONObject listPredictions(ListPredictionsOptions options)
-    throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions", options.toList());
-        String response = this.executeRequest(request);
-        return new JSONObject(response);
-    }
-
 
     public JSONObject createSecret(
         JSONObject data,
@@ -403,17 +406,17 @@ public class Client {
 
     public JSONObject createSecret(Map<String, String> data, CreateSecretOptions options)
     throws IOException, APIException, MissingAccessTokenException {
-        return this.createSecret(new JSONObject(data), new CreateSecretOptions());
+        return this.createSecret(new JSONObject(data), null);
     }
 
     public JSONObject createSecret(Map<String, String> data)
     throws IOException, APIException, MissingAccessTokenException {
-        return this.createSecret(data, new CreateSecretOptions());
+        return this.createSecret(data, null);
     }
 
     public JSONObject createSecret(JSONObject data)
     throws IOException, APIException, MissingAccessTokenException {
-        return this.createSecret(data, new CreateSecretOptions());
+        return this.createSecret(data, null);
     }
 
     public JSONObject listSecrets() throws IOException, APIException, MissingAccessTokenException {
@@ -455,7 +458,7 @@ public class Client {
     public JSONObject createTransition(
         String transitionType
     ) throws IOException, APIException, MissingAccessTokenException {
-        return this.createTransition(transitionType, new CreateTransitionOptions());
+        return this.createTransition(transitionType, null);
     }
 
     public JSONObject listTransitions() throws IOException, APIException, MissingAccessTokenException {
@@ -545,7 +548,7 @@ public class Client {
     }
 
     public JSONObject createUser(String email) throws IOException, APIException, MissingAccessTokenException {
-        return this.createUser(email, new CreateUserOptions());
+        return this.createUser(email, null);
     }
 
     public JSONObject listUsers(ListUsersOptions options)
@@ -601,7 +604,7 @@ public class Client {
     public JSONObject createWorkflow(
         JSONObject specification
     ) throws IOException, APIException, MissingAccessTokenException {
-        return this.createWorkflow(specification, new CreateWorkflowOptions());
+        return this.createWorkflow(specification, null);
     }
 
     public JSONObject listWorkflows() throws IOException, APIException, MissingAccessTokenException {
