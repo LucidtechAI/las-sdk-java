@@ -563,7 +563,7 @@ public class Client {
      */
     public JSONObject createSecret(Map<String, String> data, CreateSecretOptions options)
     throws IOException, APIException, MissingAccessTokenException {
-        return this.createSecret(new JSONObject(data), null);
+        return this.createSecret(new JSONObject(data), options);
     }
 
     /**
