@@ -15,7 +15,7 @@ public class NameAndDescriptionOptions<T> {
     }
 
     public T setName(String name){
-        assert name.equals(this.NOT_PROVIDED) : "name must have another value";
+        assert !name.equals(this.NOT_PROVIDED) : "name must have another value";
         this.name = name;
         return (T) this;
     }
