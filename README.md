@@ -68,6 +68,11 @@ To run tests, the following environment variables should be present and contain 
 ```bash
 $ gradle test
 ```
+### Use linter
+
+```bash
+$ pmd -d . -R ruleset.xml 
+```
 
 ## Publishing
 

@@ -5,15 +5,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
@@ -51,6 +47,8 @@ public class Credentials {
         this.apiKey = apiKey;
         this.authEndpoint = authEndpoint;
         this.apiEndpoint = apiEndpoint;
+        this.accessToken = null;
+        this.expires = 0;
     }
 
     /**
@@ -59,7 +57,7 @@ public class Credentials {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public String getAccessToken(HttpClient httpClient) throws MissingAccessTokenException {
-        if (accessToken == null || accessToken.isEmpty() || expires < Instant.now().getEpochSecond()) {
+        if (this.accessToken == null || this.accessToken.isEmpty() || this.expires < Instant.now().getEpochSecond()) {
             try {
                 JSONObject tokenData = this.getClientCredentials(httpClient);
                 this.accessToken = tokenData.getString("access_token");
