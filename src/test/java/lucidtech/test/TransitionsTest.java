@@ -53,14 +53,14 @@ public class TransitionsTest extends ClientTest {
     @Test
     public void testCreateManualTransition() throws IOException, APIException, MissingAccessTokenException {
         CreateTransitionOptions options = new CreateTransitionOptions().setParameters(this.getManualParameters());
-        JSONObject transition = this.client.createTransition("manual", options);
+        JSONObject transition = this.client.createTransition(TransitionType.MANUAL, options);
         this.assertTransition(transition);
     }
 
     @Test
     public void testCreateDockerTransition() throws IOException, APIException, MissingAccessTokenException {
         CreateTransitionOptions options = new CreateTransitionOptions().setParameters(this.getDockerParameters());
-        JSONObject transition = this.client.createTransition("docker", options);
+        JSONObject transition = this.client.createTransition(TransitionType.DOCKER, options);
         this.assertTransition(transition);
     }
 
@@ -72,7 +72,7 @@ public class TransitionsTest extends ClientTest {
         .setInputJsonSchema(TestUtils.schema())
         .setOutputJsonSchema(TestUtils.schema())
         .setParameters(this.getManualParameters());
-        JSONObject transition = this.client.createTransition("manual", options);
+        JSONObject transition = this.client.createTransition(TransitionType.MANUAL, options);
         this.assertTransition(transition);
     }
 
@@ -84,7 +84,7 @@ public class TransitionsTest extends ClientTest {
         .setInputJsonSchema(TestUtils.schema())
         .setOutputJsonSchema(TestUtils.schema())
         .setParameters(this.getDockerParameters());
-        JSONObject transition = this.client.createTransition("docker", options);
+        JSONObject transition = this.client.createTransition(TransitionType.DOCKER, options);
         this.assertTransition(transition);
     }
 
@@ -180,7 +180,7 @@ public class TransitionsTest extends ClientTest {
         JSONObject execution = this.client.updateTransitionExecution(
             TestUtils.transitionId(),
             TestUtils.transitionExecutionId(),
-            "succeeded",
+            TransitionExecutionStatus.SUCCEEDED,
             options
         );
         this.assertTransitionExecution(execution);
@@ -193,7 +193,7 @@ public class TransitionsTest extends ClientTest {
         JSONObject execution = this.client.updateTransitionExecution(
             TestUtils.transitionId(),
             TestUtils.transitionExecutionId(),
-            "failed",
+            TransitionExecutionStatus.FAILED,
             options
         );
         this.assertTransitionExecution(execution);

@@ -648,7 +648,8 @@ public class Client {
      * Creates a transition, calls the POST /transitions endpoint.
 
      * @see CreateTransitionOptions
-     * @param transitionType Type of transition "docker"|"manual"
+     * @see TransitionType
+     * @param transitionType Type of transition
      * @param options Additional options to include in request body
      * @return Transition response from API
      * @throws IOException General IOException
@@ -656,11 +657,11 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject createTransition(
-        String transitionType,
+        TransitionType transitionType,
         CreateTransitionOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
-        body.put("transitionType", transitionType);
+        body.put("transitionType", transitionType.value);
 
         if (options != null) {
             body = options.addOptions(body);
@@ -674,14 +675,15 @@ public class Client {
     /**
      * Creates a transition, calls the POST /transitions endpoint.
 
-     * @param transitionType Type of transition "docker"|"manual"
+     * @see TransitionType
+     * @param transitionType Type of transition
      * @return Transition response from API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject createTransition(
-        String transitionType
+        TransitionType transitionType
     ) throws IOException, APIException, MissingAccessTokenException {
         return this.createTransition(transitionType, null);
     }
@@ -812,9 +814,10 @@ public class Client {
      * calls the PATCH /transitions/{transition_id}/executions/{execution_id} endpoint.
      *
      * @see UpdateTransitionExecutionOptions
+     * @see TransitionExecutionStatus
      * @param transitionId Id of the transition
      * @param executionId Id of the execution
-     * @param status Status of the execution "succeeded"|"failed"
+     * @param status Status of the execution
      * @param options Additional options to include in request body
      * @return Transition response from REST API
      * @throws IOException General IOException
@@ -824,11 +827,11 @@ public class Client {
     public JSONObject updateTransitionExecution(
         String transitionId,
         String executionId,
-        String status,
+        TransitionExecutionStatus status,
         UpdateTransitionExecutionOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
-        body.put("status", status);
+        body.put("status", status.value);
         body = options.addOptions(body);
         String path = "/transitions/" + transitionId + "/executions/" + executionId;
         HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, body);
