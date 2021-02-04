@@ -92,6 +92,8 @@ public class Client {
     }
 
     /**
+     * Creates an asset, calls the POST /assets endpoint.
+
      * @param content Binary data
      * @return Asset response from API
      * @throws IOException General IOException
