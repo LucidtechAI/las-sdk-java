@@ -293,7 +293,6 @@ public class Client {
      * @see CreateDocumentOptions
      * @param content Binary data
      * @param contentType A mime type for the document
-     * @param options Additional options to include in request body
      * @return Document response from REST API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
@@ -389,7 +388,7 @@ public class Client {
      *
      * @see Client#createDocument
      * @param documentId The document id to post groundTruth to.
-     * @param groundTruth List of json objects on the form {'label': <label>, 'value': <value>}
+     * @param groundTruth List of json objects containing label and value for the ground truth
      * @return Document response from REST API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
@@ -962,12 +961,12 @@ public class Client {
     /**
      * Creates a new workflow, calls the POST /workflows endpoint.
      * Check out Lucidtech's tutorials for more info on how to create a workflow.
-     * @see https://docs.lucidtech.ai/getting-started/tutorials/tutorial_custom_predict_and_approve
+     * see https://docs.lucidtech.ai/getting-started/tutorials/tutorial_custom_predict_and_approve
      *
      * @see CreateWorkflowOptions
      * @param specification Specification of the workflow,
-     * currently supporting ASL: https://states-language.net/spec.html
-     * @see https://docs.lucidtech.ai/getting-started/tutorials/tutorial_custom_predict_and_approve#creating-the-workflow
+     * currently supporting ASL: https://states-language.net/spec.html. Check out the tutorials for more information:
+     * see https://docs.lucidtech.ai/getting-started/tutorials/tutorial_custom_predict_and_approve#creating-the-workflow
      * @param options Additional options to include in request body
      * @return Workflow response from API
      * @throws IOException General IOException
@@ -993,12 +992,11 @@ public class Client {
     /**
      * Creates a new workflow, calls the POST /workflows endpoint.
      * Check out Lucidtech's tutorials for more info on how to create a workflow.
-     * @see https://docs.lucidtech.ai/getting-started/tutorials/tutorial_custom_predict_and_approve
-
+     * see https://docs.lucidtech.ai/getting-started/tutorials/tutorial_custom_predict_and_approve
      *
      * @param specification Specification of the workflow,
-     * currently supporting ASL: https://states-language.net/spec.html
-     * @see https://docs.lucidtech.ai/getting-started/tutorials/tutorial_custom_predict_and_approve#creating-the-workflow
+     * currently supporting ASL: https://states-language.net/spec.html. Check out the tutorials for more information:
+     * see https://docs.lucidtech.ai/getting-started/tutorials/tutorial_custom_predict_and_approve#creating-the-workflow
      * @return Workflow response from API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
@@ -1137,6 +1135,8 @@ public class Client {
      *  calls the DELETE /workflows/{workflowId}/executions/{executionId} endpoint.
      *
      * @see Client#executeWorkflow
+     * @param workflowId Id of the workflow
+     * @param executionId Id of the execution
      * @return WorklowExecution response from REST API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
