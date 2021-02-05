@@ -10,6 +10,9 @@ publish:
 	./gradlew clean test
 	./gradlew clean uploadArchives
 
+java-docs:
+	./gradlew clean javadocJar
+
 docs: # See here for doxybook2 installation instructions https://github.com/matusnovak/doxybook2#Install
 	doxygen
 	moxygen xml
