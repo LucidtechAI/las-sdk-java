@@ -82,6 +82,12 @@ public class WorkflowsTest extends ClientTest {
     }
 
     @Test
+    public void testGetWorkflow() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject workflow = this.client.getWorkflow(TestUtils.workflowId());
+        this.assertWorkflow(workflow);
+    }
+
+    @Test
     public void testExecuteWorkflow() throws IOException, APIException, MissingAccessTokenException {
         JSONObject content  = new JSONObject();
         content.put("input", new JSONObject());
