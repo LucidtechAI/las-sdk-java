@@ -107,6 +107,12 @@ public class TransitionsTest extends ClientTest {
     }
 
     @Test
+    public void testGetTransition() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject transition = this.client.getTransition(TestUtils.transitionId());
+        this.assertTransition(transition);
+    }
+
+    @Test
     public void testUpdateTransition() throws IOException, APIException, MissingAccessTokenException {
         UpdateTransitionOptions options = new UpdateTransitionOptions()
         .setName("foo")
@@ -114,6 +120,12 @@ public class TransitionsTest extends ClientTest {
         .setInputJsonSchema(TestUtils.schema())
         .setOutputJsonSchema(TestUtils.schema());
         JSONObject transition = this.client.updateTransition(TestUtils.transitionId(), options);
+        this.assertTransition(transition);
+    }
+
+    @Test
+    public void testDeleteTransition() throws IOException, APIException, MissingAccessTokenException {
+        JSONObject transition = this.client.deleteTransition(TestUtils.transitionId());
         this.assertTransition(transition);
     }
 

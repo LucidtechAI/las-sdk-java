@@ -720,6 +720,21 @@ public class Client {
     }
 
     /**
+     *  Get transition, calls the GET /transitions/{transitionId} endpoint.
+     *
+     * @param transitionId Id of the transition
+     * @return Transition response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject getTransition(String transitionId) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/transitions/" + transitionId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
      * Updates a transition, calls the PATCH /transitions/{transitionId} endpoint.
      *
      * @see UpdateTransitionOptions
@@ -756,6 +771,24 @@ public class Client {
         HttpUriRequest request = this.createAuthorizedRequest("POST", path, new JSONObject());
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
+    }
+
+    /**
+     * Delete a transition, calls the PATCH /transitions/{transitionId} endpoint.
+     * Will fail if transition is in use by one or more workflows.
+     *
+     * @param transitionId Id of the transition
+     * @return Transition response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject deleteTransition(
+        String transitionId
+    ) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/transitions/" + transitionId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
     }
 
     /**
@@ -1036,6 +1069,21 @@ public class Client {
      */
     public JSONObject listWorkflows() throws IOException, APIException, MissingAccessTokenException {
         return this.listWorkflows(new ListWorkflowsOptions());
+    }
+
+    /**
+     *  Get workflow, calls the GET /workflows/{workflowId} endpoint.
+     *
+     * @param workflowId Id of the workflow
+     * @return Workflow response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject getWorkflow(String workflowId) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/workflows/" + workflowId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
     }
 
     /**
