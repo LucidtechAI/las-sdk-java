@@ -25,7 +25,10 @@ public class PredictionsTest extends ClientTest {
 
     @Test
     public void testCreatePredictionWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        CreatePredictionOptions options = new CreatePredictionOptions().setMaxPages(3).setAutoRotate(true);
+        CreatePredictionOptions options = new CreatePredictionOptions()
+        .setMaxPages(3)
+        .setAutoRotate(true)
+        .setImageQuality(ImageQuality.LOW);
         JSONObject prediction = this.client.createPrediction(TestUtils.documentId(), TestUtils.modelId(), options);
         this.assertPrediction(prediction);
     }
