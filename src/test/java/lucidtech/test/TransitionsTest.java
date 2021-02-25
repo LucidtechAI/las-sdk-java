@@ -188,7 +188,8 @@ public class TransitionsTest extends ClientTest {
     @Test
     public void testUpdateTransitionExecutionSucceeded() throws IOException, APIException, MissingAccessTokenException {
         UpdateTransitionExecutionOptions options = new UpdateTransitionExecutionOptions()
-        .setOutput(new JSONObject(){{ put("out", "foo"); }});
+        .setOutput(new JSONObject(){{ put("out", "foo"); }})
+        .setStartTime("2021-02-25 10:00:34.263905");
         JSONObject execution = this.client.updateTransitionExecution(
             TestUtils.transitionId(),
             TestUtils.transitionExecutionId(),
@@ -201,7 +202,8 @@ public class TransitionsTest extends ClientTest {
     @Test
     public void testUpdateTransitionExecutionFailed() throws IOException, APIException, MissingAccessTokenException {
         UpdateTransitionExecutionOptions options = new UpdateTransitionExecutionOptions()
-        .setError(new JSONObject(){{ put("message", "foo"); }});
+        .setError(new JSONObject(){{ put("message", "foo"); }})
+        .setStartTime("2021-02-25 10:00:34.263905");
         JSONObject execution = this.client.updateTransitionExecution(
             TestUtils.transitionId(),
             TestUtils.transitionExecutionId(),
