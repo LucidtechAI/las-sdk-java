@@ -216,7 +216,7 @@ public class TransitionsTest extends ClientTest {
     @Test
     public void testSendHeartbeat() throws IOException, APIException, MissingAccessTokenException {
         JSONObject response = this.client.sendHeartbeat(TestUtils.transitionId(), TestUtils.transitionExecutionId());
-        Assert.assertTrue(response.has("Your requested executed successfully"));
+        Assert.assertTrue(response.has("Your request executed successfully"));
     }
 
 }

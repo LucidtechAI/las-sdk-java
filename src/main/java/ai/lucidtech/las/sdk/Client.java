@@ -1226,7 +1226,7 @@ public class Client {
 
         if (status == 204) {
             JSONObject response = new JSONObject();
-            response.put("Your requested executed successfully", status);
+            response.put("Your request executed successfully", status);
             return response.toString();
         }
         if (status == HttpStatus.SC_FORBIDDEN) {
