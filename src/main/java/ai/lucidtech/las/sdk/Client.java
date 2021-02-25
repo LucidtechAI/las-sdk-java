@@ -874,6 +874,27 @@ public class Client {
     }
 
     /**
+     * Send heartbeat for a manual execution,
+     * calls the POST /transitions/{transitionId}/executions/{executionId}/heartbeats endpoint.
+     *
+     * @param transitionId Id of the transition
+     * @param executionId Id of the execution
+     * @return Empty response
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject sendHeartbeat(
+        String transitionId,
+        String executionId
+    ) throws IOException, APIException, MissingAccessTokenException {
+        String path = "/transitions/" + transitionId + "/executions/" + executionId + "/heartbeats" ;
+        HttpUriRequest request = this.createAuthorizedRequest("POST", path, new JSONObject());
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    /**
      * Creates a new user, calls the POST /users endpoint.
 
      * @see CreateUserOptions
@@ -1203,6 +1224,11 @@ public class Client {
         StatusLine statusLine = httpResponse.getStatusLine();
         int status = statusLine.getStatusCode();
 
+        if (status == 204) {
+            JSONObject response = new JSONObject();
+            response.put("Your requested executed successfully", status);
+            return response.toString();
+        }
         if (status == HttpStatus.SC_FORBIDDEN) {
             throw new APIException("Credentials provided are not valid");
         }
