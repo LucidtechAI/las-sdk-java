@@ -4,6 +4,8 @@ package ai.lucidtech.las.sdk;
 public enum ContentType {
     JPEG("image/jpeg"),
     PDF("application/pdf");
+    TIFF("image/tiff");
+    PNG("image/png");
 
     private String mimeType;
 
