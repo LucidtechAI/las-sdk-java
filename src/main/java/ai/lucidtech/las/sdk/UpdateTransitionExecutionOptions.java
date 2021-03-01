@@ -6,10 +6,12 @@ import org.json.JSONObject;
 public class UpdateTransitionExecutionOptions {
     private JSONObject output;
     private JSONObject error;
+    private String startTime;
 
     public UpdateTransitionExecutionOptions(){
         this.output = null;
         this.error = null;
+        this.startTime = null;
     }
 
     public UpdateTransitionExecutionOptions setOutput(JSONObject error){
@@ -22,12 +24,20 @@ public class UpdateTransitionExecutionOptions {
         return this;
     }
 
+    public UpdateTransitionExecutionOptions setStartTime(String startTime){
+        this.startTime = startTime;
+        return this;
+    }
+
     public JSONObject addOptions(JSONObject body){
         if (this.output != null) {
             body.put("output", this.output);
         }
         else if (this.error != null) {
             body.put("error", this.error);
+        }
+        if (this.startTime != null) {
+            body.put("startTime", this.startTime);
         }
         return body;
     }

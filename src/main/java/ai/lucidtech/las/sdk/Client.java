@@ -874,6 +874,28 @@ public class Client {
     }
 
     /**
+     * Send heartbeat for a manual execution to signal that we are still working on it.
+     * Must be done at minimum once every 60 seconds or the transition execution will time out,
+     * calls the POST /transitions/{transitionId}/executions/{executionId}/heartbeats endpoint.
+     *
+     * @param transitionId Id of the transition
+     * @param executionId Id of the execution
+     * @return Empty response
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject sendHeartbeat(
+        String transitionId,
+        String executionId
+    ) throws IOException, APIException, MissingAccessTokenException {
+        String path = "/transitions/" + transitionId + "/executions/" + executionId + "/heartbeats";
+        HttpUriRequest request = this.createAuthorizedRequest("POST", path, new JSONObject());
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    /**
      * Creates a new user, calls the POST /users endpoint.
 
      * @see CreateUserOptions
@@ -1203,15 +1225,18 @@ public class Client {
         StatusLine statusLine = httpResponse.getStatusLine();
         int status = statusLine.getStatusCode();
 
-        if (status == HttpStatus.SC_FORBIDDEN) {
+        if (status == HttpStatus.SC_NO_CONTENT) {
+            JSONObject response = new JSONObject();
+            response.put("Your request executed successfully", String.valueOf(status));
+            return response.toString();
+        }
+        else if (status == HttpStatus.SC_FORBIDDEN) {
             throw new APIException("Credentials provided are not valid");
         }
-
-        if (status == 429) {
+        else if (status == 429) {
             throw new APIException("You have reached the limit of requests per second");
         }
-
-        if (status > 299) {
+        else if (status > 299) {
             throw new APIException(status, statusLine.getReasonPhrase());
         }
 

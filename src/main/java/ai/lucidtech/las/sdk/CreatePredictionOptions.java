@@ -6,6 +6,7 @@ import org.json.JSONObject;
 public class CreatePredictionOptions {
     private Integer maxPages;
     private Boolean autoRotate;
+    private ImageQuality imageQuality;
 
 
     public CreatePredictionOptions(){
@@ -28,12 +29,20 @@ public class CreatePredictionOptions {
         return this;
     }
 
+    public CreatePredictionOptions setImageQuality(ImageQuality imageQuality){
+        this.imageQuality = imageQuality;
+        return this;
+    }
+
     public JSONObject addOptions(JSONObject body){
         if (this.maxPages != null) {
             body.put("maxPages", this.maxPages);
         }
         if (this.autoRotate != null) {
             body.put("autoRotate", this.autoRotate);
+        }
+        if (this.imageQuality != null) {
+            body.put("imageQuality", this.imageQuality.value);
         }
         return body;
     }
