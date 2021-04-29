@@ -7,29 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
-public class ListResourcesOptions<T> {
+public class DeleteResourcesOptions<T> {
     protected Integer maxResults;
     protected String nextToken;
-
-
-    public ListResourcesOptions() {
-        this.maxResults = null;
-        this.nextToken = null;
-    }
-
-    public ListResourcesOptions(int maxResults) {
-        this(maxResults, null);
-    }
-
-    public ListResourcesOptions(String nextToken) {
-        this(0, nextToken);
-    }
-
-    public ListResourcesOptions(int maxResults, String nextToken) {
-        this.maxResults = maxResults;
-        this.nextToken = nextToken;
-    }
 
     public T setMaxResults(int maxResults) {
         this.maxResults = maxResults;

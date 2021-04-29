@@ -87,7 +87,9 @@ public class DocumentsTest extends ClientTest {
 
     @Test
     public void testDeleteDocumentsWithConsentId() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject document = this.client.deleteDocuments(TestUtils.consentId());
+        DeleteDocumentsOptions options = new DeleteDocumentsOptions()
+            .setConsentId(new String[] {TestUtils.consentId()});
+        JSONObject document = this.client.deleteDocuments(options);
         JSONArray documents = document.getJSONArray("documents");
         Assert.assertNotNull(documents);
     }

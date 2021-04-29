@@ -2,6 +2,7 @@ package ai.lucidtech.las.sdk;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -44,6 +45,90 @@ public class Client {
     public Client(Credentials credentials) {
         this.credentials = credentials;
         this.httpClient = HttpClientBuilder.create().build();
+    }
+
+    /**
+     * Creates an app client, calls the POST /appClients endpoint.
+
+     * @see CreateAppClientOptions
+     * @param options Additional options to include in request body
+     * @return Asset response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject createAppClient(
+        CreateAppClientOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject body = new JSONObject();
+
+        if (options != null) {
+            body = options.addOptions(body);
+        }
+
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/appClients", body);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    /**
+     * Creates an app client, calls the POST /appClients endpoint.
+
+     * @return Asset response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject createAppClient() throws IOException, APIException, MissingAccessTokenException {
+        return this.createAppClient(null);
+    }
+
+    /**
+     *  List appClients available, calls the GET /appClients endpoint.
+     *
+     * @see ListAppClientsOptions
+     * @param options Additional options to pass along as query parameters
+     * @return AppClients response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject listAppClients(
+        ListAppClientsOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/appClients", queryParameters);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
+     *  List appClients available, calls the GET /appClients endpoint.
+     *
+     * @return AppClients response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject listAppClients() throws IOException, APIException, MissingAccessTokenException {
+        return this.listAppClients(new ListAppClientsOptions());
+    }
+
+    /**
+     * Delete an appClient, calls the DELETE /appClients/{appClientId} endpoint.
+     *
+     * @param appClientId Id of the appClient
+     * @return AppClient response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject deleteAppClient(
+        String appClientId
+    ) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/appClients/" + appClientId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
     }
 
     /**
@@ -135,7 +220,6 @@ public class Client {
         return new JSONObject(response);
     }
 
-
     /**
      *  List assets available, calls the GET /assets endpoint.
      *
@@ -178,9 +262,32 @@ public class Client {
         String assetId,
         UpdateAssetOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/assets/" + assetId, options.toJson());
+        JSONObject body = new JSONObject();
+
+        if (options != null) {
+            body = options.addOptions(body);
+        }
+
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/assets/" + assetId, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
+    }
+
+    /**
+     * Delete an asset, calls the DELETE /assets/{assetId} endpoint.
+     *
+     * @param assetId Id of the asset
+     * @return Asset response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject deleteAsset(
+        String assetId
+    ) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/assets/" + assetId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
     }
 
     /**
@@ -196,9 +303,11 @@ public class Client {
     public JSONObject createBatch(CreateBatchOptions options)
     throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
+
         if (options != null){
             body = options.addOptions(body);
         }
+
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -214,6 +323,83 @@ public class Client {
      */
     public JSONObject createBatch() throws IOException, APIException, MissingAccessTokenException {
         return this.createBatch(null);
+    }
+
+    /**
+     *  List batches available, calls the GET /batches endpoint.
+     *
+     * @see ListBatchesOptions
+     * @param options Additional options to pass along as query parameters
+     * @return Batches response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject listBatches(ListBatchesOptions options)
+    throws IOException, APIException, MissingAccessTokenException {
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/batches", queryParameters);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
+     *  List batches available, calls the GET /batches endpoint.
+     *
+     * @return Batches response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject listBatches() throws IOException, APIException, MissingAccessTokenException {
+        return this.listBatches(new ListBatchesOptions());
+    }
+
+    /**
+     * Delete an batch, calls the DELETE /batches/{batchId} endpoint.
+     *
+     * @param batchId Id of the batch
+     * @param deleteDocuments Set to true to delete documents in batch before deleting batch
+     * @return Batch response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject deleteBatch(
+        String batchId,
+        boolean deleteDocuments
+    ) throws IOException, APIException, MissingAccessTokenException {
+        if (deleteDocuments) {
+            DeleteDocumentsOptions options = new DeleteDocumentsOptions().setBatchId(new String[] {batchId});
+            JSONObject documents = this.deleteDocuments(options);
+            String nextTokenKey = "nextToken";
+            String nextToken = !documents.isNull(nextTokenKey) ? documents.getString(nextTokenKey) : null;
+
+            while (nextToken != null) {
+                options = options.setNextToken(nextToken);
+                documents = this.deleteDocuments(options);
+                nextToken = !documents.isNull(nextTokenKey) ? documents.getString(nextTokenKey) : null;
+            }
+        }
+
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/batches/" + batchId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
+     * Delete an batch, calls the DELETE /batches/{batchId} endpoint.
+     *
+     * @param batchId Id of the batch
+     * @return Batch response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject deleteBatch(
+        String batchId
+    ) throws IOException, APIException, MissingAccessTokenException {
+        return this.deleteBatch(batchId, false);
     }
 
     /**
@@ -336,6 +522,25 @@ public class Client {
     }
 
     /**
+     *  Delete documents, calls the DELETE /documents endpoint.
+     *
+     * @see DeleteDocumentsOptions
+     * @param options Additional options to pass along as query parameters
+     * @return Documents response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject deleteDocuments(
+        DeleteDocumentsOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/documents", queryParameters);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
      * Delete documents, calls the DELETE /documents endpoint.
      *
      * @see Client#createDocument
@@ -346,26 +551,6 @@ public class Client {
      */
     public JSONObject deleteDocuments() throws IOException, APIException, MissingAccessTokenException {
         return this.deleteDocuments(null);
-    }
-
-    /**
-     * Delete documents with the provided consentId, calls the DELETE /documents endpoint.
-     *
-     * @see Client#createDocument
-     * @param consentId Delete documents with this consentId
-     * @return Documents response from REST API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject deleteDocuments(String consentId) throws IOException, APIException, MissingAccessTokenException {
-        List<NameValuePair> consent = new ArrayList<NameValuePair>();
-        if (consentId != null) {
-            consent.add(new BasicNameValuePair("consentId", consentId));
-        }
-        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/documents", consent);
-        String jsonResponse = this.executeRequest(request);
-        return new JSONObject(jsonResponse);
     }
 
     /**
@@ -774,7 +959,7 @@ public class Client {
     }
 
     /**
-     * Delete a transition, calls the PATCH /transitions/{transitionId} endpoint.
+     * Delete a transition, calls the DELETE /transitions/{transitionId} endpoint.
      * Will fail if transition is in use by one or more workflows.
      *
      * @param transitionId Id of the transition
@@ -1380,4 +1565,13 @@ public class Client {
         return parameters;
     }
 
+    private List<NameValuePair> getQueryParameters(DeleteResourcesOptions options){
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+
+        if (options != null) {
+            parameters = options.addOptions(parameters);
+        }
+
+        return parameters;
+    }
 }
