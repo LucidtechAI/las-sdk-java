@@ -1,5 +1,6 @@
 package ai.lucidtech.las.sdk;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -17,6 +18,12 @@ public abstract class Options {
     }
 
     protected void addOption(JSONObject body, String key, Boolean value) {
+        if (value != null) {
+            body.put(key, value);
+        }
+    }
+
+    protected void addOption(JSONObject body, String key, JSONArray value) {
         if (value != null) {
             body.put(key, value);
         }

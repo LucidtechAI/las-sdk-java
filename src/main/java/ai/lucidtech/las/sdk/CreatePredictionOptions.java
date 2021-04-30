@@ -9,32 +9,32 @@ public class CreatePredictionOptions {
     private ImageQuality imageQuality;
 
 
-    public CreatePredictionOptions(){
+    public CreatePredictionOptions() {
         this.maxPages = null;
         this.autoRotate = null;
     }
 
-    public CreatePredictionOptions(int maxPages, boolean autoRotate){
+    public CreatePredictionOptions(int maxPages, boolean autoRotate) {
         this.maxPages = maxPages;
         this.autoRotate = autoRotate;
     }
 
-    public CreatePredictionOptions setMaxPages(int maxPages){
+    public CreatePredictionOptions setMaxPages(int maxPages) {
         this.maxPages = maxPages;
         return this;
     }
 
-    public CreatePredictionOptions setAutoRotate(boolean autoRotate){
+    public CreatePredictionOptions setAutoRotate(boolean autoRotate) {
         this.autoRotate = autoRotate;
         return this;
     }
 
-    public CreatePredictionOptions setImageQuality(ImageQuality imageQuality){
+    public CreatePredictionOptions setImageQuality(ImageQuality imageQuality) {
         this.imageQuality = imageQuality;
         return this;
     }
 
-    public JSONObject addOptions(JSONObject body){
+    public JSONObject addOptions(JSONObject body) {
         if (this.maxPages != null) {
             body.put("maxPages", this.maxPages);
         }
@@ -47,7 +47,7 @@ public class CreatePredictionOptions {
         return body;
     }
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject body = new JSONObject();
         return this.addOptions(body);
     }

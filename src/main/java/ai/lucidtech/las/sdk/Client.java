@@ -550,7 +550,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject deleteDocuments() throws IOException, APIException, MissingAccessTokenException {
-        return this.deleteDocuments(null);
+        return this.deleteDocuments(new DeleteDocumentsOptions());
     }
 
     /**
@@ -603,6 +603,37 @@ public class Client {
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/logs/" + logId);
         String response = this.executeRequest(request);
         return new JSONObject(response);
+    }
+
+    /**
+     *  List logs, calls the GET /logs endpoint.
+     *
+     * @see ListLogsOptions
+     * @param options Additional options to pass along as query parameters
+     * @return Logs response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject listLogs(
+        ListLogsOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        List<NameValuePair> queryParameters = getQueryParameters(options);
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/logs", queryParameters);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
+     *  List logs, calls the GET /logs endpoint.
+     *
+     * @return Logs response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject listLogs() throws IOException, APIException, MissingAccessTokenException {
+        return this.listLogs(new ListLogsOptions());
     }
 
     /**

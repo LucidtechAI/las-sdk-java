@@ -7,11 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class ListResourcesOptions<T> {
     protected Integer maxResults;
     protected String nextToken;
-
 
     public ListResourcesOptions() {
         this.maxResults = null;
@@ -46,13 +44,21 @@ public class ListResourcesOptions<T> {
         return this.addOptions(parameters);
     }
 
+    protected void addOption(List<NameValuePair> parameters, String key, String value) {
+        if (value != null) {
+            parameters.add(new BasicNameValuePair(key, value));
+        }
+    }
+
+    protected void addOption(List<NameValuePair> parameters, String key, Integer value) {
+        if (value != null) {
+            parameters.add(new BasicNameValuePair(key, Integer.toString(value)));
+        }
+    }
+
     public List<NameValuePair> addOptions(List<NameValuePair> parameters) {
-        if (this.maxResults != null) {
-            parameters.add(new BasicNameValuePair("maxResults", Integer.toString(this.maxResults)));
-        }
-        if (this.nextToken != null) {
-            parameters.add(new BasicNameValuePair("nextToken", this.nextToken));
-        }
+        this.addOption(parameters, "maxResults", this.maxResults);
+        this.addOption(parameters, "nextToken", this.nextToken);
         return parameters;
     }
 }

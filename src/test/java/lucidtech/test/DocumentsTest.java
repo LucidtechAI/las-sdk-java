@@ -13,12 +13,20 @@ import java.io.IOException;
 
 
 public class DocumentsTest extends ClientTest {
-
     private void assertDocument(JSONObject document) throws IOException {
-        Assert.assertTrue(document.has("documentId"));
-        Assert.assertTrue(document.has("content"));
-        Assert.assertTrue(document.has("consentId"));
         Assert.assertTrue(document.has("batchId"));
+        Assert.assertTrue(document.has("consentId"));
+        Assert.assertTrue(document.has("content"));
+        Assert.assertTrue(document.has("documentId"));
+    }
+
+    private void assertDocuments(JSONObject documents) throws IOException {
+        Assert.assertTrue(documents.has("documents"));
+        Assert.assertTrue(documents.has("nextToken"));
+
+        for (Object document: documents.getJSONArray("documents")) {
+            this.assertDocument((JSONObject) document);
+        }
     }
 
     @Test
@@ -61,9 +69,8 @@ public class DocumentsTest extends ClientTest {
 
     @Test
     public void testListDocuments() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject response = this.client.listDocuments();
-        JSONArray documents = response.getJSONArray("documents");
-        Assert.assertNotNull(documents);
+        JSONObject documents = this.client.listDocuments();
+        this.assertDocuments(documents);
     }
 
     @Test
@@ -72,26 +79,31 @@ public class DocumentsTest extends ClientTest {
             .setConsentId(TestUtils.consentId())
             .setBatchId(TestUtils.batchId())
             .setMaxResults(30)
-            .setNextToken("foo");
-        JSONObject response = this.client.listDocuments(options);
-        JSONArray documents = response.getJSONArray("documents");
-        Assert.assertNotNull(documents);
+            .setNextToken("Dummy NextToken");
+        JSONObject documents = this.client.listDocuments(options);
+        this.assertDocuments(documents);
     }
 
     @Test
     public void testDeleteDocuments() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject document = this.client.deleteDocuments();
-        JSONArray documents = document.getJSONArray("documents");
-        Assert.assertNotNull(documents);
+        JSONObject documents = this.client.deleteDocuments();
+        this.assertDocuments(documents);
     }
 
     @Test
     public void testDeleteDocumentsWithConsentId() throws IOException, APIException, MissingAccessTokenException {
         DeleteDocumentsOptions options = new DeleteDocumentsOptions()
             .setConsentId(new String[] {TestUtils.consentId()});
-        JSONObject document = this.client.deleteDocuments(options);
-        JSONArray documents = document.getJSONArray("documents");
-        Assert.assertNotNull(documents);
+        JSONObject documents = this.client.deleteDocuments(options);
+        this.assertDocuments(documents);
+    }
+
+    @Test
+    public void testDeleteDocumentsWithBatchId() throws IOException, APIException, MissingAccessTokenException {
+        DeleteDocumentsOptions options = new DeleteDocumentsOptions()
+            .setBatchId(new String[] {TestUtils.batchId()});
+        JSONObject documents = this.client.deleteDocuments(options);
+        this.assertDocuments(documents);
     }
 
     @Test
