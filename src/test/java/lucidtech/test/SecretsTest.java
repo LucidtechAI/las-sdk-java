@@ -65,4 +65,11 @@ public class SecretsTest extends ClientTest {
         JSONObject secret = this.client.updateSecret(TestUtils.secretId(), options);
         this.assertSecret(secret);
     }
+
+    @Test
+    public void testDeleteSecret() throws IOException, APIException, MissingAccessTokenException {
+        String secretId = TestUtils.secretId();
+        JSONObject secret = this.client.deleteSecret(secretId);
+        this.assertSecret(secret);
+    }
 }

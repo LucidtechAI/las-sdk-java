@@ -869,6 +869,23 @@ public class Client {
     }
 
     /**
+     * Delete a secret, calls the DELETE /secrets/{secretId} endpoint.
+     *
+     * @param secretId Id of the secret
+     * @return Secret response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject deleteSecret(
+        String secretId
+    ) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/secrets/" + secretId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
      * Creates a transition, calls the POST /transitions endpoint.
      *
      * @see CreateTransitionOptions
