@@ -646,8 +646,9 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject listModels(ListModelsOptions options)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listModels(
+        ListModelsOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
         List<NameValuePair> queryParameters = getQueryParameters(options);
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/models", queryParameters);
         String response = this.executeRequest(request);
@@ -723,8 +724,9 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject listPredictions(ListPredictionsOptions options)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listPredictions(
+        ListPredictionsOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
         List<NameValuePair> queryParameters = getQueryParameters(options);
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/predictions", queryParameters);
         String response = this.executeRequest(request);
@@ -778,8 +780,10 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject createSecret(Map<String, String> data, CreateSecretOptions options)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject createSecret(
+        Map<String, String> data,
+        CreateSecretOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
         return this.createSecret(new JSONObject(data), options);
     }
 
@@ -792,8 +796,9 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject createSecret(Map<String, String> data)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject createSecret(
+        Map<String, String> data
+    ) throws IOException, APIException, MissingAccessTokenException {
         return this.createSecret(data, null);
     }
 
@@ -806,8 +811,9 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject createSecret(JSONObject data)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject createSecret(
+        JSONObject data
+    ) throws IOException, APIException, MissingAccessTokenException {
         return this.createSecret(data, null);
     }
 
@@ -821,8 +827,9 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject listSecrets(ListSecretsOptions options)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listSecrets(
+        ListSecretsOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
         List<NameValuePair> queryParameters = getQueryParameters(options);
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/secrets", queryParameters);
         String response = this.executeRequest(request);
@@ -863,7 +870,7 @@ public class Client {
 
     /**
      * Creates a transition, calls the POST /transitions endpoint.
-
+     *
      * @see CreateTransitionOptions
      * @see TransitionType
      * @param transitionType Type of transition

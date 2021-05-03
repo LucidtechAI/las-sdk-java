@@ -3,21 +3,10 @@ package ai.lucidtech.las.sdk;
 import org.json.JSONObject;
 
 
-public class CreatePredictionOptions {
+public class CreatePredictionOptions extends Options {
     private Integer maxPages;
     private Boolean autoRotate;
     private ImageQuality imageQuality;
-
-
-    public CreatePredictionOptions() {
-        this.maxPages = null;
-        this.autoRotate = null;
-    }
-
-    public CreatePredictionOptions(int maxPages, boolean autoRotate) {
-        this.maxPages = maxPages;
-        this.autoRotate = autoRotate;
-    }
 
     public CreatePredictionOptions setMaxPages(int maxPages) {
         this.maxPages = maxPages;
@@ -35,15 +24,9 @@ public class CreatePredictionOptions {
     }
 
     public JSONObject addOptions(JSONObject body) {
-        if (this.maxPages != null) {
-            body.put("maxPages", this.maxPages);
-        }
-        if (this.autoRotate != null) {
-            body.put("autoRotate", this.autoRotate);
-        }
-        if (this.imageQuality != null) {
-            body.put("imageQuality", this.imageQuality.value);
-        }
+        this.addOption(body, "maxPages", this.maxPages);
+        this.addOption(body, "autoRotate", this.autoRotate);
+        this.addOption(body, "imageQuality", this.imageQuality.value);
         return body;
     }
 

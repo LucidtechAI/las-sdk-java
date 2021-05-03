@@ -23,6 +23,12 @@ public abstract class Options {
         }
     }
 
+    protected void addOption(JSONObject body, String key, Integer value) {
+        if (value != null) {
+            body.put(key, value);
+        }
+    }
+
     protected void addOption(JSONObject body, String key, JSONArray value) {
         if (value != null) {
             body.put(key, value);
