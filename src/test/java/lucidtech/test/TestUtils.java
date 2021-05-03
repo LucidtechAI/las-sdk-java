@@ -2,10 +2,14 @@ package lucidtech.test;
 
 import ai.lucidtech.las.sdk.*;
 
+import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import java.util.Random;
 
 import org.json.JSONObject;
+
 
 public final class TestUtils {
 
@@ -94,5 +98,9 @@ public final class TestUtils {
 
     public static String avatar() {
         return "jpeg-string";
+    }
+
+    public static String isoDateTime() {
+        return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
     }
 }
