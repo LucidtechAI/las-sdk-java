@@ -1313,8 +1313,9 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject listWorkflows(ListWorkflowsOptions options)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listWorkflows(
+        ListWorkflowsOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
         List<NameValuePair> queryParameters = getQueryParameters(options);
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/workflows", queryParameters);
         String response = this.executeRequest(request);
@@ -1417,8 +1418,10 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject listWorkflowExecutions(String workflowId, ListWorkflowExecutionsOptions options)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listWorkflowExecutions(
+        String workflowId,
+        ListWorkflowExecutionsOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
         List<NameValuePair> queryParameters = getQueryParameters(options);
         String path = "/workflows/" + workflowId + "/executions";
         HttpUriRequest request = this.createAuthorizedRequest("GET", path, queryParameters);
@@ -1435,24 +1438,28 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject listWorkflowExecutions(String workflowId)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listWorkflowExecutions(
+        String workflowId
+    ) throws IOException, APIException, MissingAccessTokenException {
         return this.listWorkflowExecutions(workflowId, new ListWorkflowExecutionsOptions());
     }
 
     /**
-     * Deletes the execution with the provided executionId from workflowId,
-     *  calls the DELETE /workflows/{workflowId}/executions/{executionId} endpoint.
+     * Deletes execution from workflow,
+     * calls the DELETE /workflows/{workflowId}/executions/{executionId} endpoint.
      *
      * @see Client#executeWorkflow
      * @param workflowId Id of the workflow
      * @param executionId Id of the execution
-     * @return WorklowExecution response from REST API
+     * @return WorkflowExecution response from REST API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject deleteWorkflowExecution(String workflowId, String executionId) throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject deleteWorkflowExecution(
+        String workflowId,
+        String executionId
+    ) throws IOException, APIException, MissingAccessTokenException {
         String path = "/workflows/" + workflowId + "/executions/" + executionId;
         HttpUriRequest request = this.createAuthorizedRequest("DELETE", path);
         String response = this.executeRequest(request);
@@ -1477,7 +1484,7 @@ public class Client {
             throw new APIException("You have reached the limit of requests per second");
         }
         else if (status > 299) {
-            throw new APIException(status, statusLine.getReasonPhrase());
+            //throw new APIException(status, statusLine.getReasonPhrase());
         }
 
         return EntityUtils.toString(responseEntity);

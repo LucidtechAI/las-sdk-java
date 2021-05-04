@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 
 public final class TestUtils {
-
     private TestUtils() {
         throw new AssertionError();
     }
@@ -93,7 +92,7 @@ public final class TestUtils {
     }
 
     public static String email() {
-        return "foo@bar.com";
+        return "foo@example.com";
     }
 
     public static String avatar() {
@@ -102,5 +101,9 @@ public final class TestUtils {
 
     public static String isoDateTime() {
         return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
+    }
+
+    public static String dockerImageUrl() {
+        return "my/docker:image";
     }
 }

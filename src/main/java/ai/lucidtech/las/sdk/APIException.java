@@ -10,6 +10,6 @@ public class APIException extends Exception {
     }
 
     public APIException(int code, String message) {
-        super("Code" + code + "\nMessage: " + message);
+        super("Code: " + code + "\nMessage: " + message);
     }
 }

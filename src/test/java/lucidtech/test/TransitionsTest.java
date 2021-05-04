@@ -16,7 +16,7 @@ import java.util.Map;
 
 
 public class TransitionsTest extends ClientTest {
-    public ManualTransitionParameters getManualParameters() {
+    public ManualTransitionParameters createManualParameters() {
         Map<String, String> assets = new HashMap<String, String>();
         assets.put("jsRemoteComponent", TestUtils.assetId());
         ManualTransitionParameters parameters = new ManualTransitionParameters()
@@ -24,9 +24,16 @@ public class TransitionsTest extends ClientTest {
         return parameters;
     }
 
-    private DockerTransitionParameters getDockerParameters() {
+    private DockerTransitionParameters createDockerParameters() {
+        Map<String, String> environment = new HashMap<String, String>();
+        environment.put("TEST_ENV_KEY", "Test Env Value");
+
         DockerTransitionParameters parameters = new DockerTransitionParameters()
-            .setImageUrl("my/docker:image")
+            .setImageUrl(TestUtils.dockerImageUrl())
+            .setMemory(512)
+            .setCpu(256)
+            .setEnvironment(environment)
+            .setEnvironmentSecrets(new String[] {TestUtils.secretId(), TestUtils.secretId()})
             .setSecretId(TestUtils.secretId());
         return parameters;
     }
@@ -72,7 +79,11 @@ public class TransitionsTest extends ClientTest {
     @Test
     public void testCreateManualTransition() throws IOException, APIException, MissingAccessTokenException {
         CreateTransitionOptions options = new CreateTransitionOptions()
-            .setParameters(this.getManualParameters());
+            .setName("Transition Name")
+            .setDescription("Transition Description")
+            .setInputJsonSchema(TestUtils.schema())
+            .setOutputJsonSchema(TestUtils.schema())
+            .setParameters(this.createManualParameters());
         JSONObject transition = this.client.createTransition(TransitionType.MANUAL, options);
         this.assertTransition(transition);
     }
@@ -84,31 +95,7 @@ public class TransitionsTest extends ClientTest {
             .setDescription("Transition Description")
             .setInputJsonSchema(TestUtils.schema())
             .setOutputJsonSchema(TestUtils.schema())
-            .setParameters(this.getDockerParameters());
-        JSONObject transition = this.client.createTransition(TransitionType.DOCKER, options);
-        this.assertTransition(transition);
-    }
-
-    @Test
-    public void testCreateManualTransitionWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        CreateTransitionOptions options = new CreateTransitionOptions()
-            .setName("Transition Name")
-            .setDescription("Transition Description")
-            .setInputJsonSchema(TestUtils.schema())
-            .setOutputJsonSchema(TestUtils.schema())
-            .setParameters(this.getManualParameters());
-        JSONObject transition = this.client.createTransition(TransitionType.MANUAL, options);
-        this.assertTransition(transition);
-    }
-
-    @Test
-    public void testCreateDockerTransitionWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        CreateTransitionOptions options = new CreateTransitionOptions()
-            .setName("Transition Name")
-            .setDescription("Transition Description")
-            .setInputJsonSchema(TestUtils.schema())
-            .setOutputJsonSchema(TestUtils.schema())
-            .setParameters(this.getDockerParameters());
+            .setParameters(this.createDockerParameters());
         JSONObject transition = this.client.createTransition(TransitionType.DOCKER, options);
         this.assertTransition(transition);
     }
