@@ -2,7 +2,6 @@ package lucidtech.test;
 
 import ai.lucidtech.las.sdk.*;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;

@@ -2,7 +2,6 @@ package lucidtech.test;
 
 import ai.lucidtech.las.sdk.*;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,19 +27,17 @@ public class WorkflowsTest extends ClientTest {
         Map<String, String> environment = new HashMap<String, String>();
         environment.put("TEST_ENV_KEY", "Test Env Value");
 
-        WorkflowCompletedConfig completedConfig = new WorkflowCompletedConfig()
+        return new WorkflowCompletedConfig()
             .setImageUrl(TestUtils.dockerImageUrl())
             .setEnvironment(environment)
             .setEnvironmentSecrets(new String[] {TestUtils.secretId(), TestUtils.secretId()})
             .setSecretId(TestUtils.secretId());
-        return completedConfig;
     }
 
     private WorkflowErrorConfig createErrorConfig() {
-        WorkflowErrorConfig errorConfig = new WorkflowErrorConfig()
+        return new WorkflowErrorConfig()
             .setEmail(TestUtils.email())
             .setManualRetry(true);
-        return errorConfig;
     }
 
     private void assertWorkflowExecution(JSONObject execution) throws IOException {

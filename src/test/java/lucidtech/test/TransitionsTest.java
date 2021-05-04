@@ -2,7 +2,6 @@ package lucidtech.test;
 
 import ai.lucidtech.las.sdk.*;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,23 +18,21 @@ public class TransitionsTest extends ClientTest {
     public ManualTransitionParameters createManualParameters() {
         Map<String, String> assets = new HashMap<String, String>();
         assets.put("jsRemoteComponent", TestUtils.assetId());
-        ManualTransitionParameters parameters = new ManualTransitionParameters()
+        return new ManualTransitionParameters()
             .setAssets(assets);
-        return parameters;
     }
 
     private DockerTransitionParameters createDockerParameters() {
         Map<String, String> environment = new HashMap<String, String>();
         environment.put("TEST_ENV_KEY", "Test Env Value");
 
-        DockerTransitionParameters parameters = new DockerTransitionParameters()
+        return new DockerTransitionParameters()
             .setImageUrl(TestUtils.dockerImageUrl())
             .setMemory(512)
             .setCpu(256)
             .setEnvironment(environment)
             .setEnvironmentSecrets(new String[] {TestUtils.secretId(), TestUtils.secretId()})
             .setSecretId(TestUtils.secretId());
-        return parameters;
     }
 
     private void assertTransitionExecution(JSONObject execution) throws IOException {

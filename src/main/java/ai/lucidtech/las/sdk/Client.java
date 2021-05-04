@@ -2,7 +2,6 @@ package ai.lucidtech.las.sdk;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,7 +23,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import org.json.JSONArray;
@@ -1487,7 +1485,7 @@ public class Client {
             throw new APIException("You have reached the limit of requests per second");
         }
         else if (status > 299) {
-            //throw new APIException(status, statusLine.getReasonPhrase());
+            throw new APIException(status, statusLine.getReasonPhrase());
         }
 
         return EntityUtils.toString(responseEntity);

@@ -1,9 +1,7 @@
 package ai.lucidtech.las.sdk;
 
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.NameValuePair;
 
-import java.lang.Enum;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
