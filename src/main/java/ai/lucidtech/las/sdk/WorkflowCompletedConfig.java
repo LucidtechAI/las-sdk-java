@@ -37,10 +37,4 @@ public class WorkflowCompletedConfig extends Options {
         this.addOption(body, "environment", this.environment);
         return body;
     }
-
-    public JSONObject toJson() {
-        JSONObject body = new JSONObject();
-        this.addOptions(body);
-        return body;
-    }
 }

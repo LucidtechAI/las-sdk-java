@@ -16,7 +16,9 @@ public class ListTransitionsOptions extends ListResourcesOptions<ListTransitions
 
     public List<NameValuePair> toList() {
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        this.addOption(parameters, "transitionType", this.transitionType.value);
+        if (this.transitionType != null) {
+            this.addOption(parameters, "transitionType", this.transitionType.value);
+        }
         return super.addOptions(parameters);
     }
 }

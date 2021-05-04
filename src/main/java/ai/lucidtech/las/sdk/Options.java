@@ -55,11 +55,10 @@ public abstract class Options {
 
     protected void addOption(JSONObject body, String key, Options value) {
         if (value != null) {
-            body.put(key, value.toJson());
+            JSONObject options = new JSONObject();
+            body.put(key, value.addOptions(options));
         }
     }
 
     abstract public JSONObject addOptions(JSONObject body);
-
-    abstract public JSONObject toJson();
 }

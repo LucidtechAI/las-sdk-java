@@ -22,10 +22,4 @@ public class WorkflowErrorConfig extends Options {
         this.addOption(body, "manualRetry", this.manualRetry);
         return body;
     }
-
-    public JSONObject toJson() {
-        JSONObject body = new JSONObject();
-        this.addOptions(body);
-        return body;
-    }
 }

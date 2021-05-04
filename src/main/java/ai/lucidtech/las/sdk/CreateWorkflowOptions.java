@@ -22,9 +22,4 @@ public class CreateWorkflowOptions extends NameAndDescriptionOptions<CreateWorkf
         this.addOption(body, "errorConfig", this.errorConfig);
         return super.addOptions(body);
     }
-
-    public JSONObject toJson() {
-        JSONObject body = new JSONObject();
-        return this.addOptions(body);
-    }
 }

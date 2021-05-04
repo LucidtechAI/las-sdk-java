@@ -50,12 +50,6 @@ public class DockerTransitionParameters extends TransitionParameters {
         this.addOption(body, "cpu", this.cpu);
         this.addOption(body, "environmentSecrets", this.environmentSecrets);
         this.addOption(body, "environment", this.environment);
-        return super.addOptions(body);
-    }
-
-    public JSONObject toJson() {
-        JSONObject body = new JSONObject();
-        this.addOptions(body);
         return body;
     }
 }

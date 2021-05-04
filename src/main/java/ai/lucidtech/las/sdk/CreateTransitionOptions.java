@@ -29,9 +29,4 @@ public class CreateTransitionOptions extends NameAndDescriptionOptions<CreateTra
         this.addOption(body, "outputJsonSchema", this.outputJsonSchema);
         return super.addOptions(body);
     }
-
-    public JSONObject toJson() {
-        JSONObject body = new JSONObject();
-        return this.addOptions(body);
-    }
 }

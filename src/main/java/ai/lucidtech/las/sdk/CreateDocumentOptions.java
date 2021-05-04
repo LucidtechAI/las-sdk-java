@@ -30,9 +30,4 @@ public class CreateDocumentOptions extends Options {
         this.addOption(body, "groundTruth", this.groundTruth);
         return body;
     }
-
-    public JSONObject toJson() {
-        JSONObject body = new JSONObject();
-        return this.addOptions(body);
-    }
 }

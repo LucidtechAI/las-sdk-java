@@ -15,12 +15,6 @@ public class ManualTransitionParameters extends TransitionParameters {
 
     public JSONObject addOptions(JSONObject body) {
         this.addOption(body, "assets", this.assets);
-        return super.addOptions(body);
-    }
-
-    public JSONObject toJson() {
-        JSONObject body = new JSONObject();
-        this.addOptions(body);
         return body;
     }
 }

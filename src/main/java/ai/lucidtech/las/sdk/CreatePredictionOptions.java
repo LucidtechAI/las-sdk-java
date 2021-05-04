@@ -29,9 +29,4 @@ public class CreatePredictionOptions extends Options {
         this.addOption(body, "imageQuality", this.imageQuality.value);
         return body;
     }
-
-    public JSONObject toJson() {
-        JSONObject body = new JSONObject();
-        return this.addOptions(body);
-    }
 }

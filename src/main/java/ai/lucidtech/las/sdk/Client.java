@@ -30,7 +30,6 @@ import org.json.JSONObject;
 
 
 public class Client {
-
     private HttpClient httpClient;
     private Credentials credentials;
 
@@ -59,11 +58,7 @@ public class Client {
         CreateAppClientOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
-
-        if (options != null) {
-            body = options.addOptions(body);
-        }
-
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/appClients", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -146,11 +141,7 @@ public class Client {
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
         body.put("content", Base64.getEncoder().encodeToString(content));
-
-        if (options != null) {
-            body = options.addOptions(body);
-        }
-
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/assets", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -261,11 +252,7 @@ public class Client {
         UpdateAssetOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
-
-        if (options != null) {
-            body = options.addOptions(body);
-        }
-
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/assets/" + assetId, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -298,14 +285,11 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject createBatch(CreateBatchOptions options)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject createBatch(
+        CreateBatchOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
-
-        if (options != null){
-            body = options.addOptions(body);
-        }
-
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
         String response = this.executeRequest(request);
         return new JSONObject(response);
@@ -421,11 +405,7 @@ public class Client {
         JSONObject body = new JSONObject();
         body.put("content", Base64.getEncoder().encodeToString(content));
         body.put("contentType", contentType.getMimeType());
-
-        if (options != null) {
-            body = options.addOptions(body);
-        }
-
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/documents", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -686,9 +666,7 @@ public class Client {
         JSONObject body = new JSONObject();
         body.put("documentId", documentId);
         body.put("modelId", modelId);
-        if (options != null) {
-            body = options.addOptions(body);
-        }
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/predictions", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -759,9 +737,7 @@ public class Client {
         CreateSecretOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject(){{ put("data", data); }};
-        if (options != null) {
-            body = options.addOptions(body);
-        }
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/secrets", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -861,7 +837,9 @@ public class Client {
         String secretId,
         UpdateSecretOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/secrets/" + secretId, options.toJson());
+        JSONObject body = new JSONObject();
+        this.addOptions(body, options);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/secrets/" + secretId, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -901,11 +879,7 @@ public class Client {
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
         body.put("transitionType", transitionType.value);
-
-        if (options != null) {
-            body = options.addOptions(body);
-        }
-
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/transitions", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -988,7 +962,9 @@ public class Client {
         UpdateTransitionOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         String path = "/transitions/" + transitionId;
-        HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, options.toJson());
+        JSONObject body = new JSONObject();
+        this.addOptions(body, options);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -1150,11 +1126,7 @@ public class Client {
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
         body.put("email", email);
-
-        if (options != null) {
-            body = options.addOptions(body);
-        }
-
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/users", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -1234,7 +1206,9 @@ public class Client {
         String userId,
         UpdateUserOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
-        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/users/" + userId, options.toJson());
+        JSONObject body = new JSONObject();
+        this.addOptions(body, options);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/users/" + userId, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -1275,11 +1249,7 @@ public class Client {
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
         body.put("specification", specification);
-
-        if (options != null) {
-            body = options.addOptions(body);
-        }
-
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("POST", "/workflows", body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
@@ -1366,7 +1336,9 @@ public class Client {
         UpdateWorkflowOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         String path = "/workflows/" + workflowId;
-        HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, options.toJson());
+        JSONObject body = new JSONObject();
+        this.addOptions(body, options);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);
     }
@@ -1618,7 +1590,15 @@ public class Client {
         return request;
     }
 
-    private List<NameValuePair> getQueryParameters(ListResourcesOptions options){
+    private JSONObject addOptions(JSONObject body, Options options) {
+        if (options != null) {
+            body = options.addOptions(body);
+        }
+
+        return body;
+    }
+
+    private List<NameValuePair> getQueryParameters(ListResourcesOptions options) {
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 
         if (options != null) {
@@ -1628,7 +1608,7 @@ public class Client {
         return parameters;
     }
 
-    private List<NameValuePair> getQueryParameters(DeleteResourcesOptions options){
+    private List<NameValuePair> getQueryParameters(DeleteResourcesOptions options) {
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 
         if (options != null) {
