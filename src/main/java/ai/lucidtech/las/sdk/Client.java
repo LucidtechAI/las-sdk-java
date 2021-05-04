@@ -371,7 +371,7 @@ public class Client {
             DeleteDocumentsOptions options = new DeleteDocumentsOptions().setBatchId(new String[] {batchId});
             JSONObject documents = this.deleteDocuments(options);
             String nextTokenKey = "nextToken";
-            String nextToken = !documents.isNull(nextTokenKey) ? documents.getString(nextTokenKey) : null;
+            String nextToken = documents.isNull(nextTokenKey) ? null : documents.getString(nextTokenKey);
 
             while (nextToken != null) {
                 options = options.setNextToken(nextToken);
