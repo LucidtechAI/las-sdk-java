@@ -111,7 +111,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listAppClients() throws IOException, APIException, MissingAccessTokenException {
-        return this.listAppClients(new ListAppClientsOptions());
+        return this.listAppClients(null);
     }
 
     /**
@@ -229,7 +229,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listAssets() throws IOException, APIException, MissingAccessTokenException {
-        return this.listAssets(new ListAssetsOptions());
+        return this.listAssets(null);
     }
 
     /**
@@ -352,7 +352,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listBatches() throws IOException, APIException, MissingAccessTokenException {
-        return this.listBatches(new ListBatchesOptions());
+        return this.listBatches(null);
     }
 
     /**
@@ -518,7 +518,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listDocuments() throws IOException, APIException, MissingAccessTokenException {
-        return this.listDocuments(new ListDocumentsOptions());
+        return this.listDocuments(null);
     }
 
     /**
@@ -550,7 +550,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject deleteDocuments() throws IOException, APIException, MissingAccessTokenException {
-        return this.deleteDocuments(new DeleteDocumentsOptions());
+        return this.deleteDocuments(null);
     }
 
     /**
@@ -633,7 +633,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listLogs() throws IOException, APIException, MissingAccessTokenException {
-        return this.listLogs(new ListLogsOptions());
+        return this.listLogs(null);
     }
 
     /**
@@ -664,7 +664,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listModels() throws IOException, APIException, MissingAccessTokenException {
-        return listModels(new ListModelsOptions());
+        return listModels(null);
     }
 
     /**
@@ -742,7 +742,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listPredictions() throws IOException, APIException, MissingAccessTokenException {
-        return this.listPredictions(new ListPredictionsOptions());
+        return this.listPredictions(null);
     }
 
     /**
@@ -845,7 +845,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listSecrets() throws IOException, APIException, MissingAccessTokenException {
-        return this.listSecrets(new ListSecretsOptions());
+        return this.listSecrets(null);
     }
 
     /**
@@ -956,7 +956,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listTransitions() throws IOException, APIException, MissingAccessTokenException {
-        return this.listTransitions(new ListTransitionsOptions());
+        return this.listTransitions(null);
     }
 
     /**
@@ -1062,7 +1062,7 @@ public class Client {
      */
     public JSONObject listTransitionExecutions(String transitionId)
     throws IOException, APIException, MissingAccessTokenException {
-        return this.listTransitionExecutions(transitionId, new ListTransitionExecutionsOptions());
+        return this.listTransitionExecutions(transitionId, null);
     }
 
     /**
@@ -1085,7 +1085,7 @@ public class Client {
 
     /**
      * Ends the processing of the transition execution,
-     * calls the PATCH /transitions/{transition_id}/executions/{execution_id} endpoint.
+     * calls the PATCH /transitions/{transitionId}/executions/{executionId} endpoint.
      *
      * @see UpdateTransitionExecutionOptions
      * @see TransitionExecutionStatus
@@ -1137,7 +1137,7 @@ public class Client {
 
     /**
      * Creates a new user, calls the POST /users endpoint.
-
+     *
      * @see CreateUserOptions
      * @param email Email of the new user
      * @param options Additional options to include in request body
@@ -1146,8 +1146,10 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject createUser(String email, CreateUserOptions options)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject createUser(
+        String email,
+        CreateUserOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
         body.put("email", email);
 
@@ -1162,7 +1164,7 @@ public class Client {
 
     /**
      * Creates a new user, calls the POST /users endpoint.
-
+     *
      * @param email Email to the new user
      * @return User response from API
      * @throws IOException General IOException
@@ -1332,7 +1334,7 @@ public class Client {
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
     public JSONObject listWorkflows() throws IOException, APIException, MissingAccessTokenException {
-        return this.listWorkflows(new ListWorkflowsOptions());
+        return this.listWorkflows(null);
     }
 
     /**
@@ -1442,7 +1444,7 @@ public class Client {
     public JSONObject listWorkflowExecutions(
         String workflowId
     ) throws IOException, APIException, MissingAccessTokenException {
-        return this.listWorkflowExecutions(workflowId, new ListWorkflowExecutionsOptions());
+        return this.listWorkflowExecutions(workflowId, null);
     }
 
     /**
