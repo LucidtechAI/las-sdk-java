@@ -11,30 +11,20 @@ public class ListDocumentsOptions extends ListResourcesOptions<ListDocumentsOpti
     private String batchId;
     private String consentId;
 
-    public ListDocumentsOptions(){
-        super();
-        this.batchId = null;
-        this.consentId = null;
-    }
-
-    public ListDocumentsOptions setConsentId(String consentId){
+    public ListDocumentsOptions setConsentId(String consentId) {
         this.consentId = consentId;
         return this;
     }
 
-    public ListDocumentsOptions setBatchId(String batchId){
+    public ListDocumentsOptions setBatchId(String batchId) {
         this.batchId = batchId;
         return this;
     }
 
-    public List<NameValuePair> toList(){
+    public List<NameValuePair> toList() {
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        if( this.batchId != null){
-            parameters.add(new BasicNameValuePair("batchId", this.batchId));
-        }
-        if(this.consentId != null){
-            parameters.add(new BasicNameValuePair("consentId", this.consentId));
-        }
+        this.addOption(parameters, "batchId", this.batchId);
+        this.addOption(parameters, "consentId", this.consentId);
         return super.addOptions(parameters);
     }
 }

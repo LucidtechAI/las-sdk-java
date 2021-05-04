@@ -23,18 +23,8 @@ public class DeleteDocumentsOptions extends DeleteResourcesOptions<DeleteDocumen
 
     public List<NameValuePair> toList() {
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-
-        if (this.batchId != null) {
-            for (String batchId: this.batchId) {
-                parameters.add(new BasicNameValuePair("batchId", batchId));
-            }
-        }
-        if (this.consentId != null) {
-            for (String consentId: this.consentId) {
-                parameters.add(new BasicNameValuePair("consentId", consentId));
-            }
-        }
-
+        this.addOption(parameters, "batchId", this.batchId);
+        this.addOption(parameters, "consentId", this.consentId);
         return super.addOptions(parameters);
     }
 }

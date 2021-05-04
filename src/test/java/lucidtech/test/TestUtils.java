@@ -103,6 +103,10 @@ public final class TestUtils {
         return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
     }
 
+    public static ZonedDateTime dateTime() {
+        return ZonedDateTime.now(ZoneOffset.UTC);
+    }
+
     public static String dockerImageUrl() {
         return "my/docker:image";
     }

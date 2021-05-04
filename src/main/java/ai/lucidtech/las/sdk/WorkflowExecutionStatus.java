@@ -1,7 +1,7 @@
 package ai.lucidtech.las.sdk;
 
 
-public enum WorkflowExecutionStatus{
+public enum WorkflowExecutionStatus {
     SUCCEEDED("succeeded"),
     FAILED("failed"),
     REJECTED("rejected");

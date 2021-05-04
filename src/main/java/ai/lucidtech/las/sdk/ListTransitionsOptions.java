@@ -10,21 +10,14 @@ import java.util.List;
 public class ListTransitionsOptions extends ListResourcesOptions<ListTransitionsOptions> {
     private TransitionType transitionType;
 
-    public ListTransitionsOptions(){
-        super();
-        this.transitionType = null;
-    }
-
-    public ListTransitionsOptions setTransitionType(TransitionType transitionType){
+    public ListTransitionsOptions setTransitionType(TransitionType transitionType) {
         this.transitionType = transitionType;
         return this;
     }
 
-    public List<NameValuePair> toList(){
+    public List<NameValuePair> toList() {
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        if( this.transitionType != null){
-            parameters.add(new BasicNameValuePair("transitionType", this.transitionType.value));
-        }
+        this.addOption(parameters, "transitionType", this.transitionType.value);
         return super.addOptions(parameters);
     }
 }

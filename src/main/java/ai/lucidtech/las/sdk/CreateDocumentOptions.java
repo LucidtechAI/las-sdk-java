@@ -9,12 +9,6 @@ public class CreateDocumentOptions extends Options {
     private String batchId;
     private JSONArray groundTruth;
 
-    public CreateDocumentOptions() {
-        this.consentId = null;
-        this.batchId = null;
-        this.groundTruth = null;
-    }
-
     public CreateDocumentOptions setConsentId(String consentId) {
         this.consentId = consentId;
         return this;
@@ -29,7 +23,6 @@ public class CreateDocumentOptions extends Options {
         this.groundTruth = groundTruth;
         return this;
     }
-
 
     public JSONObject addOptions(JSONObject body) {
         this.addOption(body, "consentId", this.consentId);

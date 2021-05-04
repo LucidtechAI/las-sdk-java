@@ -1,7 +1,7 @@
 package ai.lucidtech.las.sdk;
 
 
-public enum ImageQuality{
+public enum ImageQuality {
     LOW("LOW"),
     HIGH("HIGH");
 

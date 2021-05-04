@@ -8,26 +8,8 @@ import java.util.List;
 
 
 public class ListResourcesOptions<T> {
-    protected Integer maxResults;
-    protected String nextToken;
-
-    public ListResourcesOptions() {
-        this.maxResults = null;
-        this.nextToken = null;
-    }
-
-    public ListResourcesOptions(int maxResults) {
-        this(maxResults, null);
-    }
-
-    public ListResourcesOptions(String nextToken) {
-        this(0, nextToken);
-    }
-
-    public ListResourcesOptions(int maxResults, String nextToken) {
-        this.maxResults = maxResults;
-        this.nextToken = nextToken;
-    }
+    private Integer maxResults;
+    private String nextToken;
 
     public T setMaxResults(int maxResults) {
         this.maxResults = maxResults;
@@ -47,6 +29,22 @@ public class ListResourcesOptions<T> {
     protected void addOption(List<NameValuePair> parameters, String key, String value) {
         if (value != null) {
             parameters.add(new BasicNameValuePair(key, value));
+        }
+    }
+
+    protected void addOption(List<NameValuePair> parameters, String key, String[] value) {
+        if (value != null) {
+            for (String v : value) {
+                parameters.add(new BasicNameValuePair(key, v));
+            }
+        }
+    }
+
+    protected void addOption(List<NameValuePair> parameters, String key, List<String> value) {
+        if (value != null) {
+            for (String v : value) {
+                parameters.add(new BasicNameValuePair(key, v));
+            }
         }
     }
 

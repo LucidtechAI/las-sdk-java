@@ -1183,8 +1183,9 @@ public class Client {
      * @throws APIException Raised when API returns an erroneous status code
      * @throws MissingAccessTokenException Raised if access token cannot be obtained
      */
-    public JSONObject listUsers(ListUsersOptions options)
-    throws IOException, APIException, MissingAccessTokenException {
+    public JSONObject listUsers(
+        ListUsersOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
         List<NameValuePair> queryParameters = getQueryParameters(options);
         HttpUriRequest request = this.createAuthorizedRequest("GET", "/users", queryParameters);
         String response = this.executeRequest(request);
@@ -1204,9 +1205,9 @@ public class Client {
     }
 
     /**
-     * Get information about a specific user, calls the GET /users/{user_id} endpoint.
+     * Get user, calls the GET /users/{userId} endpoint.
      *
-     * @param userId The Id of the user
+     * @param userId Id of user
      * @return User response
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
@@ -1222,7 +1223,7 @@ public class Client {
      * Updates a user, calls the PATCH /users/{userId} endpoint.
      *
      * @see UpdateUserOptions
-     * @param userId Id of the user
+     * @param userId Id of user
      * @param options Additional options to include in request body
      * @return User response from REST API
      * @throws IOException General IOException
@@ -1239,9 +1240,9 @@ public class Client {
     }
 
     /**
-     * Delete a user, calls the PATCH /users/{userId} endpoint.
+     * Deletes a user, calls the PATCH /users/{userId} endpoint.
      *
-     * @param userId Id of the user
+     * @param userId Id of user
      * @return User response from REST API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code

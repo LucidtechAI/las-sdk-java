@@ -1,48 +1,43 @@
 package ai.lucidtech.las.sdk;
 
+import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import org.json.JSONObject;
 
 
-public class UpdateTransitionExecutionOptions {
+public class UpdateTransitionExecutionOptions extends Options {
     private JSONObject output;
     private JSONObject error;
     private String startTime;
 
-    public UpdateTransitionExecutionOptions(){
-        this.output = null;
-        this.error = null;
-        this.startTime = null;
-    }
-
-    public UpdateTransitionExecutionOptions setOutput(JSONObject error){
+    public UpdateTransitionExecutionOptions setOutput(JSONObject error) {
         this.output = output;
         return this;
     }
 
-    public UpdateTransitionExecutionOptions setError(JSONObject output){
+    public UpdateTransitionExecutionOptions setError(JSONObject output) {
         this.error = error;
         return this;
     }
 
-    public UpdateTransitionExecutionOptions setStartTime(String startTime){
+    public UpdateTransitionExecutionOptions setStartTime(String startTime) {
         this.startTime = startTime;
         return this;
     }
 
-    public JSONObject addOptions(JSONObject body){
-        if (this.output != null) {
-            body.put("output", this.output);
-        }
-        else if (this.error != null) {
-            body.put("error", this.error);
-        }
-        if (this.startTime != null) {
-            body.put("startTime", this.startTime);
-        }
+    public UpdateTransitionExecutionOptions setStartTime(ZonedDateTime startTime) {
+        this.startTime = startTime.format(DateTimeFormatter.ISO_INSTANT);
+        return this;
+    }
+
+    public JSONObject addOptions(JSONObject body) {
+        this.addOption(body, "output", this.output);
+        this.addOption(body, "error", this.error);
+        this.addOption(body, "startTime", this.startTime);
         return body;
     }
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject body = new JSONObject();
         return this.addOptions(body);
     }

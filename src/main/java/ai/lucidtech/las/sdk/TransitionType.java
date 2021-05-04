@@ -1,7 +1,7 @@
 package ai.lucidtech.las.sdk;
 
 
-public enum TransitionType{
+public enum TransitionType {
     MANUAL("manual"),
     DOCKER("docker");
 

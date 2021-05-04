@@ -21,18 +21,34 @@ public class DeleteResourcesOptions<T> {
         return (T) this;
     }
 
+    protected void addOption(List<NameValuePair> parameters, String key, String value) {
+        if (value != null) {
+            parameters.add(new BasicNameValuePair(key, value));
+        }
+    }
+
+    protected void addOption(List<NameValuePair> parameters, String key, String[] value) {
+        if (value != null) {
+            for (String v : value) {
+                parameters.add(new BasicNameValuePair(key, v));
+            }
+        }
+    }
+
+    protected void addOption(List<NameValuePair> parameters, String key, Integer value) {
+        if (value != null) {
+            parameters.add(new BasicNameValuePair(key, Integer.toString(value)));
+        }
+    }
+
     public List<NameValuePair> toList() {
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
         return this.addOptions(parameters);
     }
 
     public List<NameValuePair> addOptions(List<NameValuePair> parameters) {
-        if (this.maxResults != null) {
-            parameters.add(new BasicNameValuePair("maxResults", Integer.toString(this.maxResults)));
-        }
-        if (this.nextToken != null) {
-            parameters.add(new BasicNameValuePair("nextToken", this.nextToken));
-        }
+        this.addOption(parameters, "maxResults", this.maxResults);
+        this.addOption(parameters, "nextToken", this.nextToken);
         return parameters;
     }
 }

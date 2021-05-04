@@ -1,4 +1,3 @@
 package ai.lucidtech.las.sdk;
 
-public class MissingCredentialsException extends Exception {
-}
+public class MissingCredentialsException extends Exception {}
