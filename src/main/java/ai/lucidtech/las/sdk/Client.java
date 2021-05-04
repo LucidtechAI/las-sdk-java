@@ -376,7 +376,7 @@ public class Client {
             while (nextToken != null) {
                 options = options.setNextToken(nextToken);
                 documents = this.deleteDocuments(options);
-                nextToken = !documents.isNull(nextTokenKey) ? documents.getString(nextTokenKey) : null;
+                nextToken = documents.isNull(nextTokenKey) ? null : documents.getString(nextTokenKey);
             }
         }
 
