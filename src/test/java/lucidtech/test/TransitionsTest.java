@@ -2,7 +2,6 @@ package lucidtech.test;
 
 import ai.lucidtech.las.sdk.*;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,100 +9,108 @@ import org.junit.Test;
 import java.io.IOException;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 public class TransitionsTest extends ClientTest {
-
-    public JSONObject getManualParameters(){
-        JSONObject assets = new JSONObject();
+    public ManualTransitionParameters createManualParameters() {
+        Map<String, String> assets = new HashMap<String, String>();
         assets.put("jsRemoteComponent", TestUtils.assetId());
-        assets.put("thresholds", TestUtils.assetId());
-        JSONObject parameters = new JSONObject();
-        parameters.put("assets", assets);
-        return parameters;
+        return new ManualTransitionParameters()
+            .setAssets(assets);
     }
 
-    public JSONObject getDockerParameters(){
-        JSONObject parameters = new JSONObject();
-        parameters.put("imageUrl", "foo");
-        parameters.put("secretId", TestUtils.secretId());
-        return parameters;
+    private DockerTransitionParameters createDockerParameters() {
+        Map<String, String> environment = new HashMap<String, String>();
+        environment.put("TEST_ENV_KEY", "Test Env Value");
+
+        return new DockerTransitionParameters()
+            .setImageUrl(TestUtils.dockerImageUrl())
+            .setMemory(512)
+            .setCpu(256)
+            .setEnvironment(environment)
+            .setEnvironmentSecrets(new String[] {TestUtils.secretId(), TestUtils.secretId()})
+            .setSecretId(TestUtils.secretId());
     }
 
     private void assertTransitionExecution(JSONObject execution) throws IOException {
-        Assert.assertTrue(execution.has("transitionId"));
-        Assert.assertTrue(execution.has("executionId"));
-        Assert.assertTrue(execution.has("status"));
-        Assert.assertTrue(execution.has("input"));
         Assert.assertTrue(execution.has("completedBy"));
-        Assert.assertTrue(execution.has("startTime"));
         Assert.assertTrue(execution.has("endTime"));
+        Assert.assertTrue(execution.has("executionId"));
+        Assert.assertTrue(execution.has("input"));
         Assert.assertTrue(execution.has("logId"));
+        Assert.assertTrue(execution.has("startTime"));
+        Assert.assertTrue(execution.has("status"));
+        Assert.assertTrue(execution.has("transitionId"));
+    }
+
+    private void assertTransitionExecutions(JSONObject transitionExecutions) throws IOException {
+        Assert.assertTrue(transitionExecutions.has("nextToken"));
+        Assert.assertTrue(transitionExecutions.has("executions"));
+
+        for (Object transitionExecution: transitionExecutions.getJSONArray("executions")) {
+            this.assertTransitionExecution((JSONObject) transitionExecution);
+        }
     }
 
     private void assertTransition(JSONObject transition) throws IOException {
-        Assert.assertTrue(transition.has("transitionId"));
+        Assert.assertTrue(transition.has("description"));
         Assert.assertTrue(transition.has("inputJsonSchema"));
+        Assert.assertTrue(transition.has("name"));
         Assert.assertTrue(transition.has("outputJsonSchema"));
         Assert.assertTrue(transition.has("parameters"));
-        Assert.assertTrue(transition.has("description"));
-        Assert.assertTrue(transition.has("name"));
+        Assert.assertTrue(transition.has("transitionId"));
+    }
+
+    private void assertTransitions(JSONObject transitions) throws IOException {
+        Assert.assertTrue(transitions.has("nextToken"));
+        Assert.assertTrue(transitions.has("transitions"));
+
+        for (Object transition: transitions.getJSONArray("transitions")) {
+            this.assertTransition((JSONObject) transition);
+        }
     }
 
     @Test
     public void testCreateManualTransition() throws IOException, APIException, MissingAccessTokenException {
-        CreateTransitionOptions options = new CreateTransitionOptions().setParameters(this.getManualParameters());
+        CreateTransitionOptions options = new CreateTransitionOptions()
+            .setName("Transition Name")
+            .setDescription("Transition Description")
+            .setInputJsonSchema(TestUtils.schema())
+            .setOutputJsonSchema(TestUtils.schema())
+            .setParameters(this.createManualParameters());
         JSONObject transition = this.client.createTransition(TransitionType.MANUAL, options);
         this.assertTransition(transition);
     }
 
     @Test
     public void testCreateDockerTransition() throws IOException, APIException, MissingAccessTokenException {
-        CreateTransitionOptions options = new CreateTransitionOptions().setParameters(this.getDockerParameters());
-        JSONObject transition = this.client.createTransition(TransitionType.DOCKER, options);
-        this.assertTransition(transition);
-    }
-
-    @Test
-    public void testCreateManualTransitionWithOptions() throws IOException, APIException, MissingAccessTokenException {
         CreateTransitionOptions options = new CreateTransitionOptions()
-        .setName("foo")
-        .setDescription("bar")
-        .setInputJsonSchema(TestUtils.schema())
-        .setOutputJsonSchema(TestUtils.schema())
-        .setParameters(this.getManualParameters());
-        JSONObject transition = this.client.createTransition(TransitionType.MANUAL, options);
-        this.assertTransition(transition);
-    }
-
-    @Test
-    public void testCreateDockerTransitionWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        CreateTransitionOptions options = new CreateTransitionOptions()
-        .setName("foo")
-        .setDescription("bar")
-        .setInputJsonSchema(TestUtils.schema())
-        .setOutputJsonSchema(TestUtils.schema())
-        .setParameters(this.getDockerParameters());
+            .setName("Transition Name")
+            .setDescription("Transition Description")
+            .setInputJsonSchema(TestUtils.schema())
+            .setOutputJsonSchema(TestUtils.schema())
+            .setParameters(this.createDockerParameters());
         JSONObject transition = this.client.createTransition(TransitionType.DOCKER, options);
         this.assertTransition(transition);
     }
 
     @Test
     public void testListTransitions() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject response = this.client.listTransitions();
-        JSONArray transitions = response.getJSONArray("transitions");
-        Assert.assertNotNull(transitions);
+        JSONObject transitions = this.client.listTransitions();
+        this.assertTransitions(transitions);
     }
 
     @Test
     public void testListTransitionsWithOptions() throws IOException, APIException, MissingAccessTokenException {
         ListTransitionsOptions options = new ListTransitionsOptions()
-        .setMaxResults(30)
-        .setNextToken("foo")
-        .setTransitionType(TransitionType.MANUAL);
-        JSONObject response = this.client.listTransitions(options);
-        JSONArray transitions = response.getJSONArray("transitions");
-        Assert.assertNotNull(transitions);
+            .setMaxResults(30)
+            .setNextToken("Dummy NextToken")
+            .setTransitionType(TransitionType.MANUAL);
+        JSONObject transitions = this.client.listTransitions(options);
+        this.assertTransitions(transitions);
     }
 
     @Test
@@ -115,10 +122,10 @@ public class TransitionsTest extends ClientTest {
     @Test
     public void testUpdateTransition() throws IOException, APIException, MissingAccessTokenException {
         UpdateTransitionOptions options = new UpdateTransitionOptions()
-        .setName("foo")
-        .setDescription("bar")
-        .setInputJsonSchema(TestUtils.schema())
-        .setOutputJsonSchema(TestUtils.schema());
+            .setName("Transition Name")
+            .setDescription("Transition Description")
+            .setInputJsonSchema(TestUtils.schema())
+            .setOutputJsonSchema(TestUtils.schema());
         JSONObject transition = this.client.updateTransition(TestUtils.transitionId(), options);
         this.assertTransition(transition);
     }
@@ -130,13 +137,6 @@ public class TransitionsTest extends ClientTest {
     }
 
     @Test
-    public void testUpdateTransitionWithOptions() throws IOException, APIException, MissingAccessTokenException {
-        UpdateTransitionOptions options = new UpdateTransitionOptions().setName("foo");
-        JSONObject transition = this.client.updateTransition(TestUtils.transitionId(), options);
-        this.assertTransition(transition);
-    }
-
-    @Test
     public void testExecuteTransition() throws IOException, APIException, MissingAccessTokenException {
         JSONObject execution = this.client.executeTransition(TestUtils.transitionId());
         this.assertTransitionExecution(execution);
@@ -144,36 +144,33 @@ public class TransitionsTest extends ClientTest {
 
     @Test
     public void testListTransitionExecutions() throws IOException, APIException, MissingAccessTokenException {
-        JSONObject response = this.client.listTransitionExecutions(TestUtils.transitionId());
-        JSONArray executions = response.getJSONArray("executions");
-        Assert.assertNotNull(executions);
+        JSONObject executions = this.client.listTransitionExecutions(TestUtils.transitionId());
+        this.assertTransitionExecutions(executions);
     }
 
     @Test
     public void testListTransitionExecutionsWithExecutionId() throws IOException, APIException, MissingAccessTokenException {
         ListTransitionExecutionsOptions options = new ListTransitionExecutionsOptions()
-        .setMaxResults(30)
-        .setNextToken("foo")
-        .setExecutionId(TestUtils.transitionExecutionId())
-        .setSortBy("endTime")
-        .setOrder(Order.DESCENDING);
-        JSONObject response = this.client.listTransitionExecutions(TestUtils.transitionId(), options);
-        JSONArray executions = response.getJSONArray("executions");
-        Assert.assertNotNull(executions);
+            .setMaxResults(30)
+            .setNextToken("Dummy NextToken")
+            .setExecutionId(TestUtils.transitionExecutionId())
+            .setSortBy("endTime")
+            .setOrder(Order.DESCENDING);
+        JSONObject executions = this.client.listTransitionExecutions(TestUtils.transitionId(), options);
+        this.assertTransitionExecutions(executions);
     }
 
     @Test
     public void testListTransitionExecutionsWithOptions() throws IOException, APIException, MissingAccessTokenException {
         List<TransitionExecutionStatus> status = Arrays.asList(TransitionExecutionStatus.SUCCEEDED);
         ListTransitionExecutionsOptions options = new ListTransitionExecutionsOptions()
-        .setMaxResults(30)
-        .setNextToken("foo")
-        .setStatus(status)
-        .setSortBy("endTime")
-        .setOrder(Order.ASCENDING);
-        JSONObject response = this.client.listTransitionExecutions(TestUtils.transitionId(), options);
-        JSONArray executions = response.getJSONArray("executions");
-        Assert.assertNotNull(executions);
+            .setMaxResults(30)
+            .setNextToken("Dummy NextToken")
+            .setStatus(status)
+            .setSortBy("endTime")
+            .setOrder(Order.ASCENDING);
+        JSONObject executions = this.client.listTransitionExecutions(TestUtils.transitionId(), options);
+        this.assertTransitionExecutions(executions);
     }
 
     @Test
@@ -186,10 +183,26 @@ public class TransitionsTest extends ClientTest {
     }
 
     @Test
-    public void testUpdateTransitionExecutionSucceeded() throws IOException, APIException, MissingAccessTokenException {
+    public void testUpdateTransitionExecutionSucceeded(
+    ) throws IOException, APIException, MissingAccessTokenException {
         UpdateTransitionExecutionOptions options = new UpdateTransitionExecutionOptions()
-        .setOutput(new JSONObject(){{ put("out", "foo"); }})
-        .setStartTime("2021-02-25 10:00:34.263905");
+            .setOutput(new JSONObject(){{ put("out", "foo"); }})
+            .setStartTime(TestUtils.isoDateTime());
+        JSONObject execution = this.client.updateTransitionExecution(
+            TestUtils.transitionId(),
+            TestUtils.transitionExecutionId(),
+            TransitionExecutionStatus.SUCCEEDED,
+            options
+        );
+        this.assertTransitionExecution(execution);
+    }
+
+    @Test
+    public void testUpdateTransitionExecutionSucceededWithDateTime(
+    ) throws IOException, APIException, MissingAccessTokenException {
+        UpdateTransitionExecutionOptions options = new UpdateTransitionExecutionOptions()
+            .setOutput(new JSONObject(){{ put("out", "foo"); }})
+            .setStartTime(TestUtils.dateTime());
         JSONObject execution = this.client.updateTransitionExecution(
             TestUtils.transitionId(),
             TestUtils.transitionExecutionId(),
@@ -202,8 +215,8 @@ public class TransitionsTest extends ClientTest {
     @Test
     public void testUpdateTransitionExecutionFailed() throws IOException, APIException, MissingAccessTokenException {
         UpdateTransitionExecutionOptions options = new UpdateTransitionExecutionOptions()
-        .setError(new JSONObject(){{ put("message", "foo"); }})
-        .setStartTime("2021-02-25 10:00:34.263905");
+            .setError(new JSONObject(){{ put("message", "foo"); }})
+            .setStartTime(TestUtils.isoDateTime());
         JSONObject execution = this.client.updateTransitionExecution(
             TestUtils.transitionId(),
             TestUtils.transitionExecutionId(),

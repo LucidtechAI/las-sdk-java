@@ -6,16 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ListDocumentsOptions extends ListResourcesOptions<ListDocumentsOptions> {
-    private String batchId;
-    private String consentId;
+public class DeleteDocumentsOptions extends DeleteResourcesOptions<DeleteDocumentsOptions> {
+    private String[] batchId;
+    private String[] consentId;
 
-    public ListDocumentsOptions setConsentId(String consentId) {
+    public DeleteDocumentsOptions setConsentId(String[] consentId) {
         this.consentId = consentId;
         return this;
     }
 
-    public ListDocumentsOptions setBatchId(String batchId) {
+    public DeleteDocumentsOptions setBatchId(String[] batchId) {
         this.batchId = batchId;
         return this;
     }

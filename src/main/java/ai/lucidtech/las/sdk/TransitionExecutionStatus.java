@@ -1,7 +1,7 @@
 package ai.lucidtech.las.sdk;
 
 
-public enum TransitionExecutionStatus{
+public enum TransitionExecutionStatus {
     SUCCEEDED("succeeded"),
     FAILED("failed"),
     REJECTED("rejected");

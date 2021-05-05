@@ -4,7 +4,7 @@ build:
 	./gradlew build
 
 test:
-	./gradlew test
+	./gradlew --info test
 
 publish:
 	./gradlew clean test

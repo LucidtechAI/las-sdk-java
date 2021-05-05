@@ -4,53 +4,29 @@ import org.json.JSONObject;
 
 
 public class CreateTransitionOptions extends NameAndDescriptionOptions<CreateTransitionOptions> {
-    private JSONObject parameters;
+    private TransitionParameters parameters;
     private JSONObject inputJsonSchema;
     private JSONObject outputJsonSchema;
 
-
-    public CreateTransitionOptions(){
-        this.parameters = null;
-        this.inputJsonSchema = null;
-        this.outputJsonSchema = null;
-    }
-
-    public CreateTransitionOptions(JSONObject parameters){
+    public CreateTransitionOptions setParameters(TransitionParameters parameters) {
         this.parameters = parameters;
-        this.inputJsonSchema = null;
-        this.outputJsonSchema = null;
-    }
-
-    public CreateTransitionOptions setParameters(JSONObject schema){
-        this.parameters = schema;
         return this;
     }
 
-    public CreateTransitionOptions setInputJsonSchema(JSONObject schema){
-        this.inputJsonSchema = schema;
+    public CreateTransitionOptions setInputJsonSchema(JSONObject inputJsonSchema) {
+        this.inputJsonSchema = inputJsonSchema;
         return this;
     }
 
-    public CreateTransitionOptions setOutputJsonSchema(JSONObject schema){
-        this.outputJsonSchema = schema;
+    public CreateTransitionOptions setOutputJsonSchema(JSONObject outputJsonSchema) {
+        this.outputJsonSchema = outputJsonSchema;
         return this;
     }
 
-    public JSONObject addOptions(JSONObject body){
-        if (this.parameters != null) {
-            body.put("parameters", this.parameters);
-        }
-        if (this.inputJsonSchema != null) {
-            body.put("inputJsonSchema", this.inputJsonSchema);
-        }
-        if (this.outputJsonSchema != null) {
-            body.put("outputJsonSchema", this.outputJsonSchema);
-        }
+    public JSONObject addOptions(JSONObject body) {
+        this.addOption(body, "parameters", this.parameters);
+        this.addOption(body, "inputJsonSchema", this.inputJsonSchema);
+        this.addOption(body, "outputJsonSchema", this.outputJsonSchema);
         return super.addOptions(body);
-    }
-
-    public JSONObject toJson(){
-        JSONObject body = new JSONObject();
-        return this.addOptions(body);
     }
 }

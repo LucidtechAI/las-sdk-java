@@ -4,31 +4,22 @@ import org.json.JSONObject;
 
 
 public class CreateWorkflowOptions extends NameAndDescriptionOptions<CreateWorkflowOptions> {
-    private JSONObject errorConfig;
+    private WorkflowCompletedConfig completedConfig;
+    private WorkflowErrorConfig errorConfig;
 
-
-    public CreateWorkflowOptions(){
-        this.errorConfig = null;
+    public CreateWorkflowOptions setCompletedConfig(WorkflowCompletedConfig completedConfig) {
+        this.completedConfig = completedConfig;
+        return this;
     }
 
-    public CreateWorkflowOptions(JSONObject errorConfig){
-        this.errorConfig = errorConfig;
-    }
-
-    public CreateWorkflowOptions setErrorConfig(JSONObject errorConfig){
+    public CreateWorkflowOptions setErrorConfig(WorkflowErrorConfig errorConfig) {
         this.errorConfig = errorConfig;
         return this;
     }
 
-    public JSONObject addOptions(JSONObject body){
-        if (this.errorConfig != null) {
-            body.put("errorConfig", this.errorConfig);
-        }
+    public JSONObject addOptions(JSONObject body) {
+        this.addOption(body, "completedConfig", this.completedConfig);
+        this.addOption(body, "errorConfig", this.errorConfig);
         return super.addOptions(body);
-    }
-
-    public JSONObject toJson(){
-        JSONObject body = new JSONObject();
-        return this.addOptions(body);
     }
 }

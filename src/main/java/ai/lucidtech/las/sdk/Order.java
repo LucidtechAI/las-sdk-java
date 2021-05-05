@@ -1,7 +1,7 @@
 package ai.lucidtech.las.sdk;
 
 
-public enum Order{
+public enum Order {
     ASCENDING("ascending"),
     DESCENDING("descending");
 
