@@ -48,6 +48,15 @@ public class AppClientsTest extends ClientTest {
     }
 
     @Test
+    public void testUpdateAppClient() throws IOException, APIException, MissingAccessTokenException {
+        UpdateAppClientOptions options = new UpdateAppClientOptions()
+            .setName("AppClient Name")
+            .setDescription("AppClient Description");
+        JSONObject appClient = this.client.updateAppClient(TestUtils.appClientId(), options);
+        this.assertAppClient(appClient);
+    }
+
+    @Test
     public void testListAppClients() throws IOException, APIException, MissingAccessTokenException {
         JSONObject appClients = this.client.listAppClients();
         this.assertAppClients(appClients);

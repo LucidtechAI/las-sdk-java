@@ -77,6 +77,29 @@ public class Client {
     }
 
     /**
+     * Update an appClient, calls the PATCH /appClients/{appClientId} endpoint.
+     *
+     * @see UpdateAppClientOptions
+     * @param appClientId Id of the appClient
+     * @param options Additional options to include in request body
+     * @return AppClient response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject updateAppClient(
+        String appClientId,
+        UpdateAppClientOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        String path = "/appClients/" + appClientId;
+        JSONObject body = new JSONObject();
+        this.addOptions(body, options);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, body);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    /**
      * List appClients available, calls the GET /appClients endpoint.
      *
      * @see ListAppClientsOptions
@@ -305,6 +328,29 @@ public class Client {
      */
     public JSONObject createBatch() throws IOException, APIException, MissingAccessTokenException {
         return this.createBatch(null);
+    }
+
+    /**
+     * Update a batch, calls the PATCH /batches/{batchId} endpoint.
+     *
+     * @see UpdateBatchOptions
+     * @param batchId Id of the batch
+     * @param options Additional options to include in request body
+     * @return Batch response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject updateBatch(
+        String batchId,
+        UpdateBatchOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        String path = "/batches/" + batchId;
+        JSONObject body = new JSONObject();
+        this.addOptions(body, options);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, body);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
     }
 
     /**
