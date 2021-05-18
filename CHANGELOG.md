@@ -1,5 +1,10 @@
 # Changelog 
 
+## Version 1.2.0 - 2021-05-18
+
+- Added updateBatch (PATCH /batches/:id)
+- Added updateAppClient (PATCH /appClients/:id)
+
 ## Version 1.1.0 - 2021-05-04
 
 - Added createAppClient (POST /appClients)
