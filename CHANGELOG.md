@@ -1,7 +1,8 @@
 # Changelog 
 
-## Version 1.2.0 - 2021-05-18
+## Version 1.2.0 - 2021-05-19
 
+- Added createModel (POST /models)
 - Added updateBatch (PATCH /batches/:id)
 - Added updateAppClient (PATCH /appClients/:id)
 
