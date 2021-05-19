@@ -26,6 +26,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -658,6 +659,56 @@ public class Client {
      */
     public JSONObject listLogs() throws IOException, APIException, MissingAccessTokenException {
         return this.listLogs(null);
+    }
+
+    /**
+     * Create a model, calls the POST /models endpoint.
+     *
+     * @see CreateModelOptions
+     * @see FieldConfig
+     * @param width The number of pixels to be used for the input image width of your model
+     * @param height The number of pixels to be used for the input image height of your model
+     * @param fieldConfig Specification of the fields that the model is going to predict
+     * @param options Additional options to include in request body
+     * @return Model response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject createModel(
+        int width,
+        int height,
+        FieldConfig fieldConfig,
+        CreateModelOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        JSONObject body = new JSONObject();
+        body.put("width", width);
+        body.put("height", height);
+        body.put("fieldConfig", fieldConfig.toJson());
+        this.addOptions(body, options);
+        HttpUriRequest request = this.createAuthorizedRequest("POST", "/models", body);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    /**
+     * Create a model, calls the POST /models endpoint.
+     *
+     * @see FieldConfig
+     * @param width The number of pixels to be used for the input image width of your model
+     * @param height The number of pixels to be used for the input image height of your model
+     * @param fieldConfig Specification of the fields that the model is going to predict
+     * @return Model response from API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject createModel(
+        int width,
+        int height,
+        FieldConfig fieldConfig
+    ) throws IOException, APIException, MissingAccessTokenException {
+        return this.createModel(width, height, fieldConfig, null);
     }
 
     /**
@@ -1486,7 +1537,7 @@ public class Client {
     }
 
     private String executeRequest(HttpUriRequest request) throws IOException, APIException {
-        HttpResponse httpResponse= this.httpClient.execute(request);
+        HttpResponse httpResponse = this.httpClient.execute(request);
         HttpEntity responseEntity = httpResponse.getEntity();
         StatusLine statusLine = httpResponse.getStatusLine();
         int status = statusLine.getStatusCode();
@@ -1503,7 +1554,13 @@ public class Client {
             throw new APIException("You have reached the limit of requests per second");
         }
         else if (status > 299) {
-            throw new APIException(status, statusLine.getReasonPhrase());
+            try {
+                String message = EntityUtils.toString(responseEntity);
+                JSONObject jsonResponse = new JSONObject(message);
+                throw new APIException(status, jsonResponse.getString("message"));
+            } catch (JSONException ex) {
+                throw new APIException(status, statusLine.getReasonPhrase());
+            }
         }
 
         return EntityUtils.toString(responseEntity);

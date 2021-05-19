@@ -33,6 +33,42 @@ public class ModelsTest extends ClientTest {
     }
 
     @Test
+    public void testCreateModel() throws IOException, APIException, MissingAccessTokenException {
+        int width = 800;
+        int height = 800;
+        FieldConfig fieldConfig = new FieldConfig()
+            .addField(new Field("total_amount", FieldType.AMOUNT, 12))
+            .addField(new Field("purchase_date", FieldType.DATE, 10))
+            .addField(new Field("supplier_id", FieldType.ALPHANUM, 20));
+
+        JSONObject model = this.client.createModel(width, height, fieldConfig);
+        this.assertModel(model);
+    }
+
+    @Test
+    public void testCreateModelWithOptions() throws IOException, APIException, MissingAccessTokenException {
+        PreprocessConfig preprocessConfig = new PreprocessConfig()
+            .setImageQuality(ImageQuality.HIGH)
+            .setAutoRotate(true)
+            .setMaxPages(3);
+
+        CreateModelOptions options = new CreateModelOptions()
+            .setName("Model Name")
+            .setDescription("Model Description")
+            .setPreprocessConfig(preprocessConfig);
+
+        int width = 800;
+        int height = 800;
+        FieldConfig fieldConfig = new FieldConfig()
+            .addField(new Field("total_amount", FieldType.AMOUNT, 12))
+            .addField(new Field("purchase_date", FieldType.DATE, 10))
+            .addField(new Field("supplier_id", FieldType.ALPHANUM, 20));
+
+        JSONObject model = this.client.createModel(width, height, fieldConfig, options);
+        this.assertModel(model);
+    }
+
+    @Test
     public void testListModels() throws IOException, APIException, MissingAccessTokenException {
         JSONObject models = this.client.listModels();
         this.assertModels(models);
