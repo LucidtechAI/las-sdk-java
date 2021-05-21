@@ -3,6 +3,8 @@
 ## Version 1.2.0 - 2021-05-19
 
 - Added createModel (POST /models)
+- Added getModel (GET /models/:id)
+- Added updateModel (PATCH /models/:id)
 - Added updateBatch (PATCH /batches/:id)
 - Added updateAppClient (PATCH /appClients/:id)
 

@@ -712,6 +712,44 @@ public class Client {
     }
 
     /**
+     * Updates a model, calls the PATCH /models/{modelId} endpoint.
+     *
+     * @see UpdateModelOptions
+     * @param modelId Id of the model
+     * @param options Additional options to include in request body
+     * @return Model response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject updateModel(
+        String modelId,
+        UpdateModelOptions options
+    ) throws IOException, APIException, MissingAccessTokenException {
+        String path = "/models/" + modelId;
+        JSONObject body = new JSONObject();
+        this.addOptions(body, options);
+        HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, body);
+        String jsonResponse = this.executeRequest(request);
+        return new JSONObject(jsonResponse);
+    }
+
+    /**
+     * Get model, calls the GET /models/{modelId} endpoint.
+     *
+     * @param modelId Id of the model
+     * @return Model response from REST API
+     * @throws IOException General IOException
+     * @throws APIException Raised when API returns an erroneous status code
+     * @throws MissingAccessTokenException Raised if access token cannot be obtained
+     */
+    public JSONObject getModel(String modelId) throws IOException, APIException, MissingAccessTokenException {
+        HttpUriRequest request = this.createAuthorizedRequest("GET", "/models/" + modelId);
+        String response = this.executeRequest(request);
+        return new JSONObject(response);
+    }
+
+    /**
      * List models, calls the GET /models endpoint.
      *
      * @see ListModelsOptions

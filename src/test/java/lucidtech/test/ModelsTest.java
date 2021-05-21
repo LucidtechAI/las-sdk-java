@@ -69,6 +69,43 @@ public class ModelsTest extends ClientTest {
     }
 
     @Test
+    public void testGetModel() throws IOException, APIException, MissingAccessTokenException {
+        String modelId = TestUtils.modelId();
+        JSONObject model = this.client.getModel(modelId);
+        this.assertModel(model);
+    }
+
+    @Test
+    public void testUpdateModelWithOptions() throws IOException, APIException, MissingAccessTokenException {
+        PreprocessConfig preprocessConfig = new PreprocessConfig()
+            .setImageQuality(ImageQuality.HIGH)
+            .setAutoRotate(true)
+            .setMaxPages(3);
+
+        FieldConfig fieldConfig = new FieldConfig()
+            .addField(new Field("total_amount", FieldType.AMOUNT, 12))
+            .addField(new Field("purchase_date", FieldType.DATE, 10))
+            .addField(new Field("supplier_id", FieldType.ALPHANUM, 20));
+
+        int width = 800;
+        int height = 800;
+        ModelStatus modelStatus = ModelStatus.TRAINING;
+
+        UpdateModelOptions options = new UpdateModelOptions()
+            .setName("Model Name")
+            .setDescription("Model Description")
+            .setWidth(width)
+            .setHeight(height)
+            .setModelStatus(modelStatus)
+            .setFieldConfig(fieldConfig)
+            .setPreprocessConfig(preprocessConfig);
+
+        String modelId = TestUtils.modelId();
+        JSONObject model = this.client.updateModel(modelId, options);
+        this.assertModel(model);
+    }
+
+    @Test
     public void testListModels() throws IOException, APIException, MissingAccessTokenException {
         JSONObject models = this.client.listModels();
         this.assertModels(models);
