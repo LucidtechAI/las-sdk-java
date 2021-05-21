@@ -47,6 +47,15 @@ public class BatchesTest extends ClientTest {
     }
 
     @Test
+    public void testUpdateBatch() throws IOException, APIException, MissingAccessTokenException {
+        UpdateBatchOptions options = new UpdateBatchOptions()
+            .setName("Batch Name")
+            .setDescription("Batch Description");
+        JSONObject batch = this.client.updateBatch(TestUtils.batchId(), options);
+        this.assertBatch(batch);
+    }
+
+    @Test
     public void testListBatches() throws IOException, APIException, MissingAccessTokenException {
         JSONObject batches = this.client.listBatches();
         this.assertBatches(batches);

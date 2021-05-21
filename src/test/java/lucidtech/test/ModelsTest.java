@@ -33,6 +33,79 @@ public class ModelsTest extends ClientTest {
     }
 
     @Test
+    public void testCreateModel() throws IOException, APIException, MissingAccessTokenException {
+        int width = 800;
+        int height = 800;
+        FieldConfig fieldConfig = new FieldConfig()
+            .addField(new Field("total_amount", FieldType.AMOUNT, 12).setDescription("Total Amount"))
+            .addField(new Field("purchase_date", FieldType.DATE, 10).setDescription("Purchase Date"))
+            .addField(new Field("supplier_id", FieldType.ALPHANUM, 20).setDescription("Supplier ID"));
+
+        JSONObject model = this.client.createModel(width, height, fieldConfig);
+        this.assertModel(model);
+    }
+
+    @Test
+    public void testCreateModelWithOptions() throws IOException, APIException, MissingAccessTokenException {
+        PreprocessConfig preprocessConfig = new PreprocessConfig()
+            .setImageQuality(ImageQuality.HIGH)
+            .setAutoRotate(true)
+            .setMaxPages(3);
+
+        CreateModelOptions options = new CreateModelOptions()
+            .setName("Model Name")
+            .setDescription("Model Description")
+            .setPreprocessConfig(preprocessConfig);
+
+        int width = 800;
+        int height = 800;
+        FieldConfig fieldConfig = new FieldConfig()
+            .addField(new Field("total_amount", FieldType.AMOUNT, 12).setDescription("Total Amount"))
+            .addField(new Field("purchase_date", FieldType.DATE, 10).setDescription("Purchase Date"))
+            .addField(new Field("supplier_id", FieldType.ALPHANUM, 20).setDescription(null));
+
+        JSONObject model = this.client.createModel(width, height, fieldConfig, options);
+        this.assertModel(model);
+    }
+
+    @Test
+    public void testGetModel() throws IOException, APIException, MissingAccessTokenException {
+        String modelId = TestUtils.modelId();
+        JSONObject model = this.client.getModel(modelId);
+        this.assertModel(model);
+    }
+
+    @Test
+    public void testUpdateModelWithOptions() throws IOException, APIException, MissingAccessTokenException {
+        PreprocessConfig preprocessConfig = new PreprocessConfig()
+            .setImageQuality(ImageQuality.HIGH)
+            .setAutoRotate(true)
+            .setMaxPages(3);
+
+        FieldConfig fieldConfig = new FieldConfig()
+            .addField(new Field("total_amount", FieldType.AMOUNT, 12).setDescription("Total Amount"))
+            .addField(new Field("purchase_date", FieldType.DATE, 10).setDescription("Purchase Date"))
+            .addField(new Field("supplier_id", FieldType.ALPHANUM, 20).setDescription("Supplier ID"));
+
+        int width = 800;
+        int height = 800;
+        ModelStatus modelStatus = ModelStatus.TRAINING;
+
+        UpdateModelOptions options = new UpdateModelOptions()
+            .setName("Model Name")
+            .setDescription("Model Description")
+            .setWidth(width)
+            .setHeight(height)
+            .setModelStatus(modelStatus)
+            .setFieldConfig(fieldConfig)
+            .setPreprocessConfig(preprocessConfig);
+
+        String modelId = TestUtils.modelId();
+        JSONObject model = this.client.updateModel(modelId, options);
+        this.assertModel(model);
+    }
+
+    @Test
     public void testListModels() throws IOException, APIException, MissingAccessTokenException {
         JSONObject models = this.client.listModels();
         this.assertModels(models);

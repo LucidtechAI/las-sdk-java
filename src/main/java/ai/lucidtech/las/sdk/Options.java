@@ -7,6 +7,12 @@ import org.json.JSONObject;
 
 
 public abstract class Options {
+    protected void addOption(JSONObject body, String key, NullableString value) {
+        if (value != null && value.hasEditedValue) {
+            body.put(key, value);
+        }
+    }
+
     protected void addOption(JSONObject body, String key, String value) {
         if (value != null) {
             body.put(key, value);

@@ -4,16 +4,16 @@ import org.json.JSONObject;
 
 
 public class NameAndDescriptionOptions<T> extends Options {
-    private String name;
-    private String description;
+    private NullableString name = new NullableString();
+    private NullableString description = new NullableString();
 
     public T setName(String name) {
-        this.name = name;
+        this.name.setValue(name);
         return (T) this;
     }
 
     public T setDescription(String description) {
-        this.description = description;
+        this.description.setValue(description);
         return (T) this;
     }
 
