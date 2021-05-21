@@ -1,6 +1,6 @@
 # Changelog 
 
-## Version 1.2.0 - 2021-05-19
+## Version 1.2.0 - 2021-05-21
 
 - Added createModel (POST /models)
 - Added getModel (GET /models/:id)
