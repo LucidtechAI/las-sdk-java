@@ -10,7 +10,7 @@ public class Field extends Options {
     public String name;
     private FieldType fieldType;
     private Integer maxLength;
-    private String description;
+    private NullableString description = new NullableString();
 
     public Field(String name, FieldType fieldType, Integer maxLength) {
         this.name = name;
@@ -34,16 +34,14 @@ public class Field extends Options {
     }
 
     public Field setDescription(String description) {
-        this.description = description;
+        this.description.setValue(description);
         return this;
     }
 
     public JSONObject addOptions(JSONObject body) {
-        if (this.fieldType != null) {
-            this.addOption(body, "type", this.fieldType.value);
-        }
+        this.addOption(body, "type", this.fieldType.value);
         this.addOption(body, "maxLength", this.maxLength);
-        this.addOption(body, "description", this.description == null ? "" : this.description); // TODO: Remove hack
+        this.addOption(body, "description", this.description);
         return body;
     }
 }

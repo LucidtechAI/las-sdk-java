@@ -42,7 +42,9 @@ public class AppClientsTest extends ClientTest {
             .setDescription("AppClient Description")
             .setGenerateSecret(false)
             .setCallbackUrls(new String[] {"https://example.org/authCallback"})
-            .setLogoutUrls(new String[] {"https://example.org/logout"});
+            .setLogoutUrls(new String[] {"https://example.org/logout"})
+            .setLoginUrls(new String[] {"https://example.org/login"})
+            .setDefaultLoginUrl("https://example.org/login");
         JSONObject appClient = this.client.createAppClient(options);
         this.assertAppClient(appClient);
     }
