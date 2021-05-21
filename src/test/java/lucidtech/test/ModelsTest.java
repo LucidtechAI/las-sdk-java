@@ -62,7 +62,7 @@ public class ModelsTest extends ClientTest {
         FieldConfig fieldConfig = new FieldConfig()
             .addField(new Field("total_amount", FieldType.AMOUNT, 12).setDescription("Total Amount"))
             .addField(new Field("purchase_date", FieldType.DATE, 10).setDescription("Purchase Date"))
-            .addField(new Field("supplier_id", FieldType.ALPHANUM, 20).setDescription("Supplier ID"));
+            .addField(new Field("supplier_id", FieldType.ALPHANUM, 20).setDescription(null));
 
         JSONObject model = this.client.createModel(width, height, fieldConfig, options);
         this.assertModel(model);
