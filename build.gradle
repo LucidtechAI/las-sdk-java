@@ -87,11 +87,6 @@ uploadArchives {
                         email = 'magnus@lucidtech.ai'
                     }
                     developer {
-                        id = 'nikita'
-                        name = 'Nikita Antonenkov'
-                        email = 'nikita@lucidtech.ai'
-                    }
-                    developer {
                         id = 'august'
                         name = 'August Kvernmo'
                         email = 'august@lucidtech.ai'
