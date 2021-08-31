@@ -77,6 +77,7 @@ public class DocumentsTest extends ClientTest {
     public void testListDocumentsWithOptions() throws IOException, APIException, MissingAccessTokenException {
         ListDocumentsOptions options = new ListDocumentsOptions()
             .setConsentId(TestUtils.consentId())
+            .setDatasetId(TestUtils.datasetId())
             .setBatchId(TestUtils.batchId())
             .setMaxResults(30)
             .setNextToken("Dummy NextToken");
@@ -102,6 +103,14 @@ public class DocumentsTest extends ClientTest {
     public void testDeleteDocumentsWithBatchId() throws IOException, APIException, MissingAccessTokenException {
         DeleteDocumentsOptions options = new DeleteDocumentsOptions()
             .setBatchId(new String[] {TestUtils.batchId()});
+        JSONObject documents = this.client.deleteDocuments(options);
+        this.assertDocuments(documents);
+    }
+
+    @Test
+    public void testDeleteDocumentsWithDatasetId() throws IOException, APIException, MissingAccessTokenException {
+        DeleteDocumentsOptions options = new DeleteDocumentsOptions()
+            .setDatasetId(new String[] {TestUtils.datasetId()});
         JSONObject documents = this.client.deleteDocuments(options);
         this.assertDocuments(documents);
     }

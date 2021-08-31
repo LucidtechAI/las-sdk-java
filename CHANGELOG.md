@@ -1,5 +1,12 @@
 # Changelog 
 
+## Version 2.0.0 - 2021-08-31
+
+- Bugfixes for List and Delete Options
+- Added argument datasetId to ListDocumentsOptions 
+- Added argument datasetId to DeleteDocumentsOptions
+- Removed toList function from Options
+
 ## Version 1.2.0 - 2021-05-21
 
 - Added createModel (POST /models)

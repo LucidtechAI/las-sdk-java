@@ -21,11 +21,6 @@ public class ListResourcesOptions<T> {
         return (T) this;
     }
 
-    public List<NameValuePair> toList() {
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        return this.addOptions(parameters);
-    }
-
     protected void addOption(List<NameValuePair> parameters, String key, String value) {
         if (value != null) {
             parameters.add(new BasicNameValuePair(key, value));

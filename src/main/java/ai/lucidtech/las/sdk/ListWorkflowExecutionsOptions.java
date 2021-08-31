@@ -21,11 +21,6 @@ public class ListWorkflowExecutionsOptions extends ListSortablesOptions<ListWork
         return this;
     }
 
-    public List<NameValuePair> toList() {
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        return this.addOptions(parameters);
-    }
-
     public List<NameValuePair> addOptions(List<NameValuePair> parameters) {
         if (this.status != null) {
             List<String> statusList = this.status.stream().map(s -> s.value).collect(Collectors.toList());

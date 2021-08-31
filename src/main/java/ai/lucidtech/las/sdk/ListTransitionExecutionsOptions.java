@@ -32,11 +32,6 @@ public class ListTransitionExecutionsOptions extends ListSortablesOptions<ListTr
         return this;
     }
 
-    public List<NameValuePair> toList() {
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        return this.addOptions(parameters);
-    }
-
     public List<NameValuePair> addOptions(List<NameValuePair> parameters) {
         this.addOption(parameters, "executionId", this.executionId);
         if (this.status != null) {
