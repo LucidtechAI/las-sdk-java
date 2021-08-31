@@ -8,6 +8,7 @@ public class CreateDocumentOptions extends Options {
     private String consentId;
     private String batchId;
     private JSONArray groundTruth;
+    private Integer retentionInDays;
 
     public CreateDocumentOptions setConsentId(String consentId) {
         this.consentId = consentId;
@@ -24,10 +25,16 @@ public class CreateDocumentOptions extends Options {
         return this;
     }
 
+    public CreateDocumentOptions setRetentionInDays(Integer retentionInDays) {
+        this.retentionInDays = retentionInDays;
+        return this;
+    }
+
     public JSONObject addOptions(JSONObject body) {
         this.addOption(body, "consentId", this.consentId);
         this.addOption(body, "batchId", this.batchId);
         this.addOption(body, "groundTruth", this.groundTruth);
+        this.addOption(body, "retentionInDays", this.retentionInDays);
         return body;
     }
 }
