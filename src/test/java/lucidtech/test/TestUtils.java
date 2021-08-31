@@ -36,6 +36,10 @@ public final class TestUtils {
         return  "las:consent:" + hexUuid();
     }
 
+    public static String datasetId() {
+        return  "las:dataset:" + hexUuid();
+    }
+
     public static String documentId() {
         return  "las:document:" + hexUuid();
     }
