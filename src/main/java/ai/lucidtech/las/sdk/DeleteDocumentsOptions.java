@@ -29,7 +29,7 @@ public class DeleteDocumentsOptions extends DeleteResourcesOptions<DeleteDocumen
     public List<NameValuePair> addOptions(List<NameValuePair> parameters) {
         this.addOption(parameters, "batchId", this.batchId);
         this.addOption(parameters, "datasetId", this.datasetId);
-        this.addOption(parameters, "consentId", this.batchId);
+        this.addOption(parameters, "consentId", this.consentId);
         return super.addOptions(parameters);
     }
 }
