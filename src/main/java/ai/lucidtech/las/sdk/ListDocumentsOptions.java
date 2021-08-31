@@ -29,7 +29,7 @@ public class ListDocumentsOptions extends ListResourcesOptions<ListDocumentsOpti
     public List<NameValuePair> addOptions(List<NameValuePair> parameters) {
         this.addOption(parameters, "batchId", this.batchId);
         this.addOption(parameters, "datasetId", this.datasetId);
-        this.addOption(parameters, "consentId", this.batchId);
+        this.addOption(parameters, "consentId", this.consentId);
         return super.addOptions(parameters);
     }
 }
