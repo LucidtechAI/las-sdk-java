@@ -32,12 +32,11 @@ public class ListLogsOptions extends ListResourcesOptions<ListLogsOptions> {
         return this;
     }
 
-    public List<NameValuePair> toList() {
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+    public List<NameValuePair> addOptions(List<NameValuePair> parameters) {
         this.addOption(parameters, "transitionId", this.transitionId);
         this.addOption(parameters, "transitionExecutionId", this.transitionExecutionId);
         this.addOption(parameters, "workflowId", this.workflowId);
         this.addOption(parameters, "workflowExecutionId", this.workflowExecutionId);
         return super.addOptions(parameters);
-    }
+  }
 }

@@ -41,11 +41,6 @@ public class DeleteResourcesOptions<T> {
         }
     }
 
-    public List<NameValuePair> toList() {
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        return this.addOptions(parameters);
-    }
-
     public List<NameValuePair> addOptions(List<NameValuePair> parameters) {
         this.addOption(parameters, "maxResults", this.maxResults);
         this.addOption(parameters, "nextToken", this.nextToken);

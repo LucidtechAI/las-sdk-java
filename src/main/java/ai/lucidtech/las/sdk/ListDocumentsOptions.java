@@ -8,10 +8,16 @@ import java.util.List;
 
 public class ListDocumentsOptions extends ListResourcesOptions<ListDocumentsOptions> {
     private String batchId;
+    private String datasetId;
     private String consentId;
 
     public ListDocumentsOptions setConsentId(String consentId) {
         this.consentId = consentId;
+        return this;
+    }
+
+    public ListDocumentsOptions setDatasetId(String datasetId) {
+        this.datasetId = datasetId;
         return this;
     }
 
@@ -20,10 +26,10 @@ public class ListDocumentsOptions extends ListResourcesOptions<ListDocumentsOpti
         return this;
     }
 
-    public List<NameValuePair> toList() {
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+    public List<NameValuePair> addOptions(List<NameValuePair> parameters) {
         this.addOption(parameters, "batchId", this.batchId);
-        this.addOption(parameters, "consentId", this.consentId);
+        this.addOption(parameters, "datasetId", this.datasetId);
+        this.addOption(parameters, "consentId", this.batchId);
         return super.addOptions(parameters);
     }
 }
