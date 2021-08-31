@@ -18,6 +18,7 @@ public class DocumentsTest extends ClientTest {
         Assert.assertTrue(document.has("consentId"));
         Assert.assertTrue(document.has("content"));
         Assert.assertTrue(document.has("documentId"));
+        Assert.assertTrue(document.has("retentionInDays"));
     }
 
     private void assertDocuments(JSONObject documents) throws IOException {
@@ -42,7 +43,8 @@ public class DocumentsTest extends ClientTest {
         CreateDocumentOptions options = new CreateDocumentOptions()
             .setConsentId(TestUtils.consentId())
             .setBatchId(TestUtils.batchId())
-            .setGroundTruth(groundTruth);
+            .setGroundTruth(groundTruth)
+            .setRetentionInDays(30);
         JSONObject document = this.client.createDocument(TestUtils.content(), ContentType.PDF, options);
         this.assertDocument(document);
     }
@@ -55,7 +57,8 @@ public class DocumentsTest extends ClientTest {
         CreateDocumentOptions options = new CreateDocumentOptions()
             .setConsentId(TestUtils.consentId())
             .setBatchId(TestUtils.batchId())
-            .setGroundTruth(groundTruth);
+            .setGroundTruth(groundTruth)
+            .setRetentionInDays(30);
         JSONObject document = this.client.createDocument(input, ContentType.PDF, options);
         this.assertDocument(document);
 
