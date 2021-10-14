@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from collections import defaultdict
 import argparse
@@ -15,7 +16,8 @@ def main(out_dir):
     paths = list(out_dir_path.iterdir())
     paths.sort()
     for path in paths:
-        link_name = str(path.stem).replace('ai::lucidtech::las::sdk::', '')
+        new_path = Path(str(path).replace('ai::lucidtech::las::sdk::', ''))
+        link_name = new_path.stem
         readme_string = f'* [{link_name}]({str(path.name)})'
         if link_name.endswith('Client'):
             summary.extend([
@@ -26,6 +28,9 @@ def main(out_dir):
             summaries['options'].append(readme_string)
         else:
             summaries['other'].append(readme_string)
+
+        new_path.write_text(path.read_text())
+        os.remove(str(path))
 
     summary.extend(
         [
