@@ -25,7 +25,6 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -465,7 +464,7 @@ public class Client {
      *
      * @see Client#createDocument
      * @param documentId The document id to post groundTruth to.
-     * @param groundTruth List of json objects containing label and value for the ground truth
+     * @param options Additional options to include in request body
      * @return Document response from REST API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
@@ -473,10 +472,10 @@ public class Client {
      */
     public JSONObject updateDocument(
         String documentId,
-        JSONArray groundTruth
+        UpdateDocumentOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
-        body.put("groundTruth", groundTruth);
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/documents/" + documentId, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);

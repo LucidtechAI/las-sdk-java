@@ -118,7 +118,11 @@ public class DocumentsTest extends ClientTest {
     public void testUpdateDocument() throws IOException, APIException, MissingAccessTokenException {
         JSONArray groundTruth = new JSONArray();
         groundTruth.put(new JSONObject(){{ put("label", "totalAmount"); put("value", "100.00"); }});
-        JSONObject document = this.client.updateDocument(TestUtils.documentId(), groundTruth);
+        UpdateDocumentOptions options = new UpdateDocumentOptions()
+          .setDatasetId(TestUtils.datasetId())
+          .setGroundTruth(groundTruth)
+          .setRetentionInDays(14);
+        JSONObject document = this.client.updateDocument(TestUtils.documentId(), options);
         this.assertDocument(document);
     }
 }
