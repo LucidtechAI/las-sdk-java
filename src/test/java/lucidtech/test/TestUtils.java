@@ -28,10 +28,6 @@ public final class TestUtils {
         return  "las:asset:" + hexUuid();
     }
 
-    public static String batchId() {
-        return  "las:batch:" + hexUuid();
-    }
-
     public static String consentId() {
         return  "las:consent:" + hexUuid();
     }
