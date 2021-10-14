@@ -1,4 +1,5 @@
 from pathlib import Path
+from collections import defaultdict
 import argparse
 
 
@@ -8,15 +9,36 @@ def main(out_dir):
         '\n',
         f'### Overview',
         '\n',
-        f'The Client class contains all the higher level methods',
-        '\n',
-        f'### Classes',
-        '\n',
     ]
 
-    for path in out_dir_path.iterdir():
+    summaries = defaultdict(list)
+    paths = list(out_dir_path.iterdir())
+    paths.sort()
+    for path in paths:
         link_name = str(path.stem).replace('ai::lucidtech::las::sdk::', '')
-        summary.append(f'* [{link_name}]({str(path.name)})')
+        readme_string = f'* [{link_name}]({str(path.name)})'
+        if link_name.endswith('Client'):
+            summary.extend([
+                f'The [Client]({path.name}) class contains all the higher level methods',
+                '\n',
+            ])
+        elif 'Options' in link_name:
+            summaries['options'].append(readme_string)
+        else:
+            summaries['other'].append(readme_string)
+
+    summary.extend(
+        [
+            f'### Options',
+            '\n',
+        ] +
+        summaries['options'] +
+        [
+            f'### Other',
+            '\n',
+        ] +
+        summaries['other']
+    )
 
     (out_dir_path / 'README.md').write_text('\n'.join(summary))
 
