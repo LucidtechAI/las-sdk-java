@@ -18,7 +18,7 @@ def main(out_dir):
     for path in paths:
         new_path = Path(str(path).replace('ai::lucidtech::las::sdk::', ''))
         link_name = new_path.stem
-        readme_string = f'* [{link_name}]({str(path.name)})'
+        readme_string = f'* [{link_name}]({str(new_path.name)})'
         if link_name.endswith('Client'):
             summary.extend([
                 f'The [Client]({path.name}) class contains all the higher level methods',
