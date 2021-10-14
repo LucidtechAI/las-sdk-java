@@ -114,3 +114,5 @@ gradle-app.setting
 
 # Application-specific
 /src/test/resources/config.properties
+
+.idea/

@@ -25,7 +25,6 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -300,139 +299,6 @@ public class Client {
     }
 
     /**
-     * Create a batch, calls the POST /batches endpoint.
-     *
-     * @see CreateBatchOptions
-     * @param options Additional options to include in request body
-     * @return Batch response from REST API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject createBatch(
-        CreateBatchOptions options
-    ) throws IOException, APIException, MissingAccessTokenException {
-        JSONObject body = new JSONObject();
-        this.addOptions(body, options);
-        HttpUriRequest request = this.createAuthorizedRequest("POST", "/batches", body);
-        String response = this.executeRequest(request);
-        return new JSONObject(response);
-    }
-
-    /**
-     * Create a batch, calls the POST /batches endpoint.
-     *
-     * @return Batch response from REST API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject createBatch() throws IOException, APIException, MissingAccessTokenException {
-        return this.createBatch(null);
-    }
-
-    /**
-     * Update a batch, calls the PATCH /batches/{batchId} endpoint.
-     *
-     * @see UpdateBatchOptions
-     * @param batchId Id of the batch
-     * @param options Additional options to include in request body
-     * @return Batch response from REST API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject updateBatch(
-        String batchId,
-        UpdateBatchOptions options
-    ) throws IOException, APIException, MissingAccessTokenException {
-        String path = "/batches/" + batchId;
-        JSONObject body = new JSONObject();
-        this.addOptions(body, options);
-        HttpUriRequest request = this.createAuthorizedRequest("PATCH", path, body);
-        String jsonResponse = this.executeRequest(request);
-        return new JSONObject(jsonResponse);
-    }
-
-    /**
-     * List batches available, calls the GET /batches endpoint.
-     *
-     * @see ListBatchesOptions
-     * @param options Additional options to pass along as query parameters
-     * @return Batches response from REST API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject listBatches(
-        ListBatchesOptions options
-    ) throws IOException, APIException, MissingAccessTokenException {
-        List<NameValuePair> queryParameters = getQueryParameters(options);
-        HttpUriRequest request = this.createAuthorizedRequest("GET", "/batches", queryParameters);
-        String response = this.executeRequest(request);
-        return new JSONObject(response);
-    }
-
-    /**
-     * List batches available, calls the GET /batches endpoint.
-     *
-     * @return Batches response from REST API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject listBatches() throws IOException, APIException, MissingAccessTokenException {
-        return this.listBatches(null);
-    }
-
-    /**
-     * Delete a batch, calls the DELETE /batches/{batchId} endpoint.
-     *
-     * @param batchId Id of the batch
-     * @param deleteDocuments Set to true to delete documents in batch before deleting batch
-     * @return Batch response from REST API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject deleteBatch(
-        String batchId,
-        boolean deleteDocuments
-    ) throws IOException, APIException, MissingAccessTokenException {
-        if (deleteDocuments) {
-            DeleteDocumentsOptions options = new DeleteDocumentsOptions().setBatchId(new String[] {batchId});
-            JSONObject documents = this.deleteDocuments(options);
-            String nextTokenKey = "nextToken";
-            String nextToken = documents.isNull(nextTokenKey) ? null : documents.getString(nextTokenKey);
-
-            while (nextToken != null) {
-                options = options.setNextToken(nextToken);
-                documents = this.deleteDocuments(options);
-                nextToken = documents.isNull(nextTokenKey) ? null : documents.getString(nextTokenKey);
-            }
-        }
-
-        HttpUriRequest request = this.createAuthorizedRequest("DELETE", "/batches/" + batchId);
-        String response = this.executeRequest(request);
-        return new JSONObject(response);
-    }
-
-    /**
-     * Delete a batch, calls the DELETE /batches/{batchId} endpoint.
-     *
-     * @param batchId Id of the batch
-     * @return Batch response from REST API
-     * @throws IOException General IOException
-     * @throws APIException Raised when API returns an erroneous status code
-     * @throws MissingAccessTokenException Raised if access token cannot be obtained
-     */
-    public JSONObject deleteBatch(
-        String batchId
-    ) throws IOException, APIException, MissingAccessTokenException {
-        return this.deleteBatch(batchId, false);
-    }
-
-    /**
      * Create a document, calls the POST /documents endpoint.
      *
      * @see CreateDocumentOptions
@@ -598,7 +464,7 @@ public class Client {
      *
      * @see Client#createDocument
      * @param documentId The document id to post groundTruth to.
-     * @param groundTruth List of json objects containing label and value for the ground truth
+     * @param options Additional options to include in request body
      * @return Document response from REST API
      * @throws IOException General IOException
      * @throws APIException Raised when API returns an erroneous status code
@@ -606,10 +472,10 @@ public class Client {
      */
     public JSONObject updateDocument(
         String documentId,
-        JSONArray groundTruth
+        UpdateDocumentOptions options
     ) throws IOException, APIException, MissingAccessTokenException {
         JSONObject body = new JSONObject();
-        body.put("groundTruth", groundTruth);
+        this.addOptions(body, options);
         HttpUriRequest request = this.createAuthorizedRequest("PATCH", "/documents/" + documentId, body);
         String jsonResponse = this.executeRequest(request);
         return new JSONObject(jsonResponse);

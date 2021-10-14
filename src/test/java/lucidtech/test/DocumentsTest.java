@@ -14,7 +14,6 @@ import java.io.IOException;
 
 public class DocumentsTest extends ClientTest {
     private void assertDocument(JSONObject document) throws IOException {
-        Assert.assertTrue(document.has("batchId"));
         Assert.assertTrue(document.has("consentId"));
         Assert.assertTrue(document.has("content"));
         Assert.assertTrue(document.has("documentId"));
@@ -42,7 +41,7 @@ public class DocumentsTest extends ClientTest {
         groundTruth.put(new JSONObject(){{ put("label", "totalAmount"); put("value", "100.00"); }});
         CreateDocumentOptions options = new CreateDocumentOptions()
             .setConsentId(TestUtils.consentId())
-            .setBatchId(TestUtils.batchId())
+            .setDatasetId(TestUtils.datasetId())
             .setGroundTruth(groundTruth)
             .setRetentionInDays(30);
         JSONObject document = this.client.createDocument(TestUtils.content(), ContentType.PDF, options);
@@ -56,7 +55,7 @@ public class DocumentsTest extends ClientTest {
         groundTruth.put(new JSONObject(){{ put("label", "totalAmount"); put("value", "100.00"); }});
         CreateDocumentOptions options = new CreateDocumentOptions()
             .setConsentId(TestUtils.consentId())
-            .setBatchId(TestUtils.batchId())
+            .setDatasetId(TestUtils.datasetId())
             .setGroundTruth(groundTruth)
             .setRetentionInDays(30);
         JSONObject document = this.client.createDocument(input, ContentType.PDF, options);
@@ -81,7 +80,6 @@ public class DocumentsTest extends ClientTest {
         ListDocumentsOptions options = new ListDocumentsOptions()
             .setConsentId(TestUtils.consentId())
             .setDatasetId(TestUtils.datasetId())
-            .setBatchId(TestUtils.batchId())
             .setMaxResults(30)
             .setNextToken("Dummy NextToken");
         JSONObject documents = this.client.listDocuments(options);
@@ -98,14 +96,6 @@ public class DocumentsTest extends ClientTest {
     public void testDeleteDocumentsWithConsentId() throws IOException, APIException, MissingAccessTokenException {
         DeleteDocumentsOptions options = new DeleteDocumentsOptions()
             .setConsentId(new String[] {TestUtils.consentId()});
-        JSONObject documents = this.client.deleteDocuments(options);
-        this.assertDocuments(documents);
-    }
-
-    @Test
-    public void testDeleteDocumentsWithBatchId() throws IOException, APIException, MissingAccessTokenException {
-        DeleteDocumentsOptions options = new DeleteDocumentsOptions()
-            .setBatchId(new String[] {TestUtils.batchId()});
         JSONObject documents = this.client.deleteDocuments(options);
         this.assertDocuments(documents);
     }
@@ -128,7 +118,11 @@ public class DocumentsTest extends ClientTest {
     public void testUpdateDocument() throws IOException, APIException, MissingAccessTokenException {
         JSONArray groundTruth = new JSONArray();
         groundTruth.put(new JSONObject(){{ put("label", "totalAmount"); put("value", "100.00"); }});
-        JSONObject document = this.client.updateDocument(TestUtils.documentId(), groundTruth);
+        UpdateDocumentOptions options = new UpdateDocumentOptions()
+          .setDatasetId(TestUtils.datasetId())
+          .setGroundTruth(groundTruth)
+          .setRetentionInDays(14);
+        JSONObject document = this.client.updateDocument(TestUtils.documentId(), options);
         this.assertDocument(document);
     }
 }
