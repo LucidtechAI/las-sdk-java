@@ -1,5 +1,9 @@
 # Changelog 
 
+## Version 4.0.0 - 2021-10-22
+
+- Removed apiKey from Credentials
+
 ## Version 3.0.0 - 2021-10-14
 
 - Removed all support for batches. Use datasets instead.

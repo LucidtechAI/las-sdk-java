@@ -17,7 +17,6 @@ import org.json.JSONObject;
 public class Credentials {
     private String clientId;
     private String clientSecret;
-    private String apiKey;
     private String authEndpoint;
     private String apiEndpoint;
     private String accessToken;
@@ -28,7 +27,6 @@ public class Credentials {
      *
      * @param clientId Client id
      * @param clientSecret Client secret
-     * @param apiKey API key
      * @param authEndpoint Auth endpoint
      * @param apiEndpoint Domain endpoint of the api, e.g. https://{prefix}.api.lucidtech.ai/{version}
      * @throws MissingCredentialsException Raised if some of credentials are missing
@@ -36,15 +34,13 @@ public class Credentials {
     public Credentials(
         String clientId,
         String clientSecret,
-        String apiKey,
         String authEndpoint,
         String apiEndpoint
     ) throws MissingCredentialsException {
-        this.validateCredentials(clientId, clientSecret, apiKey, authEndpoint, apiEndpoint);
+        this.validateCredentials(clientId, clientSecret, authEndpoint, apiEndpoint);
 
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.apiKey = apiKey;
         this.authEndpoint = authEndpoint;
         this.apiEndpoint = apiEndpoint;
         this.accessToken = null;
@@ -68,10 +64,6 @@ public class Credentials {
         }
 
         return this.accessToken;
-    }
-
-    public String getApiKey() {
-        return apiKey;
     }
 
     public String getApiEndpoint() {

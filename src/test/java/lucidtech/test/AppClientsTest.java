@@ -11,7 +11,6 @@ import java.io.IOException;
 
 public class AppClientsTest extends ClientTest {
     private void assertAppClient(JSONObject appClient) throws IOException {
-        Assert.assertTrue(appClient.has("apiKey"));
         Assert.assertTrue(appClient.has("appClientId"));
         Assert.assertTrue(appClient.has("clientId"));
         Assert.assertTrue(appClient.has("createdTime"));
