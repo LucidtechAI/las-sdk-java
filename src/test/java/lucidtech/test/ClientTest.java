@@ -17,7 +17,7 @@ public class ClientTest {
 
     @Before
     public void setUp() throws MissingCredentialsException, MissingAccessTokenException {
-        Credentials credentials = new Credentials("test", "test", "test", "test", "http://127.0.0.1:4010");
+        Credentials credentials = new Credentials("test", "test", "test", "http://127.0.0.1:4010");
         Credentials spyCredentials = spy(credentials);
         doReturn("foo").when(spyCredentials).getAccessToken(any(HttpClient.class));
         this.client = new Client(spyCredentials);

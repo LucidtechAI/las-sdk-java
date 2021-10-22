@@ -1511,7 +1511,6 @@ public class Client {
 
         request.addHeader("Content-Type", "application/json");
         request.addHeader("Authorization", "Bearer " + this.credentials.getAccessToken(this.httpClient));
-        request.addHeader("X-Api-Key", this.credentials.getApiKey());
 
         return request;
     }
@@ -1544,7 +1543,6 @@ public class Client {
 
         request.addHeader("Content-Type", "application/json");
         request.addHeader("Authorization", "Bearer " + this.credentials.getAccessToken(this.httpClient));
-        request.addHeader("X-Api-Key", this.credentials.getApiKey());
 
         return request;
     }
@@ -1592,7 +1590,6 @@ public class Client {
 
         request.addHeader("Content-Type", "application/json");
         request.addHeader("Authorization", "Bearer " + this.credentials.getAccessToken(this.httpClient));
-        request.addHeader("X-Api-Key", this.credentials.getApiKey());
 
         return request;
     }
