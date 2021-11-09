@@ -15,7 +15,6 @@ java-docs:
 
 docs: # See here for doxybook2 installation instructions https://github.com/matusnovak/doxybook2#Install
 	doxygen
-	moxygen xml
 
 prism-start:
 	@echo "Starting mock API..."
