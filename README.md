@@ -15,30 +15,37 @@
 ### Quick start
 
 ```java
-import ai.lucidtech.las.sdk.Client;
-import ai.lucidtech.las.sdk.Prediction;
-import ai.lucidtech.las.sdk.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import ai.lucidtech.las.sdk.Client;
+import ai.lucidtech.las.sdk.ContentType;
+import ai.lucidtech.las.sdk.Credentials;
 
 public class Main {
     public static void main(String[] args) throws IOException, URISyntaxException {
+        // TODO enter values from your API Key:
         Credentials credentials = new Credentials(
             clientId,
             clientSecret,
             authEndpoint,
             apiEndpoint
         );
-        Client client = new Client("<api endpoint>");
-        JSONObject document = this.createDocument(documentContent, contentType, consentId);
+        // TODO change values:
+        String modelName = "las:organization:cradl/las:model:invoice";
+        String pdf = "<filename>.pdf";
+        
+        Client client = new Client(credentials);
+        JSONObject document = client.createDocument(Files.readAllBytes(Paths.get(pdf)), ContentType.PDF);
         String documentId = document.getString("documentId");
         JSONObject prediction = this.createPrediction(documentId, modelName);
-
+        JSONArray fields = (JSONArray) prediction.get("predictions");
         fields.forEach(item -> {
-            JSONObject field = (JSONObject) item;
-            System.out.println("field: " + field.getString("label"));
-            System.out.println("field: " + field.getString("value"));
-            System.out.println("field: " + field.getFloat("confidence"));
+            JSONObject f = (JSONObject) item;
+            System.out.println(f.getString("label") + " = " + f.getString("value") + " (" + f.getFloat("confidence") + ")");
         });
     }
 }
